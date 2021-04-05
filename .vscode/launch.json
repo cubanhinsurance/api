@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "type": "node-terminal",
+            "name": "debug",
+            "request": "launch",
+            "command": "yarn run start:debug",
+            "env": {
+                "ROOT_USER":"root",
+                "ROOT_PASSWORD":"Aqwerty123*",
+            },
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

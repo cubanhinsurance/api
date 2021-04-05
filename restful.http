@@ -1,0 +1,68 @@
+POST http://localhost:4000/auth/signin
+Content-Type: application/json
+
+{
+    "username":"root",
+    "password":"Aqwerty123*"
+}
+####
+POST http://localhost:4000/auth/signin
+Content-Type: application/json
+
+{
+    "username":"john",
+    "password":"Aqwerty123*"
+}
+####
+POST http://localhost:4000/auth/signin/agent
+Content-Type: application/json
+
+{
+    "username":"wendy",
+    "password":"Aqwerty123*"
+}
+####
+POST http://localhost:4000/users/user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpc1Jvb3QiOnRydWUsImlhdCI6MTYxNzU1Mzg4MywiZXhwIjoxNjE3NTY4MjgzfQ.BLMbU6tOsY8SK9U4CB_p1jjIS5HAx7jDEopnVvA5Q-s
+Content-Type: application/json
+
+{
+    "username":"john",
+    "password":"Aqwerty123*",
+    "name":"Juan Pablo",
+    "lastname":"Bacallao Castillo"
+}
+####
+PUT http://localhost:4000/users/user/john
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJpc1Jvb3QiOmZhbHNlLCJpYXQiOjE2MTc1ODQ2NzUsImV4cCI6MTYxNzU5OTA3NX0.1nucSGXzARiogq3QglE7ylJOiLQJ2jjmgm6uc_9wnK8
+Content-Type: application/json
+
+{
+    "last_password":"Aqwerty123*",
+    "new_password":"Aqwerty123*",
+    "confirm_password":"Aqwerty123*",
+    "expiration_date":null
+}
+####
+POST http://localhost:4000/users/agent
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpc1Jvb3QiOnRydWUsImlhdCI6MTYxNzU4ODM4NSwiZXhwIjoxNjE3NjAyNzg1fQ.mGIGxyl-lhdPEl9fv9p7JJnXTE--IbxNjN4LhXrN5Dk
+Content-Type: application/json
+
+{
+    "role":1,
+    "new_user":{
+        "username":"wendy",
+        "password":"Aqwerty123*",
+        "name":"Wendy",
+        "lastname":"Torres"
+    },
+    "expiration_date":"2020-1-1"
+}
+####
+PUT http://localhost:4000/users/agent/wendy
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpc1Jvb3QiOnRydWUsImlhdCI6MTYxNzU4ODM4NSwiZXhwIjoxNjE3NjAyNzg1fQ.mGIGxyl-lhdPEl9fv9p7JJnXTE--IbxNjN4LhXrN5Dk
+Content-Type: application/json
+
+{
+    "active":true
+}
