@@ -9,7 +9,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Exception } from 'src/lib/exceptions/exception';
 import { FindConditions, IsNull, LessThanOrEqual, Repository } from 'typeorm';
-import { AgentDto, UserDto } from '../dtos/user.dto';
+import { AgentDto, TechDto, UserDto } from '../dtos/user.dto';
 import { UsersEntity } from '../entities/user.entity';
 import { compare, hash } from 'bcryptjs';
 import { AgentsEntity } from '../entities/agent.entity';
@@ -112,7 +112,9 @@ export class UsersService {
       const created = await this.agentsEntity.save({
         role: role as any,
         user,
-        expiration_date: moment(expiration_date).toDate(),
+        expiration_date: expiration_date
+          ? moment(expiration_date).toDate()
+          : null,
       });
     } catch (e) {
       throw new InternalServerErrorException();
@@ -148,6 +150,70 @@ export class UsersService {
         user: agentObj.user,
       },
       agentObj,
+    );
+  }
+
+  async createTechnichian({ username, new_user, expiration_date }: TechDto) {
+    if (!username && !new_user) throw new BadRequestException();
+
+    const user = username
+      ? await this.usersEntity.findOne({
+          username,
+        })
+      : await this.createUser(new_user);
+
+    if (username && !user)
+      throw new NotFoundException(`Usuario ${username} no existe`);
+
+    if (username) {
+      const exists = await this.techsEntity.findOne({
+        user: user.id,
+      });
+      if (exists)
+        throw new ForbiddenException(
+          `Ya existe un tecnico con el usuario ${username}`,
+        );
+    }
+
+    try {
+      const created = await this.techsEntity.save({
+        user,
+        expiration_date: expiration_date
+          ? moment(expiration_date).toDate()
+          : null,
+      });
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async updateTechnichian(tech: string, data: any) {
+    const user = await this.usersEntity.findOne({
+      username: tech,
+    });
+
+    if (!user) throw new NotFoundException(`Usuario ${tech} no existe`);
+
+    const techObj = await this.techsEntity.findOne({
+      where: {
+        user,
+      },
+    });
+
+    if (!techObj)
+      throw new NotFoundException(
+        `No existe ningun tecnico con el usuario ${tech}`,
+      );
+
+    if (data.expiration_date || data.expiration_date === null)
+      techObj.expiration_date = data.expiration_date;
+    if (typeof data.active !== 'undefined') techObj.active = data.active;
+
+    const updated = await this.techsEntity.update(
+      {
+        user: techObj.user,
+      },
+      techObj,
     );
   }
 }

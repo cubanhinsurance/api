@@ -22,6 +22,14 @@ Content-Type: application/json
     "password":"Aqwerty123*"
 }
 ####
+POST http://localhost:4000/auth/signin/tech
+Content-Type: application/json
+
+{
+    "username":"pepe",
+    "password":"Aqwerty123*"
+}
+####
 POST http://localhost:4000/users/user
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpc1Jvb3QiOnRydWUsImlhdCI6MTYxNzU1Mzg4MywiZXhwIjoxNjE3NTY4MjgzfQ.BLMbU6tOsY8SK9U4CB_p1jjIS5HAx7jDEopnVvA5Q-s
 Content-Type: application/json
@@ -66,3 +74,31 @@ Content-Type: application/json
 {
     "active":true
 }
+####
+POST http://localhost:4000/users/tech
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxNzY3NzA3MCwiZXhwIjoxNjE3NjkxNDcwfQ.G1QTOx0FNKk3WSCd1yluqzptnOf7syZqSI92ulTO3jU
+Content-Type: application/json
+
+{
+    "new_user":{
+        "username":"pepe",
+        "password":"Aqwerty123*",
+        "name":"PEpito",
+        "lastname":"El cojo"
+    }
+}
+###
+PUT http://localhost:4000/users/tech/pepe
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxNzY3NzA3MCwiZXhwIjoxNjE3NjkxNDcwfQ.G1QTOx0FNKk3WSCd1yluqzptnOf7syZqSI92ulTO3jU
+Content-Type: application/json
+
+{
+    "active":true,
+    "expiration_date":null
+}
+###
+http://localhost:4000/functionalities
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxNzY3NzA3MCwiZXhwIjoxNjE3NjkxNDcwfQ.G1QTOx0FNKk3WSCd1yluqzptnOf7syZqSI92ulTO3jU
+###
+http://localhost:4000/roles
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxNzY3NzA3MCwiZXhwIjoxNjE3NjkxNDcwfQ.G1QTOx0FNKk3WSCd1yluqzptnOf7syZqSI92ulTO3jU

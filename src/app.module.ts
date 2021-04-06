@@ -7,10 +7,12 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards/jwt.guard';
 import { UsersModule } from './modules/users/users.module';
 import { ExceptionsInterceptor } from './lib/interceptors/exceptions.interceptor';
+import { RolesModule } from './modules/roles/roles.module';
 
 @Module({
   imports: [
     AuthModule,
+    RolesModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       useFactory({ config }: ConfigService) {

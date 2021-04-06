@@ -111,6 +111,31 @@ export class AuthService {
     return userInfo;
   }
 
+  async validateTech(username: string, password: string) {
+    const userInfo = await this.validateUser(username, password);
+
+    if (!userInfo) return;
+    if (userInfo.isRoot) return userInfo;
+    if (!userInfo.tech) return;
+    if (!userInfo.tech.active)
+      throw new UnauthorizedException(`El tecnico se encuentra inhabilitado`);
+
+    if (
+      userInfo.tech.expiration_date &&
+      moment(userInfo.tech.expiration_date).isBefore(moment())
+    ) {
+      moment.locale('es');
+      const exp = moment(userInfo.tech.expiration_date);
+      throw new UnauthorizedException(
+        `El tecnico se encuentra inhabilitado debido a que ha expirado del tiempo de uso configurado: ${exp.format(
+          'LLL',
+        )} (${exp.fromNow()})`,
+      );
+    }
+
+    return userInfo;
+  }
+
   async login(user: any) {
     return {
       access_token: this.jwtService.sign(user),

@@ -39,3 +39,14 @@ export const UPDATE_AGENT_SCHEMA = object({
   active: boolean().optional(),
   expiration_date: date().optional().allow(null),
 }).required();
+
+export const TECH_SCHEMA = object({
+  new_user: USERS_SCHEMA.optional(),
+  username: string().optional(),
+  expiration_date: date().optional(),
+}).xor('username', 'new_user');
+
+export const UPDATE_TECH_SCHEMA = object({
+  active: boolean().optional(),
+  expiration_date: date().optional().allow(null),
+});

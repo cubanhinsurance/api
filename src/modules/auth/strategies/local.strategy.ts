@@ -32,3 +32,18 @@ export class LocalAgentStrategy extends PassportStrategy(Strategy, 'agent') {
     return user;
   }
 }
+
+@Injectable()
+export class LocalTechStrategy extends PassportStrategy(Strategy, 'tech') {
+  constructor(private authService: AuthService) {
+    super();
+  }
+
+  async validate(username: string, password: string): Promise<any> {
+    const user = await this.authService.validateTech(username, password);
+
+    if (!user) throw new UnauthorizedException();
+
+    return user;
+  }
+}

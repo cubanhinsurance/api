@@ -13,7 +13,9 @@ import {
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import {
   AGENTS_SCHEMA,
+  TECH_SCHEMA,
   UPDATE_AGENT_SCHEMA,
+  UPDATE_TECH_SCHEMA,
   UPDATE_USER_SCHEMA,
   USERS_SCHEMA,
 } from '../schemas/users.schema';
@@ -86,5 +88,36 @@ export class UsersController {
     @Body(new JoiPipe(UPDATE_AGENT_SCHEMA)) body: object,
   ) {
     const updated = await this.users.updateAgent(agent, body);
+  }
+
+  @Post('tech')
+  @ApiBody({
+    schema: j2s(TECH_SCHEMA).swagger,
+  })
+  @ApiOperation({
+    summary: 'Crear un nuevo tecnico',
+  })
+  @ApiConflictResponse({ description: 'Tenico ya existe' })
+  @ApiCreatedResponse({ description: 'Tenico creado con exito' })
+  @ApiBadRequestResponse({ description: 'Parametros de entrada incorrectos' })
+  async createTech(@Body(new JoiPipe(TECH_SCHEMA)) tech: any) {
+    const created = await this.users.createTechnichian(tech);
+  }
+
+  @Put('tech/:tech')
+  @ApiBody({
+    schema: j2s(UPDATE_TECH_SCHEMA).swagger,
+  })
+  @ApiOperation({
+    summary: 'Actualizar datos de un tecnico',
+  })
+  @ApiOkResponse({ description: 'Tecnico actualizado satisfactoriamente' })
+  @ApiNotFoundResponse({ description: 'Usuario no existe' })
+  @ApiBadRequestResponse()
+  async updateTech(
+    @Param('tech') tech: string,
+    @Body(new JoiPipe(UPDATE_TECH_SCHEMA)) body: object,
+  ) {
+    const updated = await this.users.updateTechnichian(tech, body);
   }
 }

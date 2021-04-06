@@ -41,3 +41,14 @@ export class AgentDto {
     this.new_user = data.new_user;
   }
 }
+
+export class TechDto {
+  readonly expiration_date?: Date;
+  readonly username?: string;
+  readonly new_user?: UserDto;
+  constructor(data) {
+    this.expiration_date = data.expiration_date;
+    this.username = data.username;
+    this.new_user = data.new_user;
+  }
+}

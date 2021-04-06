@@ -2,7 +2,11 @@ import { Module } from '@nestjs/common';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
-import { LocalAgentStrategy, LocalStrategy } from './strategies/local.strategy';
+import {
+  LocalAgentStrategy,
+  LocalStrategy,
+  LocalTechStrategy,
+} from './strategies/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { config } from 'rxjs';
 import { ConfigService } from '@atlasjs/config';
@@ -22,6 +26,12 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, LocalAgentStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    LocalTechStrategy,
+    LocalAgentStrategy,
+    JwtStrategy,
+  ],
 })
 export class AuthModule {}

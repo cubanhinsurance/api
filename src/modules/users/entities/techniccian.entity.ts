@@ -14,4 +14,10 @@ export class TechniccianEntity {
   @OneToOne(() => UsersEntity)
   @JoinColumn({ name: 'user' })
   user: UsersEntity;
+
+  @Column({ nullable: true })
+  expiration_date: Date;
+
+  @Column({ default: true })
+  active: boolean;
 }
