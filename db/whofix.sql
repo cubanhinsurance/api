@@ -325,7 +325,9 @@ ALTER TABLE mod_users.agents OWNER TO postgres;
 --
 
 CREATE TABLE mod_users.techniccians (
-    "user" integer NOT NULL
+    "user" integer NOT NULL,
+    expiration_date timestamp without time zone,
+    active boolean DEFAULT true NOT NULL
 );
 
 
@@ -682,6 +684,7 @@ INSERT INTO mod_users.agents VALUES (4, 1, '2020-01-01 00:00:00', false);
 -- Data for Name: techniccians; Type: TABLE DATA; Schema: mod_users; Owner: postgres
 --
 
+INSERT INTO mod_users.techniccians VALUES (5, NULL, true);
 
 
 --
@@ -690,6 +693,7 @@ INSERT INTO mod_users.agents VALUES (4, 1, '2020-01-01 00:00:00', false);
 
 INSERT INTO mod_users.users VALUES (1, 'Juan Pablo', 'Bacallao Castillo', 'john', NULL, NULL, NULL, true, NULL, NULL, '$2a$10$7Vu1WmFaO2z2sDa1ImixD.kNn4iwMqPXuUxxmIfp30gQERXIRSZhG', '$2a$10$7Vu1WmFaO2z2sDa1ImixD.');
 INSERT INTO mod_users.users VALUES (4, 'Wendy', 'Torres', 'wendy', NULL, NULL, NULL, true, NULL, NULL, '$2a$10$mIUODWaO6fWF3orHY9qUc.84yaRdmW7c8opaUiqqiCP2mkzWcl8j2', '$2a$10$mIUODWaO6fWF3orHY9qUc.');
+INSERT INTO mod_users.users VALUES (5, 'PEpito', 'El cojo', 'pepe', NULL, NULL, NULL, true, NULL, NULL, '$2a$10$CvyorGtxSz5TbCVD6jFlDuH1Aa0j743pi3GloGsggvkKAw02me77u', '$2a$10$CvyorGtxSz5TbCVD6jFlDu');
 
 
 --
@@ -773,7 +777,7 @@ SELECT pg_catalog.setval('mod_security.users_id_seq', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: mod_users; Owner: postgres
 --
 
-SELECT pg_catalog.setval('mod_users.users_id_seq', 4, true);
+SELECT pg_catalog.setval('mod_users.users_id_seq', 5, true);
 
 
 --
