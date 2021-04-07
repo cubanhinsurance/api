@@ -10,3 +10,9 @@ export const ROLE_SCHEMA = object({
 });
 
 export const ROLES_LIST_SCHEMA = array().items(ROLE_SCHEMA);
+
+export const CREATE_ROLE_SCHEMA = object({
+  name: string().required(),
+  description: string().optional(),
+  functionalities: array().items(string()).optional(),
+});

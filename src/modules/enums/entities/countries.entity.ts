@@ -14,6 +14,9 @@ export class CountriesEntity {
   @Column({ nullable: true })
   short_name: string;
 
+  @Column({ nullable: true })
+  code: string;
+
   @Column({
     type: 'geometry',
     srid: 4326,

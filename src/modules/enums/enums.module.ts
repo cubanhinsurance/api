@@ -1,3 +1,5 @@
+import { EnumsController } from './controllers/enums.controller';
+import { EnumsService } from './services/enums.service';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CountriesEntity } from './entities/countries.entity';
@@ -12,7 +14,7 @@ import { ProvincesEntity } from './entities/provinces.entity';
       MunicialitiesEntity,
     ]),
   ],
-  controllers: [],
-  providers: [],
+  controllers: [EnumsController],
+  providers: [EnumsService],
 })
 export class EnumsModule {}

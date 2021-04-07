@@ -6,10 +6,14 @@ import {
   ManyToOne,
   Index,
 } from 'typeorm';
+import { ProvincesEntity } from './provinces.entity';
 
 @Entity({
   schema: 'mod_enums',
   name: 'municipalities',
+  orderBy: {
+    code: 'ASC',
+  },
 })
 export class MunicialitiesEntity {
   @PrimaryGeneratedColumn()
@@ -24,16 +28,17 @@ export class MunicialitiesEntity {
   @Column({ nullable: true })
   code: string;
 
-  @ManyToOne(() => MunicialitiesEntity)
-  @JoinColumn({ name: 'municipality' })
-  municipality: MunicialitiesEntity;
+  @ManyToOne(() => ProvincesEntity)
+  @JoinColumn({ name: 'province' })
+  province: ProvincesEntity;
 
   @Column({
+    select: false,
     type: 'geometry',
     srid: 4326,
     spatialFeatureType: 'MultiPolygon',
     nullable: true,
   })
-  @Index()
+  @Index({ spatial: true })
   geom: string;
 }
