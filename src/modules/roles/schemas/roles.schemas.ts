@@ -9,6 +9,12 @@ export const ROLE_SCHEMA = object({
   functionalities: FunctionalitiesList.optional(),
 });
 
+export const UPDATE_ROLE_SCHEMA = object({
+  name: string().optional(),
+  description: string().optional(),
+  functionalities: array().items(string()).optional(),
+});
+
 export const ROLES_LIST_SCHEMA = array().items(ROLE_SCHEMA);
 
 export const CREATE_ROLE_SCHEMA = object({

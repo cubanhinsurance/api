@@ -1,5 +1,19 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+} from '@nestjs/swagger';
 import { EnumsService } from '../services/enums.service';
 import j2s from 'joi-to-swagger';
 import {
@@ -9,6 +23,12 @@ import {
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import { string } from 'joi';
 import { NUMBER_COMMA_STRING } from 'src/lib/schemas/strings.schema';
+import {
+  CREATE_GROUP_SCHEMA,
+  CREATE_HABILITIES_SCHEMA,
+  GROUP_SCHEMA,
+  HABILITIES_SCHEMA,
+} from '../schemas/habilities.schema';
 
 @Controller('enums')
 export class EnumsController {
@@ -43,5 +63,39 @@ export class EnumsController {
     return await this.enumsService.getMunicipalities(
       provinces.split(',').map((v) => +v),
     );
+  }
+
+  @ApiOperation({ summary: 'Crea grupos de competencias' })
+  @ApiCreatedResponse({
+    schema: j2s(GROUP_SCHEMA).swagger,
+  })
+  @ApiBody({
+    schema: j2s(CREATE_GROUP_SCHEMA).swagger,
+  })
+  @Post('habilities')
+  async createHabilitiesGroup(
+    @Body(new JoiPipe(CREATE_GROUP_SCHEMA)) group: any,
+  ) {
+    return await this.enumsService.createHabilitiesGroups(group);
+  }
+
+  @Put('habilities/:group')
+  async updateHabilityGroup() {
+    //todo annadir updates 2 groups and others
+  }
+
+  @ApiOperation({ summary: 'Crea competencias en un grupo' })
+  @ApiCreatedResponse({
+    schema: j2s(HABILITIES_SCHEMA).swagger,
+  })
+  @ApiBody({
+    schema: j2s(CREATE_HABILITIES_SCHEMA).swagger,
+  })
+  @Post('habilities/:group')
+  async createHabilities(
+    @Param('group', ParseIntPipe) group: number,
+    @Body(new JoiPipe(CREATE_HABILITIES_SCHEMA)) hability: any,
+  ) {
+    return await this.enumsService.createHability(group, hability);
   }
 }

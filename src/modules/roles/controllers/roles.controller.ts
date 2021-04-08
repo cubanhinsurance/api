@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -18,6 +19,7 @@ import j2s from 'joi-to-swagger';
 import {
   CREATE_ROLE_SCHEMA,
   ROLES_LIST_SCHEMA,
+  UPDATE_ROLE_SCHEMA,
 } from '../schemas/roles.schemas';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import { STRING_COMMA_STRING } from 'src/lib/schemas/strings.schema';
@@ -78,5 +80,17 @@ export class RolesController {
       role,
       funcs.split(','),
     );
+  }
+
+  @ApiOperation({ summary: 'Actualiza los datos de un rol' })
+  @ApiBody({
+    schema: j2s(UPDATE_ROLE_SCHEMA).swagger,
+  })
+  @Put(':role')
+  async updateRole(
+    @Body(new JoiPipe(UPDATE_ROLE_SCHEMA)) body: any,
+    @Param('role', ParseIntPipe) role: number,
+  ) {
+    return await this.rolesService.updateRole(role, body);
   }
 }

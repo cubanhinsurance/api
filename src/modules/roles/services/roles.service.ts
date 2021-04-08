@@ -116,4 +116,36 @@ export class RolesService {
 
     const updated = await this.roles.save(roleObj);
   }
+
+  async updateRole(role: number, { name, description, functionalities }: any) {
+    const roleObj = await this.roles.findOne({
+      relations: ['functionalities'],
+      where: { id: role },
+    });
+
+    if (!roleObj) throw new NotFoundException('Rol no existe');
+
+    roleObj.name = name ?? roleObj.name;
+    roleObj.description = description ?? roleObj.description;
+
+    if (typeof functionalities != 'undefined') {
+      const funcs = await this.funcs.find({
+        where: { id: In(functionalities) },
+      });
+
+      if (funcs.length != functionalities.length) {
+        const missing = functionalities.filter(
+          (f) => !funcs.find(({ id }) => id == f),
+        );
+
+        throw new NotFoundException(
+          `No existen las funcionalidades: ${missing.join(',')}`,
+        );
+      }
+
+      roleObj.functionalities = funcs;
+    }
+
+    const updated = await this.roles.save(roleObj);
+  }
 }

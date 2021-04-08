@@ -5,6 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CountriesEntity } from './entities/countries.entity';
 import { MunicialitiesEntity } from './entities/municipalities.entity';
 import { ProvincesEntity } from './entities/provinces.entity';
+import { HabilitiesEntity } from './entities/habilities.entity';
+import { HabilitiesGroupsEntity } from './entities/habilities_groups.entity';
+import { HabilitiesRequirementsEntity } from './entities/habilities_reqs.entity';
 
 @Module({
   imports: [
@@ -12,6 +15,9 @@ import { ProvincesEntity } from './entities/provinces.entity';
       CountriesEntity,
       ProvincesEntity,
       MunicialitiesEntity,
+      HabilitiesEntity,
+      HabilitiesGroupsEntity,
+      HabilitiesRequirementsEntity,
     ]),
   ],
   controllers: [EnumsController],
