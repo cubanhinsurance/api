@@ -1,3 +1,4 @@
+import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,6 +6,8 @@ import {
   PrimaryColumn,
   OneToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { UsersEntity } from './user.entity';
 
@@ -20,4 +23,8 @@ export class TechniccianEntity {
 
   @Column({ default: true })
   active: boolean;
+
+  @ManyToMany(() => HabilitiesEntity)
+  @JoinTable()
+  habilities: HabilitiesEntity[];
 }

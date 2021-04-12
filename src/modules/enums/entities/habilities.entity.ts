@@ -1,3 +1,4 @@
+import { TechniccianEntity } from 'src/modules/users/entities/techniccian.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -46,4 +47,7 @@ export class HabilitiesEntity {
 
   @DeleteDateColumn({ select: false })
   deleted_at: Date;
+
+  @ManyToMany(() => TechniccianEntity, (t) => t.habilities)
+  techs: TechniccianEntity[];
 }
