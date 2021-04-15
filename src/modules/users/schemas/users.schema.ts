@@ -1,8 +1,10 @@
-import { boolean, date, number, object, ref, string } from 'joi';
+import { array, boolean, date, number, object, ref, string } from 'joi';
+import { PAGE_RESULT_SCHEMA } from 'src/lib/schemas/pagination.schema';
 import {
   STRONG_PASSWORD_SCHEMA,
   USER_NAME_SCHEMA,
 } from 'src/modules/auth/schemas/signin.schema';
+import { HABILITIES_SCHEMA } from 'src/modules/enums/schemas/habilities.schema';
 
 export const USERS_SCHEMA = object({
   username: USER_NAME_SCHEMA,
@@ -44,9 +46,39 @@ export const TECH_SCHEMA = object({
   new_user: USERS_SCHEMA.optional(),
   username: string().optional(),
   expiration_date: date().optional(),
+  habilities: array().items(number()).min(1).required(),
 }).xor('username', 'new_user');
 
 export const UPDATE_TECH_SCHEMA = object({
   active: boolean().optional(),
   expiration_date: date().optional().allow(null),
+  habilities: array().items(number()).min(0).optional(),
+});
+
+export const USER_QUERY_RESULT = object({
+  id: number(),
+  name: string(),
+  lastname: string(),
+  username: string(),
+  email: string().email(),
+  phone_number: string(),
+  telegram_id: string(),
+  active: boolean(),
+  expiration_date: date(),
+  photo: string().base64(),
+  techniccian_info: object({
+    user: number(),
+    expiration_date: date(),
+    active: boolean(),
+    habilities: array().items(HABILITIES_SCHEMA),
+  }),
+  agent_info: object({
+    user: number(),
+    expiration_date: date(),
+    active: boolean(),
+  }),
+});
+
+export const USERS_QUERY_RESULTS = PAGE_RESULT_SCHEMA.keys({
+  data: array().items(USER_QUERY_RESULT),
 });

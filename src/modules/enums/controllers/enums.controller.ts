@@ -26,6 +26,7 @@ import { NUMBER_COMMA_STRING } from 'src/lib/schemas/strings.schema';
 import {
   CREATE_GROUP_SCHEMA,
   CREATE_HABILITIES_SCHEMA,
+  GROUPS_QUERY_SCHEMA,
   GROUP_SCHEMA,
   HABILITIES_SCHEMA,
 } from '../schemas/habilities.schema';
@@ -63,6 +64,17 @@ export class EnumsController {
     return await this.enumsService.getMunicipalities(
       provinces.split(',').map((v) => +v),
     );
+  }
+
+  @ApiOperation({
+    summary: 'Devuelve listado de grupos de habilidades con sus habilidades',
+  })
+  @ApiOkResponse({
+    schema: j2s(GROUPS_QUERY_SCHEMA).swagger,
+  })
+  @Get('habilities')
+  async getHabilitiesGroups() {
+    return await this.enumsService.getHabilitiesGroups();
   }
 
   @ApiOperation({ summary: 'Crea grupos de competencias' })

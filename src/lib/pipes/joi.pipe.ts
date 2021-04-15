@@ -8,7 +8,7 @@ import { Schema } from 'joi';
 export class JoiPipe implements PipeTransform {
   constructor(private schema: Schema) {}
   transform(value: any, metadata: ArgumentMetadata) {
-    const { error } = this.schema.validate(value, {
+    const { error, value: converted } = this.schema.validate(value, {
       convert: true,
     });
 
@@ -19,6 +19,6 @@ export class JoiPipe implements PipeTransform {
         } validation failed: ${error.message}`,
       );
     }
-    return value;
+    return converted;
   }
 }

@@ -8,18 +8,29 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Exception } from 'src/lib/exceptions/exception';
-import { FindConditions, IsNull, LessThanOrEqual, Repository } from 'typeorm';
+import {
+  FindConditions,
+  FindManyOptions,
+  In,
+  IsNull,
+  LessThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { AgentDto, TechDto, UserDto } from '../dtos/user.dto';
 import { UsersEntity } from '../entities/user.entity';
 import { compare, hash } from 'bcryptjs';
 import { AgentsEntity } from '../entities/agent.entity';
 import { TechniccianEntity } from '../entities/techniccian.entity';
 import * as moment from 'moment';
+import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
+import { paginate_repo } from 'src/lib/pagination.results';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UsersEntity) private usersEntity: Repository<UsersEntity>,
+    @InjectRepository(HabilitiesEntity)
+    private habilitiesEntity: Repository<HabilitiesEntity>,
     @InjectRepository(AgentsEntity)
     private agentsEntity: Repository<AgentsEntity>,
     @InjectRepository(TechniccianEntity)
@@ -153,8 +164,26 @@ export class UsersService {
     );
   }
 
-  async createTechnichian({ username, new_user, expiration_date }: TechDto) {
+  async createTechnichian({
+    username,
+    new_user,
+    expiration_date,
+    habilities: habilities_ids,
+  }: TechDto) {
     if (!username && !new_user) throw new BadRequestException();
+
+    const habilities = await this.habilitiesEntity.find({
+      where: { id: In(habilities_ids) },
+    });
+
+    if (habilities.length != habilities_ids.length) {
+      throw new NotFoundException(`
+        No se encontraron las habilidades:
+        ${habilities_ids
+          .filter((h_id) => !habilities.find((h) => h.id == h_id))
+          .join(',')}
+      `);
+    }
 
     const user = username
       ? await this.usersEntity.findOne({
@@ -178,6 +207,7 @@ export class UsersService {
     try {
       const created = await this.techsEntity.save({
         user,
+        habilities,
         expiration_date: expiration_date
           ? moment(expiration_date).toDate()
           : null,
@@ -215,5 +245,23 @@ export class UsersService {
       },
       techObj,
     );
+  }
+
+  async getUsers(page: number, page_size: number) {
+    return await paginate_repo(page, page_size, this.usersEntity, {
+      select: [
+        'id',
+        'name',
+        'lastname',
+        'username',
+        'email',
+        'phone_number',
+        'telegram_id',
+        'active',
+        'expiration_date',
+        'photo',
+      ],
+      relations: ['techniccian_info', 'agent_info'],
+    } as FindManyOptions<UsersEntity>);
   }
 }

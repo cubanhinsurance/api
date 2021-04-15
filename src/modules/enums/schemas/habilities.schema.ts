@@ -29,3 +29,9 @@ export const HABILITIES_SCHEMA = CREATE_HABILITIES_SCHEMA.keys({
   group: GROUP_SCHEMA,
   requirements: array().items(HABILITIES_REQUIREMENTS_SCHEMA),
 });
+
+export const GROUP_QUERY_SCHEMA = GROUP_SCHEMA.keys({
+  habilities: array().items(HABILITIES_SCHEMA),
+});
+
+export const GROUPS_QUERY_SCHEMA = array().items(GROUP_QUERY_SCHEMA);

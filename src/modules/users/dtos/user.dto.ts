@@ -46,9 +46,11 @@ export class TechDto {
   readonly expiration_date?: Date;
   readonly username?: string;
   readonly new_user?: UserDto;
+  readonly habilities: number[];
   constructor(data) {
     this.expiration_date = data.expiration_date;
     this.username = data.username;
     this.new_user = data.new_user;
+    this.habilities = data.habilities;
   }
 }

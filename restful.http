@@ -1,5 +1,5 @@
 ###Autenticat sys user
-POST http://localhost:4000/auth/signin
+POST {{host}}/auth/signin
 Content-Type: application/json
 
 {
@@ -7,7 +7,7 @@ Content-Type: application/json
     "password":"Aqwerty123*"
 }
 #### Autenticar usuario
-POST http://localhost:4000/auth/signin
+POST {{host}}/auth/signin
 Content-Type: application/json
 
 {
@@ -15,7 +15,7 @@ Content-Type: application/json
     "password":"Aqwerty123*"
 }
 #### Autenticar usuario agente
-POST http://localhost:4000/auth/signin/agent
+POST {{host}}/auth/signin/agent
 Content-Type: application/json
 
 {
@@ -23,16 +23,20 @@ Content-Type: application/json
     "password":"Aqwerty123*"
 }
 #### Autenticar tecnico
-POST http://localhost:4000/auth/signin/tech
+POST {{host}}/auth/signin/tech
 Content-Type: application/json
 
 {
     "username":"pepe",
     "password":"Aqwerty123*"
 }
+### Listado de usuarios
+{{host}}/users?page=1
+Authorization: Bearer {{auth}}
+
 #### Crear usuario
-POST http://localhost:4000/users/user
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
+POST {{host}}/users/user
+Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {
@@ -42,8 +46,8 @@ Content-Type: application/json
     "lastname":"Bacallao Castillo"
 }
 #### Actualizar usuario
-PUT http://localhost:4000/users/user/john
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
+PUT {{host}}/users/user/john
+Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {
@@ -53,8 +57,8 @@ Content-Type: application/json
     "expiration_date":null
 }
 #### Crear agente
-POST http://localhost:4000/users/agent
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
+POST {{host}}/users/agent
+Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {
@@ -67,51 +71,52 @@ Content-Type: application/json
     },
     "expiration_date":"2020-1-1"
 }
-PUT http://localhost:4000/users/agent/wendy
+PUT {{host}}/users/agent/wendy
 #### Actualizar agente
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
+Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {
     "active":true
 }
 #### Crear tecnico
-POST http://localhost:4000/users/tech
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
+POST {{host}}/users/tech
+Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {
     "new_user":{
-        "username":"pepe",
+        "username":"pepe1224",
         "password":"Aqwerty123*",
         "name":"PEpito",
         "lastname":"El cojo"
-    }
+    },
+    "habilities":[2]
 }
 ### Actualizar tecnico
-PUT http://localhost:4000/users/tech/pepe
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
+PUT {{host}}/users/tech/pepe
+Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {
     "active":true,
     "expiration_date":null
 }
-###
-http://localhost:4000/functionalities
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
-###
-http://localhost:4000/roles
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
-###
-http://localhost:4000/enums/provinces
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
-###
-http://localhost:4000/enums/municipalities/15
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
-###
-POST http://localhost:4000/roles
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
+### Retorna funcionalidades
+{{host}}/functionalities
+Authorization: Bearer {{auth}}
+### Retorna los roles
+{{host}}/roles
+Authorization: Bearer {{auth}}
+### Devuelve las provincias
+{{host}}/enums/provinces
+Authorization: Bearer {{auth}}
+### Devuelve los municipios de una provincia
+{{host}}/enums/municipalities/15
+Authorization: Bearer {{auth}}
+### Crea un rol
+POST {{host}}/roles
+Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {
@@ -121,26 +126,30 @@ Content-Type: application/json
         "manage_roles"
     ]
 }
-###
-POST http://localhost:4000/roles/3/manage_users,manage_capabilities
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
+### Adiciona funcionalidades a un rol
+POST {{host}}/roles/3/manage_users,manage_capabilities
+Authorization: Bearer {{auth}}
 Content-Type: application/json
-###
-DELETE http://localhost:4000/roles/3/manage_users,manage_capabilities
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
+### Elimina funcionalidades a un rol
+DELETE {{host}}/roles/3/manage_users,manage_capabilities
+Authorization: Bearer {{auth}}
 Content-Type: application/json
-###
-POST http://localhost:4000/enums/habilities
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
+### Crea un grupo
+POST {{host}}/enums/habilities
+Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {
     "name":"Grupo12"
 }
 
-###
-POST http://localhost:4000/enums/habilities/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4iLCJhZ2VudCI6eyJ1c2VyIjoxLCJleHBpcmF0aW9uX2RhdGUiOm51bGwsImFjdGl2ZSI6dHJ1ZX0sInRlY2giOm51bGwsImlzUm9vdCI6ZmFsc2UsImlhdCI6MTYxODE5MzM1OCwiZXhwIjoxNjE4MjA3NzU4fQ.yuD4zSsWlM-M9fgwbIl-J148WBz9j6McVTpJPmOUJjo
+### Devuelve listado de grupos y habilidades
+{{host}}/enums/habilities
+Authorization: Bearer {{auth}}
+
+### Crea habilidades en un grupo
+POST {{host}}/enums/habilities/1
+Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {

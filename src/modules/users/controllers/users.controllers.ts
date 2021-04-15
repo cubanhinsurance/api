@@ -17,15 +17,29 @@ import {
   UPDATE_AGENT_SCHEMA,
   UPDATE_TECH_SCHEMA,
   UPDATE_USER_SCHEMA,
+  USERS_QUERY_RESULTS,
   USERS_SCHEMA,
 } from '../schemas/users.schema';
 import { UsersService } from '../services/users.service';
 import j2s from 'joi-to-swagger';
 import { UserDto } from '../dtos/user.dto';
+import {
+  Page,
+  PageSize,
+} from 'src/lib/decorators/pagination_queries.decorator';
 
 @Controller('users')
 export class UsersController {
   constructor(private users: UsersService) {}
+
+  @ApiOperation({ summary: 'Devuelve listado de usuarios del sistema' })
+  @ApiOkResponse({
+    schema: j2s(USERS_QUERY_RESULTS).swagger,
+  })
+  @Get()
+  async getUsersList(@Page() page: number, @PageSize() page_size: number) {
+    return await this.users.getUsers(page, page_size);
+  }
 
   @Post('user')
   @ApiBody({
