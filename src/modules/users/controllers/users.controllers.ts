@@ -19,6 +19,7 @@ import {
   UPDATE_USER_SCHEMA,
   USERS_QUERY_RESULTS,
   USERS_SCHEMA,
+  USER_QUERY_RESULT,
 } from '../schemas/users.schema';
 import { UsersService } from '../services/users.service';
 import j2s from 'joi-to-swagger';
@@ -39,6 +40,15 @@ export class UsersController {
   @Get()
   async getUsersList(@Page() page: number, @PageSize() page_size: number) {
     return await this.users.getUsers(page, page_size);
+  }
+
+  @ApiOperation({ summary: 'Devuelve los datos de un usuario' })
+  @ApiOkResponse({
+    schema: j2s(USER_QUERY_RESULT).swagger,
+  })
+  @Get('user/:username')
+  async getUserPrivateData(@Param('username') username: string) {
+    return await this.users.getUserPrivateData(username);
   }
 
   @Post('user')

@@ -6,6 +6,9 @@ import { compare } from 'bcryptjs';
 import * as moment from 'moment';
 import { AgentsEntity } from 'src/modules/users/entities/agent.entity';
 import { TechniccianEntity } from 'src/modules/users/entities/techniccian.entity';
+import { UsersEntity } from 'src/modules/users/entities/user.entity';
+import { RolesService } from 'src/modules/roles/services/roles.service';
+import { FunctionalitiesService } from 'src/modules/functionalities/services/functionalities.service';
 
 export interface USER_SIGN_INFO {
   username: string;
@@ -14,10 +17,23 @@ export interface USER_SIGN_INFO {
   isRoot: boolean;
 }
 
+export interface USER_INFO {
+  name: string;
+  lastname?: string;
+  isRoot: boolean;
+  id: number;
+  photo?: string;
+  isTech: boolean;
+  isAgent: boolean;
+  tools: string[];
+}
+
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
+    private functionalitiesService: FunctionalitiesService,
+    private rolesService: RolesService,
     private configService: ConfigService,
     private jwtService: JwtService,
   ) {}
@@ -83,12 +99,7 @@ export class AuthService {
     }
   }
 
-  async validateAgent(
-    username: string,
-    password: string,
-  ): Promise<USER_SIGN_INFO> {
-    const userInfo = await this.validateUser(username, password);
-
+  private checkAgent(userInfo: any) {
     if (!userInfo) return;
     if (userInfo.isRoot) return userInfo;
     if (!userInfo.agent) return;
@@ -107,6 +118,17 @@ export class AuthService {
         )} (${exp.fromNow()})`,
       );
     }
+
+    return true;
+  }
+
+  async validateAgent(
+    username: string,
+    password: string,
+  ): Promise<USER_SIGN_INFO> {
+    const userInfo = await this.validateUser(username, password);
+
+    this.checkAgent(userInfo);
 
     return userInfo;
   }
@@ -142,11 +164,65 @@ export class AuthService {
     };
   }
 
-  async getUserInfo(username: string) {
-    if (this.isRoot(username)) return true;
+  async getAllTools() {
+    return (await this.functionalitiesService.getFunctionalitiesList()).map(
+      (f) => f.id,
+    );
+  }
 
-    const user = await this.usersService.findUserByUserName(username);
+  async getUserInfo(username: string): Promise<USER_INFO> {
+    if (this.isRoot(username))
+      return {
+        isRoot: false,
+        id: -1,
+        isAgent: false,
+        isTech: false,
+        name: 'Root',
+        tools: await this.getAllTools(),
+      };
 
-    return user;
+    const {
+      name,
+      lastname,
+      agent_info,
+      techniccian_info,
+      id,
+      username: user,
+      photo,
+    } = await this.usersService.findUserByUserName(username);
+
+    let isAgent = !!agent_info;
+    let agentError = null;
+    let tools = [];
+
+    if (isAgent) {
+      try {
+        isAgent = !!this.checkAgent({
+          username: username,
+          agent: agent_info,
+          tech: techniccian_info,
+          isRoot: false,
+        });
+      } catch (e) {
+        isAgent = false;
+      }
+
+      if (isAgent) {
+        tools = agent_info.role.root
+          ? await this.getAllTools()
+          : agent_info.role.functionalities.map((f) => f.id);
+      }
+    }
+
+    return {
+      name,
+      lastname,
+      isRoot: false,
+      id,
+      photo,
+      isTech: !!techniccian_info,
+      isAgent,
+      tools,
+    };
   }
 }

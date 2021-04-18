@@ -19,10 +19,12 @@ export class RolesService {
   ) {}
 
   async getRolesList() {
-    return await this.roles.find();
+    return await this.roles.find({
+      relations: ['functionalities'],
+    });
   }
 
-  async createRole({ description, name, functionalities }: RoleDto) {
+  async createRole({ description, name, functionalities, root }: RoleDto) {
     const funcs =
       functionalities && functionalities.length > 0
         ? await this.funcs.find({
@@ -52,7 +54,7 @@ export class RolesService {
     const created = await this.roles.save({
       name,
       description,
-      root: false,
+      root: root ?? false,
       functionalities: funcs,
     });
 
@@ -117,7 +119,10 @@ export class RolesService {
     const updated = await this.roles.save(roleObj);
   }
 
-  async updateRole(role: number, { name, description, functionalities }: any) {
+  async updateRole(
+    role: number,
+    { name, description, functionalities, root }: any,
+  ) {
     const roleObj = await this.roles.findOne({
       relations: ['functionalities'],
       where: { id: role },
@@ -127,6 +132,7 @@ export class RolesService {
 
     roleObj.name = name ?? roleObj.name;
     roleObj.description = description ?? roleObj.description;
+    roleObj.root = root ?? roleObj.root;
 
     if (typeof functionalities != 'undefined') {
       const funcs = await this.funcs.find({

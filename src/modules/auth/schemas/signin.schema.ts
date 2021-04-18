@@ -1,4 +1,4 @@
-import { object, string } from 'joi';
+import { array, boolean, number, object, string } from 'joi';
 
 export const STRONG_PASSWORD_SCHEMA = string()
   .required()
@@ -11,4 +11,15 @@ export const USER_NAME_SCHEMA = string()
 export const SIGN_IN_SCHEMA = object({
   username: string().required(),
   password: string().required(),
+});
+
+export const USER_INFO_SCHEMA = object({
+  name: string(),
+  lastname: string(),
+  isRoot: boolean(),
+  id: number(),
+  photo: string().base64(),
+  isTech: boolean(),
+  isAgent: boolean(),
+  tools: array().items(string()),
 });

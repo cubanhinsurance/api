@@ -23,10 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(user: any) {
-    const userInfo = await this.auth.getUserInfo(user.username);
-    if (!userInfo) throw new UnauthorizedException();
-    if (userInfo === true) return user;
-
-    return userInfo;
+    return await this.auth.getUserInfo(user.username);
   }
 }

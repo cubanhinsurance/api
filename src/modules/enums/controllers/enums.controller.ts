@@ -3,9 +3,15 @@ import {
   Controller,
   Get,
   Param,
+  ParseArrayPipe,
   ParseIntPipe,
   Post,
   Put,
+  Query,
+  UploadedFile,
+  UploadedFiles,
+  UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -13,6 +19,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { EnumsService } from '../services/enums.service';
 import j2s from 'joi-to-swagger';
@@ -21,7 +28,7 @@ import {
   PROVINCES_SCHEMA,
 } from '../schemas/enums.schema';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
-import { string } from 'joi';
+import { array, number, string } from 'joi';
 import { NUMBER_COMMA_STRING } from 'src/lib/schemas/strings.schema';
 import {
   CREATE_GROUP_SCHEMA,
@@ -30,6 +37,14 @@ import {
   GROUP_SCHEMA,
   HABILITIES_SCHEMA,
 } from '../schemas/habilities.schema';
+import {
+  CREATE_ISSUE_TREE_NODE_SCHEMA,
+  ISSUE_SCHEMA,
+  ISSUE_TREE_SCHEMA,
+  UPDATE_ISSUE_TREE_NODE_SCHEMA,
+} from '../schemas/issues.schema';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { imageFilter } from 'src/lib/multer/filter';
 
 @Controller('enums')
 export class EnumsController {
@@ -109,5 +124,81 @@ export class EnumsController {
     @Body(new JoiPipe(CREATE_HABILITIES_SCHEMA)) hability: any,
   ) {
     return await this.enumsService.createHability(group, hability);
+  }
+
+  @ApiOperation({
+    summary: 'Devuelve el listado de Tipos de incidencias con su jerarquia',
+  })
+  @ApiOkResponse({
+    schema: j2s(array().items(ISSUE_TREE_SCHEMA)).swagger,
+  })
+  @Get('issues')
+  async getIssues() {
+    return await this.enumsService.getIssuesTree();
+  }
+
+  @ApiOperation({ summary: 'Crea grupos/incidencias de manera jerarquica' })
+  @ApiQuery({
+    name: 'parent',
+    required: false,
+    description: 'Id de la categoria padre',
+  })
+  @ApiBody({
+    schema: j2s(CREATE_ISSUE_TREE_NODE_SCHEMA).swagger,
+  })
+  @ApiCreatedResponse({
+    schema: j2s(ISSUE_SCHEMA).swagger,
+  })
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      fileFilter: imageFilter,
+    }),
+  )
+  @Post('issues')
+  async createIssueType(
+    @Query('parent', new JoiPipe(number().optional().allow(null)))
+    parent: number,
+    @Body(
+      new JoiPipe(CREATE_ISSUE_TREE_NODE_SCHEMA, null, ['questions', 'rules']),
+    )
+    issue: any,
+    @UploadedFile() avatar,
+  ) {
+    if (avatar) issue.avatar = avatar.buffer;
+
+    return await this.enumsService.createIssueType(issue, parent);
+  }
+
+  @ApiOperation({ summary: 'Actualiza los datos de una incidencia' })
+  @ApiQuery({
+    name: 'parent',
+    required: false,
+    description: 'Id de la categoria padre',
+  })
+  @ApiBody({
+    schema: j2s(UPDATE_ISSUE_TREE_NODE_SCHEMA).swagger,
+  })
+  @ApiOkResponse({
+    schema: j2s(ISSUE_SCHEMA).swagger,
+  })
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      fileFilter: imageFilter,
+    }),
+  )
+  @Put('issues/:issue')
+  async updateIssueType(
+    @Query('parent', new JoiPipe(number().optional().allow(null)))
+    parent: number,
+    @Body(
+      new JoiPipe(UPDATE_ISSUE_TREE_NODE_SCHEMA, null, ['questions', 'rules']),
+    )
+    issue: any,
+    @UploadedFile() avatar,
+    @Param('issue', ParseIntPipe) issue_id: number,
+  ) {
+    if (avatar) issue.avatar = avatar.buffer;
+
+    return await this.enumsService.updateIssueType(issue_id, issue, parent);
   }
 }

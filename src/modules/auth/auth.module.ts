@@ -11,10 +11,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { config } from 'rxjs';
 import { ConfigService } from '@atlasjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { RolesModule } from '../roles/roles.module';
+import { FunctionalitiesModule } from '../functionalities/functionalities.module';
 
 @Module({
   imports: [
     UsersModule,
+    RolesModule,
+    FunctionalitiesModule,
     JwtModule.registerAsync({
       useFactory({ config }: ConfigService) {
         return {

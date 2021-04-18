@@ -11,3 +11,6 @@ export class CreateHabilityDto {
 export class CreateHabilityGroupDto {
   name: string;
 }
+
+export type HabilityRuleAnd = number[];
+export type HabilityRuleOr = HabilityRuleAnd[];

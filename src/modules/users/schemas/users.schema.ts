@@ -22,6 +22,7 @@ export const UPDATE_USER_SCHEMA = object({
   name: string().optional(),
   last_name: string().optional(),
   email: string().email().optional(),
+  phone_number: string().optional(),
   telegram_id: string().optional(),
   active: boolean().optional(),
   expiration_date: date().optional().allow(null),

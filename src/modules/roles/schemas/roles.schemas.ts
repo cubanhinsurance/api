@@ -12,6 +12,7 @@ export const ROLE_SCHEMA = object({
 export const UPDATE_ROLE_SCHEMA = object({
   name: string().optional(),
   description: string().optional(),
+  root: boolean().optional().description('Define si es un rol administrativo'),
   functionalities: array().items(string()).optional(),
 });
 
@@ -20,5 +21,6 @@ export const ROLES_LIST_SCHEMA = array().items(ROLE_SCHEMA);
 export const CREATE_ROLE_SCHEMA = object({
   name: string().required(),
   description: string().optional(),
+  root: boolean().optional().description('Define si es un rol administrativo'),
   functionalities: array().items(string()).optional(),
 });

@@ -19,7 +19,7 @@ POST {{host}}/auth/signin/agent
 Content-Type: application/json
 
 {
-    "username":"wendy",
+    "username":"john",
     "password":"Aqwerty123*"
 }
 #### Autenticar tecnico
@@ -30,6 +30,10 @@ Content-Type: application/json
     "username":"pepe",
     "password":"Aqwerty123*"
 }
+### Datos de un usuario
+{{host}}/users/user/john
+Authorization: Bearer {{auth}}
+
 ### Listado de usuarios
 {{host}}/users?page=1
 Authorization: Bearer {{auth}}
@@ -160,3 +164,25 @@ Content-Type: application/json
         }
     ]
 }
+
+### Crea nuevos grupos
+POST {{host}}/enums/issues
+Authorization: Bearer {{auth}}
+Content-Type: multipart/form-data; charset=utf-8; boundary="boundary"
+
+--boundary
+Content-Disposition: form-data; name="name"
+
+title
+--boundary
+Content-Disposition: form-data; name="questions"
+
+[
+    {
+        "name":4
+    }
+]
+--boundary--
+### User funcs
+{{host}}/auth/user_info
+Authorization: Bearer {{auth}}

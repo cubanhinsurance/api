@@ -9,5 +9,6 @@ import { FunctionalitiesEntity } from '../functionalities/entities/functionaliti
   imports: [TypeOrmModule.forFeature([RolesEntity, FunctionalitiesEntity])],
   controllers: [RolesController],
   providers: [RolesService],
+  exports: [RolesService],
 })
 export class RolesModule {}

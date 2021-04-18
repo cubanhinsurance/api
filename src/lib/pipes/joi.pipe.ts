@@ -3,14 +3,36 @@ import {
   BadRequestException,
   PipeTransform,
 } from '@nestjs/common';
+import { json } from 'express';
 import { Schema } from 'joi';
 
 export class JoiPipe implements PipeTransform {
-  constructor(private schema: Schema) {}
+  constructor(
+    private schema: Schema,
+    private convert: boolean = true,
+    private decode: boolean | string[] = false,
+  ) {}
   transform(value: any, metadata: ArgumentMetadata) {
-    const { error, value: converted } = this.schema.validate(value, {
-      convert: true,
-    });
+    if (
+      value != null &&
+      typeof value == 'object' &&
+      this.decode &&
+      typeof this.decode == 'object' &&
+      this.decode instanceof Array
+    ) {
+      for (const prop of this.decode) {
+        if (!(prop in value) || value[prop] == null) continue;
+        value[prop] = JSON.parse(value[prop]);
+      }
+    }
+    const { error, value: converted } = this.schema.validate(
+      typeof this.decode == 'boolean' && this.decode && typeof value == 'string'
+        ? JSON.parse(value)
+        : value,
+      {
+        convert: this.convert,
+      },
+    );
 
     if (error) {
       throw new BadRequestException(

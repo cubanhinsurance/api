@@ -9,6 +9,7 @@ import { UsersModule } from './modules/users/users.module';
 import { ExceptionsInterceptor } from './lib/interceptors/exceptions.interceptor';
 import { RolesModule } from './modules/roles/roles.module';
 import { EnumsModule } from './modules/enums/enums.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [

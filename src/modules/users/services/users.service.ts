@@ -42,7 +42,12 @@ export class UsersService {
     query?: FindConditions<UsersEntity>,
   ) {
     return await this.usersEntity.findOne({
-      relations: ['techniccian_info', 'agent_info'],
+      relations: [
+        'techniccian_info',
+        'agent_info',
+        'agent_info.role',
+        'agent_info.role.functionalities',
+      ],
       where: {
         username,
         ...query,
@@ -245,6 +250,25 @@ export class UsersService {
       },
       techObj,
     );
+  }
+
+  async getUserPrivateData(username: string) {
+    return await this.usersEntity.findOne({
+      select: [
+        'id',
+        'name',
+        'lastname',
+        'username',
+        'email',
+        'phone_number',
+        'telegram_id',
+        'active',
+        'expiration_date',
+        'photo',
+      ],
+      relations: ['techniccian_info', 'agent_info'],
+      where: { username },
+    });
   }
 
   async getUsers(page: number, page_size: number) {

@@ -8,9 +8,14 @@ import { ProvincesEntity } from './entities/provinces.entity';
 import { HabilitiesEntity } from './entities/habilities.entity';
 import { HabilitiesGroupsEntity } from './entities/habilities_groups.entity';
 import { HabilitiesRequirementsEntity } from './entities/habilities_reqs.entity';
+import { MulterModule } from '@nestjs/platform-express';
+import { IssuesTypesEntity } from './entities/issues_types.entity';
 
 @Module({
   imports: [
+    MulterModule.register({
+      // dest: './asd',
+    }),
     TypeOrmModule.forFeature([
       CountriesEntity,
       ProvincesEntity,
@@ -18,6 +23,7 @@ import { HabilitiesRequirementsEntity } from './entities/habilities_reqs.entity'
       HabilitiesEntity,
       HabilitiesGroupsEntity,
       HabilitiesRequirementsEntity,
+      IssuesTypesEntity,
     ]),
   ],
   controllers: [EnumsController],
