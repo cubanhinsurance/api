@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -28,6 +37,8 @@ import {
   Page,
   PageSize,
 } from 'src/lib/decorators/pagination_queries.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { imageFilter } from 'src/lib/multer/filter';
 
 @Controller('users')
 export class UsersController {
@@ -58,10 +69,19 @@ export class UsersController {
   @ApiOperation({
     summary: 'Crear un nuevo usuario',
   })
+  @UseInterceptors(
+    FileInterceptor('photo', {
+      fileFilter: imageFilter,
+    }),
+  )
   @ApiConflictResponse({ description: 'Usuario ya existe' })
   @ApiCreatedResponse({ description: 'Usuario creado con exito' })
   @ApiBadRequestResponse({ description: 'Parametros de entrada incorrectos' })
-  async createUser(@Body(new JoiPipe(USERS_SCHEMA)) user: any) {
+  async createUser(
+    @Body(new JoiPipe(USERS_SCHEMA)) user: any,
+    @UploadedFile() photo,
+  ) {
+    if (photo) user.photo = photo.buffer;
     const created = await this.users.createUser(user);
   }
 
@@ -72,14 +92,21 @@ export class UsersController {
   @ApiOperation({
     summary: 'Actualizar datos de un usuario',
   })
+  @UseInterceptors(
+    FileInterceptor('photo', {
+      fileFilter: imageFilter,
+    }),
+  )
   @ApiOkResponse({ description: 'Usuario actualizado satisfactoriamente' })
   @ApiForbiddenResponse({ description: `Las credenciales no coinciden` })
   @ApiNotFoundResponse({ description: 'Usuario no existe' })
   @ApiBadRequestResponse()
   async updateUser(
     @Param('username') username: string,
-    @Body(new JoiPipe(UPDATE_USER_SCHEMA)) body: object,
+    @Body(new JoiPipe(UPDATE_USER_SCHEMA)) body: any,
+    @UploadedFile() photo,
   ) {
+    if (photo) body.photo = photo.buffer;
     const updated = await this.users.updateUser(username, body);
   }
 

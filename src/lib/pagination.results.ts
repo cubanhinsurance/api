@@ -1,4 +1,5 @@
-import { FindManyOptions, Repository } from 'typeorm';
+import { InternalServerErrorException, Logger } from '@nestjs/common';
+import { FindManyOptions, Repository, SelectQueryBuilder } from 'typeorm';
 
 export interface QUERY_PAGE {
   page: number;
@@ -38,8 +39,32 @@ export const paginate_repo = async (
   repository: Repository<any>,
   options: FindManyOptions = {},
 ) => {
-  options.take = page_size;
-  options.skip = skip(page, page_size);
-  const [data, count] = await repository.findAndCount(options);
-  return paginate(data, page, page_size, count);
+  try {
+    options.take = page_size;
+    options.skip = skip(page, page_size);
+    const [data, count] = await repository.findAndCount(options);
+    return paginate(data, page, page_size, count);
+  } catch (e) {
+    Logger.error(`${e.message} on ${e.query}`);
+    throw new InternalServerErrorException(
+      `Error consultando los datos del modelo`,
+    );
+  }
+};
+
+export const paginate_qr = async (
+  page: number,
+  page_size: number,
+  qr: SelectQueryBuilder<any>,
+) => {
+  try {
+    qr.take(page_size).skip(skip(page, page_size));
+    const [data, count] = await qr.getManyAndCount();
+    return paginate(data, page, page_size, count);
+  } catch (e) {
+    Logger.error(`${e.message} on ${e.query}`);
+    throw new InternalServerErrorException(
+      `Error consultando los datos del modelo`,
+    );
+  }
 };

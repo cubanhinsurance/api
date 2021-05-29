@@ -94,6 +94,10 @@ export class UsersService {
     }
 
     if (data.name) curr.name = data.name;
+    if (!!data.photo) {
+      data.photo =
+        typeof data.photo != 'undefined' ? data.photo.toString('base64') : null;
+    }
     if (data.lastname) curr.lastname = data.lastname;
     if (data.email) curr.email = data.email;
     if (typeof data.telegram_id !== 'undefined') curr.active = data.active;

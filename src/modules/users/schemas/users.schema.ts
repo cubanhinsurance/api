@@ -1,4 +1,4 @@
-import { array, boolean, date, number, object, ref, string } from 'joi';
+import { array, binary, boolean, date, number, object, ref, string } from 'joi';
 import { PAGE_RESULT_SCHEMA } from 'src/lib/schemas/pagination.schema';
 import {
   STRONG_PASSWORD_SCHEMA,
@@ -13,6 +13,7 @@ export const USERS_SCHEMA = object({
   lastname: string().required(),
   email: string().email().optional(),
   telegram_id: string().optional(),
+  photo: binary().optional(),
 }).required();
 
 export const UPDATE_USER_SCHEMA = object({
@@ -26,6 +27,7 @@ export const UPDATE_USER_SCHEMA = object({
   telegram_id: string().optional(),
   active: boolean().optional(),
   expiration_date: date().optional().allow(null),
+  photo: binary().optional(),
 })
   .required()
   .with('new_password', ['last_password', 'confirm_password']);

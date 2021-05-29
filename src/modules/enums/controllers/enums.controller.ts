@@ -45,6 +45,7 @@ import {
 } from '../schemas/issues.schema';
 import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { imageFilter } from 'src/lib/multer/filter';
+import { Public } from 'src/modules/auth/decorators/public.decorator';
 
 @Controller('enums')
 export class EnumsController {
@@ -56,6 +57,7 @@ export class EnumsController {
   @ApiOkResponse({
     schema: j2s(PROVINCES_SCHEMA).swagger,
   })
+  @Public()
   @Get('provinces')
   async getProvinces() {
     return await this.enumsService.getProvinces();
@@ -68,6 +70,7 @@ export class EnumsController {
     name: 'provinces',
     description: 'Listado de ids separados por coma ex: 1|1,2,3',
   })
+  @Public()
   @Get('municipalities/:provinces')
   @ApiOkResponse({
     schema: j2s(MUNICIPALITIES_SCHEMA).swagger,

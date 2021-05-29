@@ -17,7 +17,8 @@ export class UserDto {
     this.email = data.email;
     this.telegram_id = data.telegram_id;
     this.phone_number = data.phone_number;
-    this.photo = data.photo;
+    this.photo =
+      typeof data.photo != 'undefined' ? data.photo.toString('base64') : null;
     this.password = data.password;
   }
 

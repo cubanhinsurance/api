@@ -1,3 +1,4 @@
+import { System_configModule } from './modules/system_config/system_config.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@atlasjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,6 +14,7 @@ import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
+    System_configModule,
     AuthModule,
     RolesModule,
     ConfigModule.forRoot(),
