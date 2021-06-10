@@ -63,7 +63,7 @@ export class UsersController {
     @PageSize() page_size: number,
     @Query('q') query: any,
   ) {
-    return await this.users.getUsers(page, page_size);
+    return await this.users.getUsers(page, page_size, query);
   }
 
   @ApiOperation({ summary: 'Devuelve los datos de un usuario' })

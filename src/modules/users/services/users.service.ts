@@ -339,7 +339,7 @@ export class UsersService {
       tech_municipalities?: number[];
       tech_rating?: number[];
       habilities?: number[];
-    },
+    } = {},
   ) {
     const qr = this.usersEntity
       .createQueryBuilder('u')
