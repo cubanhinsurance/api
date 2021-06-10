@@ -5,6 +5,7 @@ import {
   USER_NAME_SCHEMA,
 } from 'src/modules/auth/schemas/signin.schema';
 import { HABILITIES_SCHEMA } from 'src/modules/enums/schemas/habilities.schema';
+import { USER_TYPE } from '../services/users.service';
 
 export const USERS_SCHEMA = object({
   username: USER_NAME_SCHEMA,
@@ -50,13 +51,27 @@ export const TECH_SCHEMA = object({
   username: string().optional(),
   expiration_date: date().optional(),
   habilities: array().items(number()).min(1).required(),
+  confirmation_photo: binary().optional(),
+  address: string().required(),
+  confirmed: boolean().required(),
+  ci: string().required().length(11),
+  province: number().required(),
+  municipality: number().required(),
 }).xor('username', 'new_user');
 
 export const UPDATE_TECH_SCHEMA = object({
   active: boolean().optional(),
   expiration_date: date().optional().allow(null),
   habilities: array().items(number()).min(0).optional(),
-});
+  confirmation_photo: binary().optional(),
+  address: string().optional(),
+  confirmed: boolean().optional(),
+  ci: string().optional().length(11),
+  province: number().optional(),
+  municipality: number().optional(),
+})
+  .with('province', 'municipality')
+  .with('municipality', 'province');
 
 export const USER_QUERY_RESULT = object({
   id: number(),
@@ -73,6 +88,7 @@ export const USER_QUERY_RESULT = object({
     user: number(),
     expiration_date: date(),
     active: boolean(),
+    rating: number().min(1).max(5),
     habilities: array().items(HABILITIES_SCHEMA),
   }),
   agent_info: object({
@@ -84,4 +100,23 @@ export const USER_QUERY_RESULT = object({
 
 export const USERS_QUERY_RESULTS = PAGE_RESULT_SCHEMA.keys({
   data: array().items(USER_QUERY_RESULT),
+});
+
+export const USERS_FILTERS = object({
+  types: array()
+    .items(string().valid(...Object.values(USER_TYPE)))
+    .optional()
+    .min(1),
+  username: string().optional(),
+  name: string().optional(),
+  user_active: boolean().optional(),
+  roles: array().items(number()).optional().min(1),
+  agent_active: boolean().optional(),
+  tech_active: boolean().optional(),
+  ci: string().optional(),
+  address: string().optional(),
+  tech_provinces: array().items(number()).optional().min(1),
+  tech_municipalities: array().items(number()).optional().min(1),
+  tech_rating: number().optional().min(1).max(5),
+  habilities: array().items(number()).optional().min(1),
 });

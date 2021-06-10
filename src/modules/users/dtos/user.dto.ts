@@ -48,10 +48,28 @@ export class TechDto {
   readonly username?: string;
   readonly new_user?: UserDto;
   readonly habilities: number[];
+  readonly confirmation_photo?: string;
+  readonly address: string;
+  readonly confirmed: boolean;
+  readonly active: boolean;
+  readonly ci: string;
+  readonly province: number;
+  readonly municipality: number;
+
   constructor(data) {
     this.expiration_date = data.expiration_date;
     this.username = data.username;
     this.new_user = data.new_user;
     this.habilities = data.habilities;
+    this.ci = data.ci;
+    this.address = data.ci;
+    this.active = data.active;
+    this.confirmed = data.ci;
+    this.province = data.province;
+    this.municipality = data.municipality;
+    this.confirmation_photo =
+      typeof data.confirmation_photo != 'undefined'
+        ? data.confirmation_photo.toString('base64')
+        : null;
   }
 }

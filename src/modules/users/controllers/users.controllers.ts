@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiSecurity,
 } from '@nestjs/swagger';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
@@ -26,6 +28,7 @@ import {
   UPDATE_AGENT_SCHEMA,
   UPDATE_TECH_SCHEMA,
   UPDATE_USER_SCHEMA,
+  USERS_FILTERS,
   USERS_QUERY_RESULTS,
   USERS_SCHEMA,
   USER_QUERY_RESULT,
@@ -48,8 +51,18 @@ export class UsersController {
   @ApiOkResponse({
     schema: j2s(USERS_QUERY_RESULTS).swagger,
   })
+  @ApiQuery({
+    name: 'q',
+    required: false,
+    description: 'Filtros de la api',
+    schema: j2s(USERS_FILTERS).swagger,
+  })
   @Get()
-  async getUsersList(@Page() page: number, @PageSize() page_size: number) {
+  async getUsersList(
+    @Page() page: number,
+    @PageSize() page_size: number,
+    @Query('q') query: any,
+  ) {
     return await this.users.getUsers(page, page_size);
   }
 

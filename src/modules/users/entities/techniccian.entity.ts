@@ -1,4 +1,6 @@
 import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
+import { MunicialitiesEntity } from 'src/modules/enums/entities/municipalities.entity';
+import { ProvincesEntity } from 'src/modules/enums/entities/provinces.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -8,6 +10,7 @@ import {
   JoinColumn,
   ManyToMany,
   JoinTable,
+  ManyToOne,
 } from 'typeorm';
 import { UsersEntity } from './user.entity';
 
@@ -27,4 +30,24 @@ export class TechniccianEntity {
   @ManyToMany(() => HabilitiesEntity)
   @JoinTable()
   habilities: HabilitiesEntity[];
+
+  @Column({ default: false })
+  confirmed: boolean;
+
+  @Column({ nullable: true })
+  confirmation_photo: string;
+
+  @Column({ nullable: true })
+  address: string;
+
+  @Column({ nullable: true })
+  ci: string;
+
+  @ManyToOne(() => ProvincesEntity, { nullable: true })
+  @JoinColumn({ name: 'province' })
+  province: ProvincesEntity;
+
+  @ManyToOne(() => MunicialitiesEntity, { nullable: true })
+  @JoinColumn({ name: 'municipality' })
+  municipality: MunicialitiesEntity;
 }

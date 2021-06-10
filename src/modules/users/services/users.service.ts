@@ -23,7 +23,13 @@ import { AgentsEntity } from '../entities/agent.entity';
 import { TechniccianEntity } from '../entities/techniccian.entity';
 import * as moment from 'moment';
 import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
-import { paginate_repo } from 'src/lib/pagination.results';
+import { paginate_qr, paginate_repo } from 'src/lib/pagination.results';
+
+export enum USER_TYPE {
+  USER = 'user',
+  TECH = 'tech',
+  AGENT = 'agent',
+}
 
 @Injectable()
 export class UsersService {
@@ -178,6 +184,13 @@ export class UsersService {
     new_user,
     expiration_date,
     habilities: habilities_ids,
+    address,
+    ci,
+    confirmed,
+    province,
+    municipality,
+    confirmation_photo,
+    active,
   }: TechDto) {
     if (!username && !new_user) throw new BadRequestException();
 
@@ -217,6 +230,15 @@ export class UsersService {
       const created = await this.techsEntity.save({
         user,
         habilities,
+        active: active ?? true,
+        address,
+        ci,
+        province: province as any,
+        municipality: municipality as any,
+        confirmed: confirmed ?? true,
+        confirmation_photo: confirmation_photo
+          ? (confirmation_photo as any).toString('base64')
+          : null,
         expiration_date: expiration_date
           ? moment(expiration_date).toDate()
           : null,
@@ -247,6 +269,17 @@ export class UsersService {
     if (data.expiration_date || data.expiration_date === null)
       techObj.expiration_date = data.expiration_date;
     if (typeof data.active !== 'undefined') techObj.active = data.active;
+    if (typeof data.ci !== 'undefined') techObj.ci = data.ci;
+    if (typeof data.address !== 'undefined') techObj.address = data.address;
+    if (typeof data.province !== 'undefined') techObj.province = data.province;
+    if (typeof data.municipality !== 'undefined')
+      techObj.municipality = data.municipality;
+    if (typeof data.confirmation_photo !== 'undefined')
+      techObj.confirmation_photo = (data.confirmation_photo as any).toString(
+        'base64',
+      );
+    if (typeof data.confirmed !== 'undefined')
+      techObj.confirmed = data.confirmed;
 
     const updated = await this.techsEntity.update(
       {
@@ -275,21 +308,116 @@ export class UsersService {
     });
   }
 
-  async getUsers(page: number, page_size: number) {
-    return await paginate_repo(page, page_size, this.usersEntity, {
-      select: [
-        'id',
-        'name',
-        'lastname',
-        'username',
-        'email',
-        'phone_number',
-        'telegram_id',
-        'active',
-        'expiration_date',
-        'photo',
-      ],
-      relations: ['techniccian_info', 'agent_info'],
-    } as FindManyOptions<UsersEntity>);
+  async getUsers(
+    page: number,
+    page_size: number,
+    {
+      address,
+      ci,
+      habilities,
+      name,
+      username,
+      agent_active,
+      roles,
+      tech_active,
+      tech_municipalities,
+      tech_provinces,
+      tech_rating,
+      types,
+      user_active,
+    }: {
+      types?: number[];
+      username?: string;
+      name?: string;
+      user_active?: boolean;
+      roles?: number[];
+      agent_active?: boolean;
+      tech_active?: boolean;
+      ci?: string;
+      address?: string;
+      tech_provinces?: number[];
+      tech_municipalities?: number[];
+      tech_rating?: number[];
+      habilities?: number[];
+    },
+  ) {
+    const qr = this.usersEntity
+      .createQueryBuilder('u')
+      .select([
+        'u.id',
+        'u.name',
+        'u.lastname',
+        'u.username',
+        'u.email',
+        'u.phone_number',
+        'u.telegram_id',
+        'u.active',
+        'u.expiration_date',
+        'u.photo',
+      ])
+      .leftJoinAndSelect('u.techniccian_info', 'tech')
+      .leftJoinAndSelect('u.agent_info', 'agent');
+
+    if (address !== undefined)
+      qr.andWhere('tech.address ilike :address', { address: `%${address}%` });
+    if (username !== undefined)
+      qr.andWhere('u.username ilike :username', { username: `%${username}%` });
+    if (user_active !== undefined)
+      qr.andWhere('u.active =:active', { active: user_active });
+    if (tech_active !== undefined)
+      qr.andWhere('tech.active =:active', { active: tech_active });
+    if (agent_active !== undefined)
+      qr.andWhere('agent.active =:active', { active: agent_active });
+    if (name !== undefined)
+      qr.andWhere('(u.name ilike :name or u.lastname ilike :name)', {
+        name: `%${name}%`,
+      });
+    if (ci !== undefined)
+      qr.andWhere('(tech.ci ilike :ci)', {
+        ci: `%${ci}%`,
+      });
+    if (roles !== undefined)
+      qr.leftJoin('agent.role', 'role').andWhere('(role.id in (:...roles))', {
+        roles,
+      });
+    if (habilities !== undefined) {
+      qr.leftJoin(
+        'tech.habilities',
+        'hab',
+      ).andWhere('hab.id in (:...habilities)', { habilities });
+    }
+    if (tech_provinces !== undefined) {
+      qr.leftJoin('tech.province', 'tech_province').andWhere(
+        'tech_province.id in (:...tech_provinces)',
+        {
+          tech_provinces,
+        },
+      );
+    }
+    if (tech_municipalities !== undefined) {
+      qr.leftJoin('tech.municipality', 'tech_municipality').andWhere(
+        'tech_municipality.id in (:...tech_municipalities)',
+        {
+          tech_municipalities,
+        },
+      );
+    }
+    if (types != undefined) {
+      const loadTech = !!types.find((t: any) => t == USER_TYPE.TECH);
+      const loadAgent = !!types.find((t: any) => t == USER_TYPE.AGENT);
+      qr.andWhere(
+        `(
+          ${loadAgent ? 'agent.user notnull' : '1=1'} or 
+          ${loadTech ? 'tech.user notnull' : '1=1'}
+          )`,
+      );
+    }
+    const results = await paginate_qr<UsersEntity>(page, page_size, qr);
+    for (const u of results.data) {
+      if (u.techniccian_info) {
+        (u.techniccian_info as any).rating = Math.random() * (5 - 1) + 1;
+      }
+    }
+    return results;
   }
 }
