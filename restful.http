@@ -89,12 +89,12 @@ Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {
-    "new_user":{
-        "username":"pepe1224",
-        "password":"Aqwerty123*",
-        "name":"PEpito",
-        "lastname":"El cojo"
-    },
+    "username":"john",
+    "address":"asdasd",
+    "confirmed":true,
+    "ci":"89122620343",
+    "province":15,
+    "municipality":32,
     "habilities":[2]
 }
 ### Actualizar tecnico

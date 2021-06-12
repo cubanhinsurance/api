@@ -24,6 +24,8 @@ import { TechniccianEntity } from '../entities/techniccian.entity';
 import * as moment from 'moment';
 import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
 import { paginate_qr, paginate_repo } from 'src/lib/pagination.results';
+import { MunicialitiesEntity } from 'src/modules/enums/entities/municipalities.entity';
+import { ProvincesEntity } from 'src/modules/enums/entities/provinces.entity';
 
 export enum USER_TYPE {
   USER = 'user',
@@ -41,6 +43,10 @@ export class UsersService {
     private agentsEntity: Repository<AgentsEntity>,
     @InjectRepository(TechniccianEntity)
     private techsEntity: Repository<TechniccianEntity>,
+    @InjectRepository(ProvincesEntity)
+    private provinces: Repository<ProvincesEntity>,
+    @InjectRepository(MunicialitiesEntity)
+    private municipalities: Repository<MunicialitiesEntity>,
   ) {}
 
   async findUserByUserName(
@@ -226,6 +232,11 @@ export class UsersService {
         );
     }
 
+    const p = await this.provinces.findOne(province);
+    if (!p) throw new NotFoundException('No existe la provincia');
+
+    const m = await this.municipalities.findOne(municipality);
+    if (!m) throw new NotFoundException('No existe el municipio');
     try {
       const created = await this.techsEntity.save({
         user,
@@ -233,8 +244,8 @@ export class UsersService {
         active: active ?? true,
         address,
         ci,
-        province: province as any,
-        municipality: municipality as any,
+        province: p,
+        municipality: m,
         confirmed: confirmed ?? true,
         confirmation_photo: confirmation_photo
           ? (confirmation_photo as any).toString('base64')

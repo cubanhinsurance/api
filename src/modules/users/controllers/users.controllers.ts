@@ -161,10 +161,19 @@ export class UsersController {
   @ApiOperation({
     summary: 'Crear un nuevo tecnico',
   })
+  @UseInterceptors(
+    FileInterceptor('confirmation_photo', {
+      fileFilter: imageFilter,
+    }),
+  )
   @ApiConflictResponse({ description: 'Tenico ya existe' })
   @ApiCreatedResponse({ description: 'Tenico creado con exito' })
   @ApiBadRequestResponse({ description: 'Parametros de entrada incorrectos' })
-  async createTech(@Body(new JoiPipe(TECH_SCHEMA)) tech: any) {
+  async createTech(
+    @Body(new JoiPipe(TECH_SCHEMA)) tech: any,
+    @UploadedFile() confirmation_photo,
+  ) {
+    if (confirmation_photo) tech.confirmation_photo = confirmation_photo;
     const created = await this.users.createTechnichian(tech);
   }
 
