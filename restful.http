@@ -44,7 +44,7 @@ Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {
-    "username":"john",
+    "username":"john3",
     "password":"Aqwerty123*",
     "name":"Juan Pablo",
     "lastname":"Bacallao Castillo"
@@ -89,13 +89,14 @@ Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {
-    "username":"john",
+    "username":"john2222",
     "address":"asdasd",
     "confirmed":true,
     "ci":"89122620343",
     "province":15,
+    "confirmation_photo": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABQAA",
     "municipality":32,
-    "habilities":[2]
+    "habilities":[34]
 }
 ### Actualizar tecnico
 PUT {{host}}/users/tech/pepe

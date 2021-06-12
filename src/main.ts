@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { json } from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -9,6 +10,12 @@ async function bootstrap() {
   });
   // app.setGlobalPrefix('v1/api');
   app.useGlobalPipes(new ValidationPipe());
+
+  app.use(
+    json({
+      limit: '10mb',
+    }),
+  );
 
   const options = new DocumentBuilder()
     .setTitle('Who fix services')

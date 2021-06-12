@@ -164,6 +164,9 @@ export class UsersController {
   @UseInterceptors(
     FileInterceptor('confirmation_photo', {
       fileFilter: imageFilter,
+      limits: {
+        fileSize: 10,
+      },
     }),
   )
   @ApiConflictResponse({ description: 'Tenico ya existe' })
