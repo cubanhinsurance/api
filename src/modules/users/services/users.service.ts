@@ -26,6 +26,7 @@ import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
 import { paginate_qr, paginate_repo } from 'src/lib/pagination.results';
 import { MunicialitiesEntity } from 'src/modules/enums/entities/municipalities.entity';
 import { ProvincesEntity } from 'src/modules/enums/entities/provinces.entity';
+import { findOrFail } from 'src/lib/typeorm/id_colection_handler';
 
 export enum USER_TYPE {
   USER = 'user',
@@ -441,5 +442,38 @@ export class UsersService {
       }
     }
     return results;
+  }
+
+  async deleteUser(username: string) {
+    const { id } = await findOrFail<UsersEntity>(
+      {
+        where: { username },
+      },
+      this.usersEntity,
+    );
+
+    await this.usersEntity.softDelete(id);
+  }
+
+  async deleteAgent(username: string) {
+    const { user } = await findOrFail<AgentsEntity>(
+      {
+        where: { username },
+      },
+      this.agentsEntity,
+    );
+
+    await this.agentsEntity.softDelete(user);
+  }
+
+  async deleteTech(username: string) {
+    const { user } = await findOrFail<TechniccianEntity>(
+      {
+        where: { username },
+      },
+      this.techsEntity,
+    );
+
+    await this.techsEntity.softDelete(user);
   }
 }

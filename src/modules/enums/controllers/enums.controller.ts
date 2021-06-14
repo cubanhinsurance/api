@@ -20,6 +20,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiQuery,
+  ApiTags,
 } from '@nestjs/swagger';
 import { EnumsService } from '../services/enums.service';
 import j2s from 'joi-to-swagger';
@@ -51,6 +52,7 @@ import { Public } from 'src/modules/auth/decorators/public.decorator';
 export class EnumsController {
   constructor(private enumsService: EnumsService) {}
 
+  @ApiTags('Enums')
   @ApiOperation({
     summary: 'Devuelve el listado de provincias',
   })
@@ -63,6 +65,7 @@ export class EnumsController {
     return await this.enumsService.getProvinces();
   }
 
+  @ApiTags('Enums')
   @ApiOperation({
     summary: 'Devuelve el listado de municipios de una provincia',
   })
@@ -84,6 +87,7 @@ export class EnumsController {
     );
   }
 
+  @ApiTags('Enums')
   @ApiOperation({
     summary: 'Devuelve listado de grupos de habilidades con sus habilidades',
   })
@@ -95,6 +99,7 @@ export class EnumsController {
     return await this.enumsService.getHabilitiesGroups();
   }
 
+  @ApiTags('Enums')
   @ApiOperation({ summary: 'Crea grupos de competencias' })
   @ApiCreatedResponse({
     schema: j2s(GROUP_SCHEMA).swagger,
@@ -109,6 +114,7 @@ export class EnumsController {
     return await this.enumsService.createHabilitiesGroups(group);
   }
 
+  @ApiTags('Enums')
   @Put('habilities/:group')
   async updateHabilityGroup() {
     //todo annadir updates 2 groups and others
@@ -129,6 +135,7 @@ export class EnumsController {
     return await this.enumsService.createHability(group, hability);
   }
 
+  @ApiTags('Enums')
   @ApiOperation({
     summary: 'Devuelve el listado de Tipos de incidencias con su jerarquia',
   })

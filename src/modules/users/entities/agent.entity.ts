@@ -6,6 +6,9 @@ import {
   ManyToOne,
   JoinColumn,
   Column,
+  DeleteDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { UsersEntity } from './user.entity';
 
@@ -27,4 +30,13 @@ export class AgentsEntity {
 
   @Column({ default: true })
   active: boolean;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }

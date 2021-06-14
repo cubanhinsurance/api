@@ -7,6 +7,9 @@ import {
   JoinColumn,
   OneToOne,
   BaseEntity,
+  DeleteDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { AgentsEntity } from './agent.entity';
 import { TechniccianEntity } from './techniccian.entity';
@@ -57,4 +60,13 @@ export class UsersEntity extends BaseEntity {
 
   @Column({ nullable: true })
   photo: string;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }

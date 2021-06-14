@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -20,6 +21,7 @@ import {
   ApiOperation,
   ApiQuery,
   ApiSecurity,
+  ApiTags,
 } from '@nestjs/swagger';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import {
@@ -47,6 +49,7 @@ import { imageFilter } from 'src/lib/multer/filter';
 export class UsersController {
   constructor(private users: UsersService) {}
 
+  @ApiTags('Users')
   @ApiOperation({ summary: 'Devuelve listado de usuarios del sistema' })
   @ApiOkResponse({
     schema: j2s(USERS_QUERY_RESULTS).swagger,
@@ -66,6 +69,7 @@ export class UsersController {
     return await this.users.getUsers(page, page_size, query);
   }
 
+  @ApiTags('Users')
   @ApiOperation({ summary: 'Devuelve los datos de un usuario' })
   @ApiOkResponse({
     schema: j2s(USER_QUERY_RESULT).swagger,
@@ -75,6 +79,7 @@ export class UsersController {
     return await this.users.getUserPrivateData(username);
   }
 
+  @ApiTags('Users')
   @Post('user')
   @ApiBody({
     schema: j2s(USERS_SCHEMA).swagger,
@@ -98,6 +103,7 @@ export class UsersController {
     const created = await this.users.createUser(user);
   }
 
+  @ApiTags('Users')
   @Put('user/:username')
   @ApiBody({
     schema: j2s(UPDATE_USER_SCHEMA).swagger,
@@ -123,6 +129,7 @@ export class UsersController {
     const updated = await this.users.updateUser(username, body);
   }
 
+  @ApiTags('Users')
   @Post('agent')
   @ApiBody({
     schema: j2s(AGENTS_SCHEMA).swagger,
@@ -137,6 +144,7 @@ export class UsersController {
     const created = await this.users.createAgent(agent);
   }
 
+  @ApiTags('Users')
   @Put('agent/:agent')
   @ApiBody({
     schema: j2s(UPDATE_AGENT_SCHEMA).swagger,
@@ -154,6 +162,7 @@ export class UsersController {
     const updated = await this.users.updateAgent(agent, body);
   }
 
+  @ApiTags('Users')
   @Post('tech')
   @ApiBody({
     schema: j2s(TECH_SCHEMA).swagger,
@@ -180,6 +189,7 @@ export class UsersController {
     const created = await this.users.createTechnichian(tech);
   }
 
+  @ApiTags('Users')
   @Put('tech/:tech')
   @ApiBody({
     schema: j2s(UPDATE_TECH_SCHEMA).swagger,
@@ -195,5 +205,32 @@ export class UsersController {
     @Body(new JoiPipe(UPDATE_TECH_SCHEMA)) body: object,
   ) {
     const updated = await this.users.updateTechnichian(tech, body);
+  }
+
+  @ApiTags('Users')
+  @Delete('user/:username')
+  @ApiOperation({
+    summary: 'Eliminar un usuario',
+  })
+  async deleteUser(@Param('username') username: string) {
+    await this.deleteUser(username);
+  }
+
+  @ApiTags('Users')
+  @Delete('agent/:agent')
+  @ApiOperation({
+    summary: 'Eliminar un agente',
+  })
+  async deleteAgent(@Param('username') username: string) {
+    await this.deleteAgent(username);
+  }
+
+  @ApiTags('Users')
+  @Delete('tech/:tech')
+  @ApiOperation({
+    summary: 'Eliminar un tecnico',
+  })
+  async deleteTechnician(@Param('username') username: string) {
+    await this.deleteTechnician(username);
   }
 }

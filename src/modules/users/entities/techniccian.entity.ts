@@ -11,6 +11,9 @@ import {
   ManyToMany,
   JoinTable,
   ManyToOne,
+  DeleteDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { UsersEntity } from './user.entity';
 
@@ -50,4 +53,13 @@ export class TechniccianEntity {
   @ManyToOne(() => MunicialitiesEntity, { nullable: true })
   @JoinColumn({ name: 'municipality' })
   municipality: MunicialitiesEntity;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }

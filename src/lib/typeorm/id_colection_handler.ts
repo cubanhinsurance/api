@@ -1,5 +1,5 @@
-import { In, Repository } from 'typeorm';
-import { BadRequestException } from '@nestjs/common';
+import { FindOneOptions, In, Repository } from 'typeorm';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 export const handleNumberArr = async (
   arr: any[],
@@ -24,3 +24,12 @@ export const handleIdsCommaString = async (
   message: string = 'Missing:',
   idfield: string = 'id',
 ) => await handleNumberArr(ids.split(','), repo, message, idfield);
+
+export const findOrFail = async <T>(
+  condition: FindOneOptions<T>,
+  repo: Repository<T>,
+) => {
+  const r = await repo.findOne(condition);
+  if (!r) throw new NotFoundException(`${repo.metadata.name}: no encontrado/a`);
+  return r;
+};
