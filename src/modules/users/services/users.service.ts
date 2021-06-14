@@ -445,14 +445,18 @@ export class UsersService {
   }
 
   async deleteUser(username: string) {
-    const { id } = await findOrFail<UsersEntity>(
+    const { id, agent_info, techniccian_info } = await findOrFail<UsersEntity>(
       {
         where: { username },
+        relations: ['techniccian_info', 'agent_info'],
       },
       this.usersEntity,
     );
 
     await this.usersEntity.softDelete(id);
+
+    if (agent_info) await this.deleteAgent(username);
+    if (techniccian_info) await this.deleteTech(username);
   }
 
   async deleteAgent(username: string) {

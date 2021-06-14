@@ -13,6 +13,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiTags,
 } from '@nestjs/swagger';
 import { RolesService } from '../services/roles.service';
 import j2s from 'joi-to-swagger';
@@ -28,6 +29,7 @@ import { STRING_COMMA_STRING } from 'src/lib/schemas/strings.schema';
 export class RolesController {
   constructor(private rolesService: RolesService) {}
 
+  @ApiTags('Security')
   @ApiOperation({
     summary: 'Devuelve el listado de roles',
   })
@@ -39,6 +41,7 @@ export class RolesController {
     return await this.rolesService.getRolesList();
   }
 
+  @ApiTags('Security')
   @ApiOperation({ summary: 'Crea un nuevo rol' })
   @ApiBody({
     schema: j2s(CREATE_ROLE_SCHEMA).swagger,
@@ -48,6 +51,7 @@ export class RolesController {
     return await this.rolesService.createRole(body);
   }
 
+  @ApiTags('Security')
   @ApiOperation({ summary: 'Adiciona funcionalidades a un rol' })
   @ApiParam({
     name: 'functionalities',
@@ -65,6 +69,7 @@ export class RolesController {
     );
   }
 
+  @ApiTags('Security')
   @ApiOperation({ summary: 'Elimina funcionalidades a un rol' })
   @ApiParam({
     name: 'functionalities',
@@ -82,6 +87,7 @@ export class RolesController {
     );
   }
 
+  @ApiTags('Security')
   @ApiOperation({ summary: 'Actualiza los datos de un rol' })
   @ApiBody({
     schema: j2s(UPDATE_ROLE_SCHEMA).swagger,

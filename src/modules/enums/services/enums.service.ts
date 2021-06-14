@@ -5,7 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isDeepStrictEqual } from 'node:util';
-import { handleNumberArr } from 'src/lib/typeorm/id_colection_handler';
+import {
+  findOrFail,
+  handleNumberArr,
+} from 'src/lib/typeorm/id_colection_handler';
 import { In, IsNull, Repository } from 'typeorm';
 import {
   CreateHabilityDto,
@@ -261,5 +264,32 @@ export class EnumsService {
     if (typeof parent != 'undefined') issueObj.parent = parentObj;
 
     return await this.parseIssue(await this.issuesTypes.save(issueObj));
+  }
+
+  async deleteHabilityGroup(group: any) {
+    const { id } = await findOrFail<HabilitiesGroupsEntity>(
+      { where: { id: group } },
+      this.habilities_groups,
+    );
+
+    await this.habilities_groups.softDelete(id);
+  }
+
+  async deleteHability(group: any, hability: any) {
+    const { id } = await findOrFail<HabilitiesEntity>(
+      { where: { id: hability, group } },
+      this.habilities,
+    );
+
+    await this.habilities.softDelete(id);
+  }
+
+  async deleteIssueType(issue: any) {
+    const { id } = await findOrFail<IssuesTypesEntity>(
+      { where: { id: issue } },
+      this.issuesTypes,
+    );
+
+    await this.issuesTypes.softDelete(id);
   }
 }

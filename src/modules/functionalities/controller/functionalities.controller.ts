@@ -1,5 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { FunctionalitiesEntity } from '../entities/functionalities.entity';
 import { FunctionalitiesService } from '../services/functionalities.service';
@@ -11,6 +16,7 @@ import { FunctionalitiesList } from '../schemas/functionalities.schemas';
 export class FunctionalitiesController {
   constructor(private funcsService: FunctionalitiesService) {}
 
+  @ApiTags('Security')
   @ApiOperation({
     summary: 'Devuelve el listado de funcionalidades del sistema',
   })

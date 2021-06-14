@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseArrayPipe,
@@ -120,6 +121,14 @@ export class EnumsController {
     //todo annadir updates 2 groups and others
   }
 
+  @ApiTags('Enums')
+  @ApiOperation({ summary: 'Elimina un grupo de habilidades' })
+  @Delete('habilities/:group')
+  async deleteHabilitiesGroup(@Param('group') group: any) {
+    await this.enumsService.deleteHabilityGroup(group);
+  }
+
+  @ApiTags('Enums')
   @ApiOperation({ summary: 'Crea competencias en un grupo' })
   @ApiCreatedResponse({
     schema: j2s(HABILITIES_SCHEMA).swagger,
@@ -136,6 +145,16 @@ export class EnumsController {
   }
 
   @ApiTags('Enums')
+  @ApiOperation({ summary: 'Elimina una habilidad' })
+  @Delete('habilities/:group/:hability')
+  async deleteHability(
+    @Param('group') group: any,
+    @Param('hability') hability: any,
+  ) {
+    await this.enumsService.deleteHability(group, hability);
+  }
+
+  @ApiTags('Enums')
   @ApiOperation({
     summary: 'Devuelve el listado de Tipos de incidencias con su jerarquia',
   })
@@ -147,6 +166,7 @@ export class EnumsController {
     return await this.enumsService.getIssuesTree();
   }
 
+  @ApiTags('Enums')
   @ApiOperation({ summary: 'Crea grupos/incidencias de manera jerarquica' })
   @ApiQuery({
     name: 'parent',
@@ -179,6 +199,7 @@ export class EnumsController {
     return await this.enumsService.createIssueType(issue, parent);
   }
 
+  @ApiTags('Enums')
   @ApiOperation({ summary: 'Actualiza los datos de una incidencia' })
   @ApiQuery({
     name: 'parent',
@@ -210,5 +231,14 @@ export class EnumsController {
     if (avatar) issue.avatar = avatar.buffer;
 
     return await this.enumsService.updateIssueType(issue_id, issue, parent);
+  }
+
+  @ApiTags('Enums')
+  @ApiOperation({
+    summary: 'Elimina un tipo incidencia o grupo de incidencias',
+  })
+  @Delete('issues/:issue')
+  async deleteIssueType(@Param('issue') issue: any) {
+    await this.enumsService.deleteIssueType(issue);
   }
 }

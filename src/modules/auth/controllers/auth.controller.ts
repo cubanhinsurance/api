@@ -16,12 +16,14 @@ import {
   ApiUnauthorizedResponse,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
   constructor(private auth: AuthService) {}
 
+  @ApiTags('Auth')
   @Post('signin')
   @Public()
   @UseGuards(LocalGuard)
@@ -52,6 +54,7 @@ export class AuthController {
     return await this.auth.login(user);
   }
 
+  @ApiTags('Auth')
   @Post('signin/agent')
   @Public()
   @UseGuards(LocalAgentGuard)
@@ -82,6 +85,7 @@ export class AuthController {
     return await this.auth.login(user);
   }
 
+  @ApiTags('Auth')
   @Post('signin/tech')
   @Public()
   @UseGuards(LocalTechGuard)
@@ -112,6 +116,7 @@ export class AuthController {
     return await this.auth.login(user);
   }
 
+  @ApiTags('Auth')
   @ApiOperation({ summary: 'Devuelve la informacion de un usuario' })
   @ApiOkResponse({
     schema: j2s.default(USER_INFO_SCHEMA).swagger,
