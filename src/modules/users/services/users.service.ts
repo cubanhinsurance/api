@@ -314,7 +314,13 @@ export class UsersService {
         'expiration_date',
         'photo',
       ],
-      relations: ['techniccian_info', 'agent_info'],
+      relations: [
+        'techniccian_info',
+        'techniccian_info.habilities',
+        'techniccian_info.habilities.group',
+        'agent_info',
+        'agent_info.role',
+      ],
       where: { username },
     });
   }
@@ -367,6 +373,8 @@ export class UsersService {
         'u.photo',
       ])
       .leftJoinAndSelect('u.techniccian_info', 'tech')
+      .leftJoinAndSelect('tech.habilities', 'habilities')
+      .leftJoinAndSelect('habilities.group', 'habilities_group')
       .leftJoinAndSelect('u.agent_info', 'agent');
 
     if (address !== undefined)
