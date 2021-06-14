@@ -317,6 +317,8 @@ export class UsersService {
       relations: [
         'techniccian_info',
         'techniccian_info.habilities',
+        'techniccian_info.province',
+        'techniccian_info.municipality',
         'techniccian_info.habilities.group',
         'agent_info',
         'agent_info.role',
@@ -375,7 +377,8 @@ export class UsersService {
       .leftJoinAndSelect('u.techniccian_info', 'tech')
       .leftJoinAndSelect('tech.habilities', 'habilities')
       .leftJoinAndSelect('habilities.group', 'habilities_group')
-      .leftJoinAndSelect('u.agent_info', 'agent');
+      .leftJoinAndSelect('u.agent_info', 'agent')
+      .leftJoinAndSelect('agent.role', 'role');
 
     if (address !== undefined)
       qr.andWhere('tech.address ilike :address', { address: `%${address}%` });
