@@ -64,7 +64,7 @@ export class UsersController {
   async getUsersList(
     @Page() page: number,
     @PageSize() page_size: number,
-    @Query('q') query: any,
+    @Query('q', new JoiPipe(USERS_FILTERS, true, true)) query: any,
   ) {
     return await this.users.getUsers(page, page_size, query);
   }

@@ -15,7 +15,9 @@ export const USERS_SCHEMA = object({
   email: string().email().optional(),
   telegram_id: string().optional(),
   photo: binary().optional(),
-}).required();
+})
+  .required()
+  .unknown();
 
 export const UPDATE_USER_SCHEMA = object({
   last_password: STRONG_PASSWORD_SCHEMA.optional(),

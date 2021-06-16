@@ -346,7 +346,7 @@ export class UsersService {
       types,
       user_active,
     }: {
-      types?: number[];
+      types?: string[];
       username?: string;
       name?: string;
       user_active?: boolean;
@@ -425,16 +425,20 @@ export class UsersService {
         },
       );
     }
-    if (types != undefined) {
-      const loadTech = !!types.find((t: any) => t == USER_TYPE.TECH);
-      const loadAgent = !!types.find((t: any) => t == USER_TYPE.AGENT);
-      qr.andWhere(
-        `(
-          ${loadAgent ? 'agent.user notnull' : '1=1'} or 
-          ${loadTech ? 'tech.user notnull' : '1=1'}
-          )`,
-      );
-    }
+
+    const loadUsers =
+      types != undefined && !!types.find((t: any) => t == USER_TYPE.USER);
+    const loadTech =
+      types != undefined && !!types.find((t: any) => t == USER_TYPE.TECH);
+    const loadAgent =
+      types != undefined && !!types.find((t: any) => t == USER_TYPE.AGENT);
+
+    qr.andWhere(`(
+      (${loadAgent ? 'agent.user notnull and tech.user isnull' : 'false'}) or
+      (${loadTech ? 'tech.user notnull and agent.user isnull' : 'false'}) or
+      (${loadUsers ? `agent.user isnull and tech.user isnull` : 'false'})
+    )`);
+
     const results = await paginate_qr<UsersEntity>(page, page_size, qr);
     for (const u of results.data) {
       if (u.techniccian_info) {
