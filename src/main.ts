@@ -13,7 +13,7 @@ async function bootstrap() {
 
   app.use(
     json({
-      limit: '10mb',
+      limit: '20mb',
     }),
   );
 
