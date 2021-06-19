@@ -179,7 +179,7 @@ export class UsersController {
   @ApiCreatedResponse({ description: 'Tenico creado con exito' })
   @ApiBadRequestResponse({ description: 'Parametros de entrada incorrectos' })
   async createTech(
-    @Body(new JoiPipe(TECH_SCHEMA)) tech: any,
+    @Body(new JoiPipe(TECH_SCHEMA, true, ['habilities'])) tech: any,
     @UploadedFile() confirmation_photo,
   ) {
     if (confirmation_photo) tech.confirmation_photo = confirmation_photo;
@@ -199,7 +199,7 @@ export class UsersController {
   @ApiBadRequestResponse()
   async updateTech(
     @Param('tech') tech: string,
-    @Body(new JoiPipe(UPDATE_TECH_SCHEMA)) body: object,
+    @Body(new JoiPipe(UPDATE_TECH_SCHEMA, true, ['habilities'])) body: object,
   ) {
     const updated = await this.users.updateTechnichian(tech, body);
   }
