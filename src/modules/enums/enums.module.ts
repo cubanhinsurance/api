@@ -13,9 +13,6 @@ import { IssuesTypesEntity } from './entities/issues_types.entity';
 
 @Module({
   imports: [
-    MulterModule.register({
-      // dest: './asd',
-    }),
     TypeOrmModule.forFeature([
       CountriesEntity,
       ProvincesEntity,
