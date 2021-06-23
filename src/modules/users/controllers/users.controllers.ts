@@ -182,7 +182,7 @@ export class UsersController {
     @Body(new JoiPipe(TECH_SCHEMA, true, ['habilities'])) tech: any,
     @UploadedFile() confirmation_photo,
   ) {
-    if (confirmation_photo) tech.confirmation_photo = confirmation_photo;
+    if (confirmation_photo) tech.confirmation_photo = confirmation_photo.buffer;
     const created = await this.users.createTechnichian(tech);
   }
 
@@ -194,13 +194,20 @@ export class UsersController {
   @ApiOperation({
     summary: 'Actualizar datos de un tecnico',
   })
+  @UseInterceptors(
+    FileInterceptor('confirmation_photo', {
+      fileFilter: imageFilter,
+    }),
+  )
   @ApiOkResponse({ description: 'Tecnico actualizado satisfactoriamente' })
   @ApiNotFoundResponse({ description: 'Usuario no existe' })
   @ApiBadRequestResponse()
   async updateTech(
     @Param('tech') tech: string,
-    @Body(new JoiPipe(UPDATE_TECH_SCHEMA, true, ['habilities'])) body: object,
+    @Body(new JoiPipe(UPDATE_TECH_SCHEMA, true, ['habilities'])) body: any,
+    @UploadedFile() confirmation_photo,
   ) {
+    if (confirmation_photo) body.confirmation_photo = confirmation_photo.buffer;
     const updated = await this.users.updateTechnichian(tech, body);
   }
 

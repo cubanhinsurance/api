@@ -239,6 +239,9 @@ export class UsersService {
     const m = await this.municipalities.findOne(municipality);
     if (!m) throw new NotFoundException('No existe el municipio');
     try {
+      const ph = confirmation_photo
+        ? (confirmation_photo as any).toString('base64')
+        : null;
       const created = await this.techsEntity.save({
         user,
         habilities,
@@ -248,9 +251,7 @@ export class UsersService {
         province: p,
         municipality: m,
         confirmed: confirmed ?? true,
-        confirmation_photo: confirmation_photo
-          ? (confirmation_photo as any).toString('base64')
-          : null,
+        confirmation_photo: ph,
         expiration_date: expiration_date
           ? moment(expiration_date).toDate()
           : null,
