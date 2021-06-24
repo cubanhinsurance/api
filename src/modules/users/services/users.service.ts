@@ -178,12 +178,7 @@ export class UsersService {
     if (typeof data.role !== 'undefined') agentObj.role = data.role;
     if (typeof data.active !== 'undefined') agentObj.active = data.active;
 
-    const updated = await this.agentsEntity.update(
-      {
-        user: agentObj.user,
-      },
-      agentObj,
-    );
+    const updated = await this.agentsEntity.save(user);
   }
 
   async createTechnichian({
