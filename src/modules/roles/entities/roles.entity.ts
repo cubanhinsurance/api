@@ -5,6 +5,9 @@ import {
   Column,
   ManyToMany,
   JoinTable,
+  DeleteDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity({
@@ -27,4 +30,13 @@ export class RolesEntity {
 
   @Column({ default: false })
   root: boolean;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }

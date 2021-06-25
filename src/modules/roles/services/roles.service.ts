@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { func } from 'joi';
+import { findOrFail } from 'src/lib/typeorm/id_colection_handler';
 import { FunctionalitiesEntity } from 'src/modules/functionalities/entities/functionalities.entity';
 import { In, Repository } from 'typeorm';
 import { RoleDto } from '../dtos/roles.dto';
@@ -153,5 +154,18 @@ export class RolesService {
     }
 
     const updated = await this.roles.save(roleObj);
+  }
+
+  async deleteRole(role: number) {
+    const { id } = await findOrFail<RolesEntity>(
+      {
+        where: {
+          id: role as any,
+        },
+      },
+      this.roles,
+    );
+
+    const deleted = await this.roles.softDelete(id);
   }
 }

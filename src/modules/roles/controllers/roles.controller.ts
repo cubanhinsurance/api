@@ -99,4 +99,13 @@ export class RolesController {
   ) {
     return await this.rolesService.updateRole(role, body);
   }
+
+  @ApiTags('Security')
+  @Delete(':role')
+  @ApiOperation({
+    summary: 'Eliminar un rol',
+  })
+  async deleteRole(@Param('role', ParseIntPipe) role: number) {
+    return await this.rolesService.deleteRole(role);
+  }
 }
