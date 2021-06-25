@@ -25,6 +25,7 @@ export interface USER_INFO {
   photo?: string;
   isTech: boolean;
   isAgent: boolean;
+  username: string;
   tools: string[];
 }
 
@@ -178,6 +179,7 @@ export class AuthService {
         isAgent: false,
         isTech: false,
         name: 'Root',
+        username,
         tools: await this.getAllTools(),
       };
 
@@ -216,6 +218,7 @@ export class AuthService {
 
     return {
       name,
+      username,
       lastname,
       isRoot: false,
       id,

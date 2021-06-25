@@ -107,6 +107,7 @@ export class UsersService {
     }
 
     if (data.name) curr.name = data.name;
+    if (data.username) curr.username = data.username;
     if (!!data.photo) {
       data.photo =
         typeof data.photo != 'undefined' ? data.photo.toString('base64') : null;
@@ -436,7 +437,12 @@ export class UsersService {
     qr.andWhere(`(
       (${loadAgent ? 'agent.user notnull and tech.user isnull' : 'false'}) or
       (${loadTech ? 'tech.user notnull and agent.user isnull' : 'false'}) or
-      (${loadUsers ? `agent.user isnull and tech.user isnull` : 'false'})
+      (${loadUsers ? `agent.user isnull and tech.user isnull` : 'false'}) or
+      (${
+        loadTech && loadAgent
+          ? 'agent.user notnull and tech.user notnull'
+          : '1=2'
+      })
     )`);
 
     const results = await paginate_qr<UsersEntity>(page, page_size, qr);

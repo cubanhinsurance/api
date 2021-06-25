@@ -8,8 +8,8 @@ import { HABILITIES_SCHEMA } from 'src/modules/enums/schemas/habilities.schema';
 import { USER_TYPE } from '../services/users.service';
 
 export const USERS_SCHEMA = object({
-  username: USER_NAME_SCHEMA,
-  password: STRONG_PASSWORD_SCHEMA,
+  username: USER_NAME_SCHEMA.required(),
+  password: STRONG_PASSWORD_SCHEMA.required(),
   name: string().required(),
   lastname: string().required(),
   email: string().email().optional(),
@@ -24,7 +24,8 @@ export const UPDATE_USER_SCHEMA = object({
   new_password: STRONG_PASSWORD_SCHEMA.optional(),
   confirm_password: ref('new_password'),
   name: string().optional(),
-  last_name: string().optional(),
+  username: USER_NAME_SCHEMA.optional(),
+  lastname: string().optional(),
   email: string().email().optional(),
   phone_number: string().optional(),
   telegram_id: string().optional(),
