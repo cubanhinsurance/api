@@ -78,7 +78,7 @@ export class AuthService {
 
       if (
         user.expiration_date &&
-        moment(user.expiration_date).isBefore(moment())
+        moment(user.expiration_date).isAfter(moment())
       ) {
         moment.locale('es');
         const exp = moment(user.expiration_date);
@@ -109,7 +109,7 @@ export class AuthService {
 
     if (
       userInfo.agent.expiration_date &&
-      moment(userInfo.agent.expiration_date).isBefore(moment())
+      moment(userInfo.agent.expiration_date).isAfter(moment())
     ) {
       moment.locale('es');
       const exp = moment(userInfo.agent.expiration_date);
@@ -145,7 +145,7 @@ export class AuthService {
 
     if (
       userInfo.tech.expiration_date &&
-      moment(userInfo.tech.expiration_date).isBefore(moment())
+      moment(userInfo.tech.expiration_date).isAfter(moment())
     ) {
       moment.locale('es');
       const exp = moment(userInfo.tech.expiration_date);

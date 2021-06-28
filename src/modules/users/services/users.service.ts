@@ -441,10 +441,24 @@ export class UsersService {
       })
     )`);
 
+    const now = moment();
     const results = await paginate_qr<UsersEntity>(page, page_size, qr);
     for (const u of results.data) {
       if (u.techniccian_info) {
         (u.techniccian_info as any).rating = Math.random() * (5 - 1) + 1;
+        if (!!u.techniccian_info.expiration_date && u.techniccian_info.active) {
+          u.techniccian_info.active = moment(
+            u.techniccian_info.expiration_date,
+          ).isAfter(moment());
+        }
+      }
+
+      if (u.agent_info) {
+        if (!!u.agent_info.expiration_date && u.agent_info.active) {
+          u.agent_info.active = moment(u.agent_info.expiration_date).isAfter(
+            moment(),
+          );
+        }
       }
     }
     return results;
