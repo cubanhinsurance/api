@@ -144,6 +144,9 @@ export class UsersService {
       this.usersEntity,
     );
 
+    if (user.confirmed)
+      throw new ConflictException('Usuario ya se encuentra confirmado');
+
     const key = await this.generateNewHotpCode(user);
 
     // return key;
