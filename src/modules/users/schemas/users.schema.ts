@@ -19,6 +19,10 @@ export const USERS_SCHEMA = object({
   .required()
   .unknown();
 
+export const REGISTER_USER_SCHEMA = USERS_SCHEMA.keys({
+  email: string().email().required(),
+});
+
 export const UPDATE_USER_SCHEMA = object({
   last_password: STRONG_PASSWORD_SCHEMA.optional(),
   new_password: STRONG_PASSWORD_SCHEMA.optional(),

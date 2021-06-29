@@ -1,5 +1,10 @@
 import { ConfigService } from '@atlasjs/config';
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcryptjs';
@@ -73,6 +78,9 @@ export class AuthService {
       const user = await this.usersService.findUserByUserName(username);
       if (!user) throw new UnauthorizedException();
 
+      if (!user.confirmed)
+        throw new ForbiddenException('El usuario necesita confirmarse');
+
       if (!user.active)
         throw new UnauthorizedException(`El usuario se encuentra inhabilitado`);
 
@@ -98,6 +106,13 @@ export class AuthService {
         isRoot: false,
       };
     }
+  }
+
+  async sendVerificationEmail(username: string, email: string) {
+    return await this.usersService.sendVerificationEmail(username, email);
+  }
+  async verifyUserConfirmationCode(username: string, code: string) {
+    return await this.usersService.confirmUser(username, code);
   }
 
   private checkAgent(userInfo: any) {
@@ -162,6 +177,7 @@ export class AuthService {
   async login(user: any) {
     return {
       access_token: this.jwtService.sign(user),
+      expires_in: this.configService.config.auth.expiresIn,
     };
   }
 

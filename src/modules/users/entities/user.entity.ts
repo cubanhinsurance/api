@@ -69,4 +69,16 @@ export class UsersEntity extends BaseEntity {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @Column({ default: true })
+  confirmed: boolean;
+
+  @Column({ default: 1 })
+  hotp: number;
+
+  @Column({ nullable: true })
+  totp: string;
+
+  @Column({ default: false })
+  enable_totp: boolean;
 }

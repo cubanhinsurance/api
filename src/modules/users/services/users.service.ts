@@ -27,6 +27,8 @@ import { paginate_qr, paginate_repo } from 'src/lib/pagination.results';
 import { MunicialitiesEntity } from 'src/modules/enums/entities/municipalities.entity';
 import { ProvincesEntity } from 'src/modules/enums/entities/provinces.entity';
 import { findOrFail } from 'src/lib/typeorm/id_colection_handler';
+import { hotp, totp } from 'otplib';
+import { createTransport } from 'nodemailer';
 
 export enum USER_TYPE {
   USER = 'user',
@@ -85,6 +87,86 @@ export class UsersService {
         `Ha ocurrido un error guardando el usuario`,
       );
     }
+  }
+
+  async generateNewHotpCode(user: UsersEntity) {
+    user.hotp++;
+    const key = hotp.generate(user.salt, user.hotp);
+    await this.usersEntity.save(user);
+    return key;
+  }
+
+  async verifyUserHotp(username: string | UsersEntity, key: string) {
+    const { hotp: h, salt } =
+      username instanceof UsersEntity
+        ? username
+        : await findOrFail<UsersEntity>(
+            {
+              where: {
+                username,
+              },
+            },
+            this.usersEntity,
+          );
+
+    const valid = hotp.check(key, salt, h);
+    return valid;
+  }
+
+  async confirmUser(username: string, key: string) {
+    const user = await findOrFail<UsersEntity>(
+      {
+        where: {
+          username,
+        },
+      },
+      this.usersEntity,
+    );
+
+    const valid = await this.verifyUserHotp(user, key);
+
+    if (!valid) throw new ForbiddenException('Codigo de confirmacion invalido');
+
+    user.confirmed = true;
+    const confirm = await this.usersEntity.save(user);
+  }
+
+  async sendVerificationEmail(username: string, address?: string) {
+    const user = await findOrFail<UsersEntity>(
+      {
+        where: {
+          username,
+        },
+      },
+      this.usersEntity,
+    );
+
+    const key = await this.generateNewHotpCode(user);
+
+    return key;
+
+    const t = createTransport({
+      logger: true,
+      service: 'gmail',
+      debug: true,
+      // host: 'smtp.gmail.com',
+      // port: 587,
+      // secure: true,
+      auth: {
+        // type: 'oauth2',
+        user: 'abel.prieto1992@gmail.com',
+        pass: 'Abelprieto1992',
+      },
+    });
+
+    const sended = await t.sendMail({
+      from: 'john891226@gmail.com',
+      to: user.email,
+      subject: 'Codigo de verificacion',
+      text: key,
+      html: '<p>asdsad</p>',
+    });
+    const b = 6;
   }
 
   async updateUser(username: string, data: any) {

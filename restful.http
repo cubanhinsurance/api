@@ -49,6 +49,32 @@ Content-Type: application/json
     "name":"Juan Pablo",
     "lastname":"Bacallao Castillo"
 }
+#### Registrar usuario
+POST {{host}}/users/register
+Content-Type: application/json
+
+{
+    "username":"johnp",
+    "password":"Aqwerty123*",
+    "name":"Juan Pablo",
+    "lastname":"Bacallao Castillo",
+    "email":"john891226@gmail.com"
+}
+#### Enviar correo de verificacion
+POST {{host}}/auth/confirmation
+Content-Type: application/json
+
+{
+    "username":"johnp",
+    "email":"john891226@gmail.com"
+}
+#### Confirmar codigo de verificacion
+POST {{host}}/auth/confirmation/johnp
+Content-Type: application/json
+
+{
+    "code":"653261"
+}
 #### Actualizar usuario
 PUT {{host}}/users/user/john
 Authorization: Bearer {{auth}}

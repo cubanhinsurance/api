@@ -8,9 +8,11 @@ export class UserDto {
   readonly phone_number: string;
   readonly photo: string;
   readonly username: string;
+  readonly confirmed: boolean;
   public password: string;
   public salt: string;
   constructor(data) {
+    this.confirmed = data?.confirmed ?? true;
     this.username = data.username;
     this.name = data.name;
     this.lastname = data.lastname;

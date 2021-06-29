@@ -26,6 +26,7 @@ import {
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import {
   AGENTS_SCHEMA,
+  REGISTER_USER_SCHEMA,
   TECH_SCHEMA,
   UPDATE_AGENT_SCHEMA,
   UPDATE_TECH_SCHEMA,
@@ -44,6 +45,7 @@ import {
 } from 'src/lib/decorators/pagination_queries.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { imageFilter } from 'src/lib/multer/filter';
+import { Public } from 'src/modules/auth/decorators/public.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -236,5 +238,31 @@ export class UsersController {
   })
   async deleteTechnician(@Param('username') username: string) {
     await this.deleteTechnician(username);
+  }
+
+  @ApiTags('Users')
+  @Post('register')
+  @ApiBody({
+    schema: j2s(REGISTER_USER_SCHEMA).swagger,
+  })
+  @ApiOperation({
+    summary: 'Registrar un nuevo usuario',
+  })
+  @UseInterceptors(
+    FileInterceptor('photo', {
+      fileFilter: imageFilter,
+    }),
+  )
+  @ApiConflictResponse({ description: 'Usuario ya existe' })
+  @ApiCreatedResponse({ description: 'Usuario creado con exito' })
+  @ApiBadRequestResponse({ description: 'Parametros de entrada incorrectos' })
+  @Public()
+  async registerUser(
+    @Body(new JoiPipe(REGISTER_USER_SCHEMA)) user: any,
+    @UploadedFile() photo,
+  ) {
+    if (photo) user.photo = photo.buffer;
+    const created = await this.users.createUser({ ...user, confirmed: false });
+    return await this.users.sendVerificationEmail(user.username);
   }
 }

@@ -11,6 +11,7 @@ import { ExceptionsInterceptor } from './lib/interceptors/exceptions.interceptor
 import { RolesModule } from './modules/roles/roles.module';
 import { EnumsModule } from './modules/enums/enums.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { CookieInterceptor } from './modules/auth/interceptors/cookie.interceptor';
 
 @Module({
   imports: [
@@ -49,6 +50,10 @@ import { MulterModule } from '@nestjs/platform-express';
     {
       provide: APP_INTERCEPTOR,
       useClass: ExceptionsInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CookieInterceptor,
     },
   ],
 })

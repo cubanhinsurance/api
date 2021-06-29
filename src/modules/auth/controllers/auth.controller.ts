@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import { Public } from '../decorators/public.decorator';
 import { User } from '../decorators/user.decorator';
@@ -9,7 +17,7 @@ import {
 } from '../guards/local.guard';
 import { SIGN_IN_SCHEMA, USER_INFO_SCHEMA } from '../schemas/signin.schema';
 import { AuthService } from '../services/auth.service';
-import * as j2s from 'joi-to-swagger';
+import j2s from 'joi-to-swagger';
 import {
   ApiBody,
   ApiOperation,
@@ -17,7 +25,11 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
+import { SetAuthCookie } from '../decorators/login.decorator';
+import { object, string } from 'joi';
 
 @Controller('auth')
 export class AuthController {
@@ -28,13 +40,16 @@ export class AuthController {
   @Public()
   @UseGuards(LocalGuard)
   @ApiBody({
-    schema: j2s.default(SIGN_IN_SCHEMA).swagger,
+    schema: j2s(SIGN_IN_SCHEMA).swagger,
   })
   @ApiOperation({
     summary: 'Autenticar usuario',
   })
   @ApiUnauthorizedResponse({
     description: 'Fallo',
+  })
+  @ApiForbiddenResponse({
+    description: 'El usuario necesita confirmarse',
   })
   @ApiCreatedResponse({
     description: 'Correcto',
@@ -47,6 +62,7 @@ export class AuthController {
       },
     },
   })
+  @SetAuthCookie()
   async signin(
     @Body(new JoiPipe(SIGN_IN_SCHEMA)) { username, password },
     @User() user: object,
@@ -59,7 +75,7 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAgentGuard)
   @ApiBody({
-    schema: j2s.default(SIGN_IN_SCHEMA).swagger,
+    schema: j2s(SIGN_IN_SCHEMA).swagger,
   })
   @ApiOperation({
     summary: 'Autenticar agente',
@@ -90,7 +106,7 @@ export class AuthController {
   @Public()
   @UseGuards(LocalTechGuard)
   @ApiBody({
-    schema: j2s.default(SIGN_IN_SCHEMA).swagger,
+    schema: j2s(SIGN_IN_SCHEMA).swagger,
   })
   @ApiOperation({
     summary: 'Autenticar tecnico',
@@ -119,10 +135,67 @@ export class AuthController {
   @ApiTags('Auth')
   @ApiOperation({ summary: 'Devuelve la informacion de un usuario' })
   @ApiOkResponse({
-    schema: j2s.default(USER_INFO_SCHEMA).swagger,
+    schema: j2s(USER_INFO_SCHEMA).swagger,
   })
   @Get('user_info')
   async userFuncs(@Req() { user }: any) {
     return user;
+  }
+
+  @Post('confirmation')
+  @ApiTags('Auth', 'Users')
+  @ApiOperation({
+    summary: 'Enviar un correo de confirmacion con codigo secreto',
+  })
+  @ApiBody({
+    schema: j2s(
+      object({
+        username: string().required(),
+        email: string().email().required(),
+      }),
+    ).swagger,
+  })
+  @ApiForbiddenResponse({ description: 'El correo de ese usuario no coincide' })
+  @ApiNotFoundResponse({ description: 'Usuario no existe' })
+  @Public()
+  async sendVerificationEmail(
+    @Body(
+      new JoiPipe(
+        object({
+          username: string().required(),
+          email: string().email().required(),
+        }),
+      ),
+    )
+    { username, email },
+  ) {
+    return await this.auth.sendVerificationEmail(username, email);
+  }
+
+  @Post('confirmation/:username')
+  @ApiOperation({
+    summary: 'Confirmar usuario',
+  })
+  @ApiTags('Auth', 'Users')
+  @ApiBody({
+    schema: j2s(
+      object({
+        code: string().required(),
+      }),
+    ).swagger,
+  })
+  @Public()
+  async confirmVerificationCode(
+    @Param('username') username: string,
+    @Body(
+      new JoiPipe(
+        object({
+          code: string().required(),
+        }),
+      ),
+    )
+    { code },
+  ) {
+    await this.auth.verifyUserConfirmationCode(username, code);
   }
 }
