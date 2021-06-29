@@ -123,6 +123,9 @@ export class UsersService {
       this.usersEntity,
     );
 
+    if (user.confirmed)
+      throw new ConflictException('Usuario ya se encuentra confirmado');
+
     const valid = await this.verifyUserHotp(user, key);
 
     if (!valid) throw new ForbiddenException('Codigo de confirmacion invalido');
@@ -143,17 +146,12 @@ export class UsersService {
 
     const key = await this.generateNewHotpCode(user);
 
-    return key;
+    // return key;
 
     const t = createTransport({
-      logger: true,
-      service: 'gmail',
-      debug: true,
-      // host: 'smtp.gmail.com',
-      // port: 587,
-      // secure: true,
+      host: 'smtp.gmail.com',
+      port: 587,
       auth: {
-        // type: 'oauth2',
         user: 'abel.prieto1992@gmail.com',
         pass: 'Abelprieto1992',
       },
@@ -164,9 +162,7 @@ export class UsersService {
       to: user.email,
       subject: 'Codigo de verificacion',
       text: key,
-      html: '<p>asdsad</p>',
     });
-    const b = 6;
   }
 
   async updateUser(username: string, data: any) {
