@@ -12,7 +12,7 @@ export class UserDto {
   public password: string;
   public salt: string;
   constructor(data) {
-    this.confirmed = data?.confirmed ?? true;
+    this.confirmed = data?.confirmed;
     this.username = data.username;
     this.name = data.name;
     this.lastname = data.lastname;

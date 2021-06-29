@@ -36,6 +36,7 @@ export const UPDATE_USER_SCHEMA = object({
   active: boolean().optional(),
   expiration_date: date().optional().allow(null),
   photo: binary().optional(),
+  confirmed: boolean().optional(),
 })
   .required()
   .with('new_password', ['last_password', 'confirm_password']);
