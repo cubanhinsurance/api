@@ -20,6 +20,7 @@ export interface USER_SIGN_INFO {
   agent?: AgentsEntity;
   tech?: TechniccianEntity;
   isRoot: boolean;
+  confirmed?: boolean;
 }
 
 export interface USER_INFO {
@@ -79,8 +80,8 @@ export class AuthService {
       const user = await this.usersService.findUserByUserName(username);
       if (!user) throw new UnauthorizedException();
 
-      if (!user.confirmed)
-        throw new ForbiddenException('El usuario necesita confirmarse');
+      // if (!user.confirmed)
+      //   throw new ForbiddenException('El usuario necesita confirmarse');
 
       if (!user.active)
         throw new UnauthorizedException(`El usuario se encuentra inhabilitado`);
@@ -104,6 +105,7 @@ export class AuthService {
         username: user.username,
         agent: user.agent_info,
         tech: user.techniccian_info,
+        confirmed: user.confirmed,
         isRoot: false,
       };
     }
