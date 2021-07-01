@@ -10,6 +10,11 @@ import { HabilitiesGroupsEntity } from './entities/habilities_groups.entity';
 import { HabilitiesRequirementsEntity } from './entities/habilities_reqs.entity';
 import { MulterModule } from '@nestjs/platform-express';
 import { IssuesTypesEntity } from './entities/issues_types.entity';
+import { IssuesStatesEntity } from './entities/issues_states.entity';
+import { CoinsEntity } from './entities/coins.entity';
+import { TransactionsTypesEntity } from './entities/transactions_types.entity';
+import { PayGatewaysEntity } from './entities/pay_gateways.entity';
+import { LicensesTypesEntity } from './entities/licenses_types.entity';
 
 @Module({
   imports: [
@@ -21,6 +26,11 @@ import { IssuesTypesEntity } from './entities/issues_types.entity';
       HabilitiesGroupsEntity,
       HabilitiesRequirementsEntity,
       IssuesTypesEntity,
+      IssuesStatesEntity,
+      CoinsEntity,
+      TransactionsTypesEntity,
+      PayGatewaysEntity,
+      LicensesTypesEntity,
     ]),
   ],
   controllers: [EnumsController],

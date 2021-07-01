@@ -12,12 +12,16 @@ import { RolesModule } from './modules/roles/roles.module';
 import { EnumsModule } from './modules/enums/enums.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { CookieInterceptor } from './modules/auth/interceptors/cookie.interceptor';
+import { ClientModule } from './modules/client/client.module';
+import { BussinesModule } from './modules/bussines/bussines.module';
 
 @Module({
   imports: [
     System_configModule,
     AuthModule,
     RolesModule,
+    ClientModule,
+    BussinesModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       useFactory({ config }: ConfigService) {

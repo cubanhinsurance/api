@@ -4,14 +4,25 @@ export enum EMAIL_SERVICE {
   GMAIL = 'gmail',
 }
 
-export interface EMAIL_CONFIG {
-  service: EMAIL_SERVICE;
-  auth?: {
-    username: string;
-    password: string;
-  };
-}
-{
+type AUTH = {
+  username: string;
+  password: string;
+};
+
+export type EMAIL_CONFIG =
+  | {
+      service: EMAIL_SERVICE;
+      auth: AUTH;
+    }
+  | {
+      host: string;
+      port: number;
+      secure: boolean;
+      auth: AUTH;
+    };
+
+export interface SYS_CONFIG {
+  email?: EMAIL_CONFIG;
 }
 
 @Entity({
@@ -25,5 +36,5 @@ export class SystemConfigEntity {
   @Column({
     type: 'jsonb',
   })
-  config: object;
+  config: SYS_CONFIG;
 }
