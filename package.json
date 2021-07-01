@@ -24,7 +24,8 @@
     "typeorm:create": "npm run typeorm migration:create -- -n",
     "typeorm:run": "npm run typeorm migration:run",
     "typeorm:revert": "npm run typeorm migration:revert",
-    "typeorm:show": "npm run typeorm migration:show"
+    "typeorm:show": "npm run typeorm migration:show",
+    "migrate": "npm run typeorm:migrate db"
   },
   "dependencies": {
     "@atlasjs/config": "^1.0.0",

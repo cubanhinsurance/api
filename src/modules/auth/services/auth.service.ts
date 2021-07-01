@@ -31,6 +31,7 @@ export interface USER_INFO {
   isTech: boolean;
   isAgent: boolean;
   username: string;
+  confirmed?: boolean;
   tools: string[];
 }
 
@@ -207,6 +208,7 @@ export class AuthService {
       id,
       username: user,
       photo,
+      confirmed,
     } = await this.usersService.findUserByUserName(username);
 
     let isAgent = !!agent_info;
@@ -239,6 +241,7 @@ export class AuthService {
       isRoot: false,
       id,
       photo,
+      confirmed,
       isTech: !!techniccian_info,
       isAgent,
       tools,

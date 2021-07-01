@@ -31,7 +31,7 @@ import { CookieInterceptor } from './modules/auth/interceptors/cookie.intercepto
           subscribers: [__dirname + '/**/*.subscriber{.ts,.js}'],
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           migrations: [__dirname + '/migrations/*{.ts,.js}'],
-          synchronize: true,
+          // synchronize: true,
           keepConnectionAlive: true,
         };
       },

@@ -1,24 +1,16 @@
 import { ConfigService } from '@atlasjs/config';
-import { Injectable } from '@nestjs/common';
-
-interface SystemConfig {
-  before_alerts_time: number;
-  extra_renueval_time: number;
-}
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { SystemConfigEntity } from '../entities/sysconfig.entity';
 
 @Injectable()
-export class System_configService {
-  private config: SystemConfig;
-  constructor({
-    config: {
-      system_config: {
-        subscriptions: { before_alerts_time, extra_renueval_time },
-      },
-    },
-  }: ConfigService) {
-    this.config = {
-      before_alerts_time,
-      extra_renueval_time,
-    };
-  }
+export class System_configService implements OnModuleInit {
+  private config: object;
+  constructor(
+    @InjectRepository(SystemConfigEntity)
+    private configEntity: Repository<SystemConfigEntity>,
+  ) {}
+
+  onModuleInit() {}
 }

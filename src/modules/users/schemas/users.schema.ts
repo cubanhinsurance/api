@@ -14,6 +14,7 @@ export const USERS_SCHEMA = object({
   lastname: string().required(),
   email: string().email().optional(),
   telegram_id: string().optional(),
+  phone_number: string().optional(),
   photo: binary().optional(),
 })
   .required()
