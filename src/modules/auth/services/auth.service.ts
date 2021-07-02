@@ -111,7 +111,7 @@ export class AuthService {
     }
   }
 
-  async sendVerificationEmail(username: string, email: string) {
+  async sendVerificationEmail(username: string, email?: string) {
     return await this.usersService.sendVerificationEmail(username, email);
   }
   async verifyUserConfirmationCode(username: string, code: string) {

@@ -134,7 +134,7 @@ export class UsersService {
     const confirm = await this.usersEntity.save(user);
   }
 
-  async sendVerificationEmail(username: string, address?: string) {
+  async sendVerificationEmail(username: string, email?: string) {
     const user = await findOrFail<UsersEntity>(
       {
         where: {
@@ -147,9 +147,11 @@ export class UsersService {
     if (user.confirmed)
       throw new ConflictException('Usuario ya se encuentra confirmado');
 
-    const key = await this.generateNewHotpCode(user);
+    if (email && user.email != email) {
+      throw new ForbiddenException('Correo del usuario no coincide');
+    }
 
-    // return key;
+    const key = await this.generateNewHotpCode(user);
 
     const t = createTransport({
       host: 'smtp.gmail.com',

@@ -142,7 +142,43 @@ export class AuthController {
     return user;
   }
 
+  @Get('confirmation')
+  @ApiTags('Auth', 'Users')
+  @ApiOperation({
+    summary:
+      'Enviar un correo de confirmacion con codigo secreto a un usuario autenticado',
+  })
+  async sendVerificationEmail2LoggedUser(@User('username') username) {
+    return await this.auth.sendVerificationEmail(username);
+  }
+
   @Post('confirmation')
+  @ApiOperation({
+    summary: 'Confirmar usuario autenticado',
+  })
+  @ApiTags('Auth', 'Users')
+  @ApiBody({
+    schema: j2s(
+      object({
+        code: string().required(),
+      }),
+    ).swagger,
+  })
+  async confirmVerificationCodeLoggedUser(
+    @User('username') username: string,
+    @Body(
+      new JoiPipe(
+        object({
+          code: string().required(),
+        }),
+      ),
+    )
+    { code },
+  ) {
+    await this.auth.verifyUserConfirmationCode(username, code);
+  }
+
+  @Post('public_confirmation')
   @ApiTags('Auth', 'Users')
   @ApiOperation({
     summary: 'Enviar un correo de confirmacion con codigo secreto',
@@ -172,7 +208,7 @@ export class AuthController {
     return await this.auth.sendVerificationEmail(username, email);
   }
 
-  @Post('confirmation/:username')
+  @Post('public_confirmation/:username')
   @ApiOperation({
     summary: 'Confirmar usuario',
   })
