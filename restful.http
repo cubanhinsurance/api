@@ -74,7 +74,7 @@ POST {{host}}/users/register
 Content-Type: application/json
 
 {
-    "username":"johnp3211222212",
+    "username":"johnp3211221122121",
     "password":"Aqwerty123*",
     "name":"Juan Pablo",
     "lastname":"Bacallao Castillo",

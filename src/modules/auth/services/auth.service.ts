@@ -122,6 +122,18 @@ export class AuthService {
     return await this.usersService.confirmUser(username, code);
   }
 
+  async recoverUserPassword(username: string, password: string, code: string) {
+    const valid = await this.usersService.verifyUserHotp(username, code);
+    if (!valid) throw new ForbiddenException();
+
+    await this.usersService.updateUser(username, {
+      password,
+      confirm_password: password,
+    });
+
+    await this.usersService.breakHotpCode(username);
+  }
+
   private checkAgent(userInfo: any) {
     if (!userInfo) return;
     if (userInfo.isRoot) return userInfo;

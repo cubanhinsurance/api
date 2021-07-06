@@ -178,6 +178,35 @@ export class AuthController {
     await this.auth.verifyUserConfirmationCode(username, code);
   }
 
+  @Post('recovery')
+  @ApiTags('Auth', 'Users')
+  @ApiOperation({
+    summary: 'Recuperar contraseña',
+  })
+  @ApiBody({
+    schema: j2s(
+      object({
+        code: string().required(),
+        username: string().required(),
+        password: string().required(),
+      }),
+    ).swagger,
+  })
+  async recoverPassword(
+    @Body(
+      new JoiPipe(
+        object({
+          code: string().required(),
+          username: string().required(),
+          password: string().required(),
+        }),
+      ),
+    )
+    { code, username, password },
+  ) {
+    await this.auth.recoverUserPassword(username, password, code);
+  }
+
   @Post('public_confirmation')
   @ApiTags('Auth', 'Users')
   @ApiOperation({

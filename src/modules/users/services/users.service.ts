@@ -98,6 +98,23 @@ export class UsersService {
     }
   }
 
+  async breakHotpCode(username: string | UsersEntity) {
+    const user =
+      username instanceof UsersEntity
+        ? username
+        : await findOrFail<UsersEntity>(
+            {
+              where: {
+                username,
+              },
+            },
+            this.usersEntity,
+          );
+
+    user.hotp++;
+    await this.usersEntity.save(user);
+  }
+
   async generateNewHotpCode(user: UsersEntity) {
     user.hotp++;
     const key = hotp.generate(user.salt, user.hotp);
@@ -141,6 +158,8 @@ export class UsersService {
 
     user.confirmed = true;
     const confirm = await this.usersEntity.save(user);
+
+    await this.breakHotpCode(user);
   }
 
   async sendVerificationEmail(username: string, email?: string) {
@@ -176,7 +195,7 @@ export class UsersService {
     }
   }
 
-  async updateUser(username: string, data: any) {
+  async updateUser(username: string, data: any, check_last_password = false) {
     const curr = await this.usersEntity.findOne({
       username,
     });
@@ -189,7 +208,10 @@ export class UsersService {
           `Nueva contraseña debe coincidir con la antigua`,
         );
 
-      if (!(await compare(data.last_password, curr.password)))
+      if (
+        check_last_password &&
+        !(await compare(data.last_password, curr.password))
+      )
         throw new ForbiddenException(`Contraseña no coincide con la antigua`);
 
       curr.password = await hash(data.new_password, curr.salt);
