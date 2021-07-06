@@ -9,17 +9,12 @@ type AUTH = {
   password: string;
 };
 
-export type EMAIL_CONFIG =
-  | {
-      service: EMAIL_SERVICE;
-      auth: AUTH;
-    }
-  | {
-      host: string;
-      port: number;
-      secure: boolean;
-      auth: AUTH;
-    };
+export interface EMAIL_CONFIG {
+  host: string;
+  port: number;
+  secure: boolean;
+  auth: AUTH;
+}
 
 export interface SYS_CONFIG {
   email?: EMAIL_CONFIG;

@@ -643,6 +643,15 @@
   resolved "https://npm.geocuba.cu/@nestjs%2fmapped-types/-/mapped-types-0.4.0.tgz#352b9a661d6d36863cf48b2057616cef1b2c802d"
   integrity sha512-TVtd/aTb7EqPhVczdeuvzF9dY0fyE3ivvCstc2eO+AkNqrfzSG1kXYYiUUznKjd0qDa8g2TmPSmHUQ21AXsV1Q==
 
+"@nestjs/microservices@^7.6.18":
+  version "7.6.18"
+  resolved "https://npm.geocuba.cu/@nestjs%2fmicroservices/-/microservices-7.6.18.tgz#3661bc5ea24a77feccaec766f07995c1568f6bf9"
+  integrity sha512-vSSl9hgHgBtTye57f2PZIg36MLcv5TRdqu3QEsS50WlUmxIjISCfAeCMLk+hWQNM8zjvlLwNbKUJW+NOZ2aovA==
+  dependencies:
+    iterare "1.2.1"
+    json-socket "0.3.0"
+    tslib "2.2.0"
+
 "@nestjs/passport@^7.1.5":
   version "7.1.5"
   resolved "https://npm.geocuba.cu/@nestjs%2fpassport/-/passport-7.1.5.tgz#b32fc0492008d73ebae4327fbc0012a738a83664"
@@ -4086,6 +4095,11 @@ json-schema@0.2.3:
   resolved "https://npm.geocuba.cu/json-schema/-/json-schema-0.2.3.tgz#b480c892e59a2f05954ce727bd3f2a4e882f9e13"
   integrity sha1-tIDIkuWaLwWVTOcnvT8qTogvnhM=
 
+json-socket@0.3.0:
+  version "0.3.0"
+  resolved "https://npm.geocuba.cu/json-socket/-/json-socket-0.3.0.tgz#f4b953c685bb8e8bd0b72438f5208d9a0799ae07"
+  integrity sha512-jc8ZbUnYIWdxERFWQKVgwSLkGSe+kyzvmYxwNaRgx/c8NNyuHes4UHnPM3LUrAFXUx1BhNJ94n1h/KCRlbvV0g==
+
 json-stable-stringify-without-jsonify@^1.0.1:
   version "1.0.1"
   resolved "https://npm.geocuba.cu/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
@@ -6253,6 +6267,11 @@ tslib@2.1.0, tslib@^2.1.0:
   version "2.1.0"
   resolved "https://npm.geocuba.cu/tslib/-/tslib-2.1.0.tgz#da60860f1c2ecaa5703ab7d39bc05b6bf988b97a"
   integrity sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==
+
+tslib@2.2.0:
+  version "2.2.0"
+  resolved "https://npm.geocuba.cu/tslib/-/tslib-2.2.0.tgz#fb2c475977e35e241311ede2693cee1ec6698f5c"
+  integrity sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==
 
 tslib@^1.8.1, tslib@^1.9.0:
   version "1.14.1"

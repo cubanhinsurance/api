@@ -14,6 +14,11 @@ import { MulterModule } from '@nestjs/platform-express';
 import { CookieInterceptor } from './modules/auth/interceptors/cookie.interceptor';
 import { ClientModule } from './modules/client/client.module';
 import { BussinesModule } from './modules/bussines/bussines.module';
+import { APP_MAIL_MODULE } from './common/mailer.module';
+import { MailModule } from './modules/mail/mail.module';
+import { System_configService } from './modules/system_config/services/system_config.service';
+import { MAIL_CONFIG } from './modules/mail/common';
+import { Observable } from 'rxjs';
 
 @Module({
   imports: [
@@ -37,11 +42,29 @@ import { BussinesModule } from './modules/bussines/bussines.module';
           migrations: [__dirname + '/migrations/*{.ts,.js}'],
           // synchronize: true,
           keepConnectionAlive: true,
+          // migrationsRun: true,
         };
       },
       inject: [ConfigService],
     }),
     FunctionalitiesModule,
+    MailModule.registerAsync({
+      global: true,
+      // imports: [System_configModule],
+      async useFactory(service: System_configService): Promise<MAIL_CONFIG> {
+        // await service.preload();
+        return {
+          global: true,
+          ...service.config?.email,
+          refresh: new Observable<MAIL_CONFIG>((ob) => {
+            service.updated$.subscribe((cfg) => {
+              ob.next(cfg.email);
+            });
+          }),
+        };
+      },
+      inject: ['APP_CONFIG'],
+    }),
     UsersModule,
     EnumsModule,
   ],

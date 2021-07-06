@@ -1,8 +1,10 @@
 import { ConfigService } from '@atlasjs/config';
 import {
   ForbiddenException,
+  Inject,
   Injectable,
   Logger,
+  OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from 'src/modules/users/services/users.service';
@@ -14,6 +16,7 @@ import { TechniccianEntity } from 'src/modules/users/entities/techniccian.entity
 import { UsersEntity } from 'src/modules/users/entities/user.entity';
 import { RolesService } from 'src/modules/roles/services/roles.service';
 import { FunctionalitiesService } from 'src/modules/functionalities/services/functionalities.service';
+import { ClientProxy } from '@nestjs/microservices';
 
 export interface USER_SIGN_INFO {
   username: string;
@@ -44,6 +47,7 @@ export class AuthService {
     private rolesService: RolesService,
     private configService: ConfigService,
     private jwtService: JwtService,
+    @Inject('AUTH') private micro: ClientProxy,
   ) {}
 
   isRoot(username: string) {

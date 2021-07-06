@@ -1,9 +1,9 @@
 import { FindOneOptions, In, Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
-export const handleNumberArr = async (
+export const handleNumberArr = async<T> (
   arr: any[],
-  repo: Repository<any>,
+  repo: Repository<T>,
   message: string = 'Missing:',
   idfield: string = 'id',
 ) => {

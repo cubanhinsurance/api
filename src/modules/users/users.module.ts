@@ -8,6 +8,7 @@ import { AgentsEntity } from './entities/agent.entity';
 import { TechniccianEntity } from './entities/techniccian.entity';
 import { UsersEntity } from './entities/user.entity';
 import { UsersService } from './services/users.service';
+import { APP_MAIL_MODULE } from '../../common/mailer.module';
 
 @Module({
   imports: [

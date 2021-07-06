@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -26,9 +27,14 @@ import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
 import { paginate_qr, paginate_repo } from 'src/lib/pagination.results';
 import { MunicialitiesEntity } from 'src/modules/enums/entities/municipalities.entity';
 import { ProvincesEntity } from 'src/modules/enums/entities/provinces.entity';
-import { findOrFail } from 'src/lib/typeorm/id_colection_handler';
+import {
+  findOrFail,
+  handleNumberArr,
+} from 'src/lib/typeorm/id_colection_handler';
 import { hotp, totp } from 'otplib';
 import { createTransport } from 'nodemailer';
+import { InjectMailService } from 'src/modules/mail/common';
+import { MailService } from 'src/modules/mail/mail.service';
 
 export enum USER_TYPE {
   USER = 'user',
@@ -50,7 +56,10 @@ export class UsersService {
     private provinces: Repository<ProvincesEntity>,
     @InjectRepository(MunicialitiesEntity)
     private municipalities: Repository<MunicialitiesEntity>,
-  ) {}
+    @InjectMailService() private mail: MailService,
+  ) {
+    // const b = 7;
+  }
 
   async findUserByUserName(
     username: string,
@@ -153,21 +162,18 @@ export class UsersService {
 
     const key = await this.generateNewHotpCode(user);
 
-    const t = createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      auth: {
-        user: 'abel.prieto1992@gmail.com',
-        pass: 'Abelprieto1992',
-      },
-    });
-
-    const sended = await t.sendMail({
-      from: 'john891226@gmail.com',
-      to: user.email,
-      subject: 'Codigo de verificacion',
-      text: key,
-    });
+    try {
+      this.mail.send({
+        from: 'john891226@gmail.com',
+        to: user.email,
+        subject: 'Codigo de verificacion',
+        text: key,
+      });
+    } catch (e) {
+      Logger.error(
+        `No se pudo enviar el correo al usuario: ${user.email}, ${e.message}`,
+      );
+    }
   }
 
   async updateUser(username: string, data: any) {
@@ -348,6 +354,7 @@ export class UsersService {
     if (!user) throw new NotFoundException(`Usuario ${tech} no existe`);
 
     const techObj = await this.techsEntity.findOne({
+      relations: ['user'],
       where: {
         user,
       },
@@ -372,13 +379,21 @@ export class UsersService {
       );
     if (typeof data.confirmed !== 'undefined')
       techObj.confirmed = data.confirmed;
+    if (typeof data.habilities != 'undefined') {
+      techObj.habilities =
+        data.habilities.length == 0
+          ? []
+          : await handleNumberArr<HabilitiesEntity>(
+              data.habilities,
+              this.habilitiesEntity,
+            );
+    }
 
-    const updated = await this.techsEntity.update(
-      {
-        user: techObj.user,
-      },
-      techObj,
-    );
+    try {
+      const updated = await this.techsEntity.save(techObj);
+    } catch (e) {
+      const a = 6;
+    }
   }
 
   async getUserPrivateData(username: string) {
