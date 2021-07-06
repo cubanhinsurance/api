@@ -122,6 +122,10 @@ export class AuthService {
     return await this.usersService.confirmUser(username, code);
   }
 
+  async checkCode(username: string, code: string) {
+    return await this.usersService.verifyUserHotp(username, code);
+  }
+
   async recoverUserPassword(username: string, password: string, code: string) {
     const valid = await this.usersService.verifyUserHotp(username, code);
     if (!valid) throw new ForbiddenException();

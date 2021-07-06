@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -181,6 +182,34 @@ export class AuthController {
   @Post('recovery')
   @ApiTags('Auth', 'Users')
   @ApiOperation({
+    summary: 'Verificar codigo',
+  })
+  @ApiBody({
+    schema: j2s(
+      object({
+        code: string().required(),
+        username: string().required(),
+      }),
+    ).swagger,
+  })
+  @Public()
+  async verifyCode(
+    @Body(
+      new JoiPipe(
+        object({
+          code: string().required(),
+          username: string().required(),
+        }),
+      ),
+    )
+    { code, username },
+  ) {
+    await this.auth.checkCode(username, code);
+  }
+
+  @Put('recovery')
+  @ApiTags('Auth', 'Users')
+  @ApiOperation({
     summary: 'Recuperar contraseña',
   })
   @ApiBody({
@@ -192,6 +221,7 @@ export class AuthController {
       }),
     ).swagger,
   })
+  @Public()
   async recoverPassword(
     @Body(
       new JoiPipe(
