@@ -1,5 +1,4 @@
 
-
 ### Crea un grupo
 POST {{host}}/enums/habilities
 Authorization: Bearer {{auth}}
@@ -45,6 +44,7 @@ Content-Disposition: form-data; name="questions"
     }
 ]
 --boundary--
-### User funcs
-{{host}}/auth/user_info
+
+### Get coins
+{{host}}/enums/coins
 Authorization: Bearer {{auth}}

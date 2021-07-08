@@ -3,25 +3,31 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { isDeepStrictEqual } from 'node:util';
 import {
   findOrFail,
   handleNumberArr,
 } from 'src/lib/typeorm/id_colection_handler';
-import { In, IsNull, Repository } from 'typeorm';
+import { TypeOrmRepo } from 'src/lib/typeorm/repository';
+import { EntityRepository, In, IsNull, Repository } from 'typeorm';
 import {
   CreateHabilityDto,
   CreateHabilityGroupDto,
   HabilityRuleOr,
 } from '../dtos/habilities.dto';
 import { IssuesQuestionsDTO, QUESTION_TYPES } from '../dtos/questions.dto';
+import { CoinsEntity } from '../entities/coins.entity';
 import { HabilitiesEntity } from '../entities/habilities.entity';
 import { HabilitiesGroupsEntity } from '../entities/habilities_groups.entity';
 import { HabilitiesRequirementsEntity } from '../entities/habilities_reqs.entity';
 import { IssuesTypesEntity } from '../entities/issues_types.entity';
 import { MunicialitiesEntity } from '../entities/municipalities.entity';
 import { ProvincesEntity } from '../entities/provinces.entity';
+// import { Coins } from '../enums.module';
+
+@EntityRepository(CoinsEntity)
+export class Coins extends TypeOrmRepo<CoinsEntity> {}
 
 @Injectable()
 export class EnumsService {
@@ -38,7 +44,10 @@ export class EnumsService {
     private habilities_reqs: Repository<HabilitiesRequirementsEntity>,
     @InjectRepository(HabilitiesGroupsEntity)
     private habilities_groups: Repository<HabilitiesGroupsEntity>,
-  ) {}
+    public coins: Coins, // @InjectRepository(CoinsEntity) // private coinsEntity: Repository<CoinsEntity>,
+  ) {
+    const a = 7;
+  }
 
   async getProvinces() {
     return await this.provinces.find({
@@ -292,4 +301,22 @@ export class EnumsService {
 
     await this.issuesTypes.softDelete(id);
   }
+
+  // async getCoins() {
+  //   return await this.coinsEntity.find({
+  //     select: ['name', 'id'],
+  //     where: {
+  //       active: true,
+  //     },
+  //   });
+  // }
+
+  // async createCoin({ name, factor }: { name: string; factor: number }) {
+  //   await this.coinsEntity.save({
+  //     name,
+  //     factor,
+  //   });
+  // }
+
+  async updateCoin() {}
 }

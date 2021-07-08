@@ -1,7 +1,7 @@
 import { FindOneOptions, In, Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
-export const handleNumberArr = async<T> (
+export const handleNumberArr = async <T>(
   arr: any[],
   repo: Repository<T>,
   message: string = 'Missing:',
@@ -26,10 +26,10 @@ export const handleIdsCommaString = async (
 ) => await handleNumberArr(ids.split(','), repo, message, idfield);
 
 export const findOrFail = async <T>(
-  condition: FindOneOptions<T>,
+  condition: string | number | FindOneOptions<T>,
   repo: Repository<T>,
 ) => {
-  const r = await repo.findOne(condition);
+  const r = await repo.findOne(condition as any);
   if (!r) throw new NotFoundException(`${repo.metadata.name}: no encontrado/a`);
   return r;
 };

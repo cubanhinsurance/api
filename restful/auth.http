@@ -1,0 +1,48 @@
+###Autenticat sys user
+POST {{host}}/auth/signin
+Content-Type: application/json
+
+{
+    "username":"root",
+    "password":"Aqwerty123*"
+}
+#### Autenticar usuario
+POST {{host}}/auth/signin
+Content-Type: application/json
+
+{
+    "username":"john",
+    "password":"Aqwerty123*"
+}
+#### Autenticar usuario agente
+POST {{host}}/auth/signin/agent
+Content-Type: application/json
+
+{
+    "username":"john",
+    "password":"Aqwerty123*"
+}
+#### Autenticar tecnico
+POST {{host}}/auth/signin/tech
+Content-Type: application/json
+
+{
+    "username":"pepe",
+    "password":"Aqwerty123*"
+}
+
+#### Enviar correo de verificacion
+POST {{host}}/auth/confirmation
+Content-Type: application/json
+
+{
+    "username":"johnp",
+    "email":"john891226@gmail.com"
+}
+#### Confirmar codigo de verificacion
+POST {{host}}/auth/confirmation/johnp
+Content-Type: application/json
+
+{
+    "code":"653261"
+}

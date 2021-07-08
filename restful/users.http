@@ -1,0 +1,96 @@
+
+### Datos de un usuario
+{{host}}/users/user/john
+Authorization: Bearer {{auth}}
+
+### Listado de usuarios
+{{host}}/users?page=1
+Authorization: Bearer {{auth}}
+
+#### Crear usuario
+POST {{host}}/users/user
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+
+{
+    "username":"john31",
+    "password":"Aqwerty123*",
+    "name":"Juan Pablo",
+    "lastname":"Bacallao Castillo"
+}
+
+
+#### Registrar usuario
+POST {{host}}/users/register
+Content-Type: application/json
+
+{
+    "username":"johnp3211221122121",
+    "password":"Aqwerty123*",
+    "name":"Juan Pablo",
+    "lastname":"Bacallao Castillo",
+    "email":"john891226@gmail.com"
+}
+
+#### Actualizar usuario
+PUT {{host}}/users/user/john
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+
+{
+    "last_password":"Aqwerty123*",
+    "new_password":"Aqwerty123*",
+    "confirm_password":"Aqwerty123*",
+    "expiration_date":null
+}
+#### Crear agente
+POST {{host}}/users/agent
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+
+{
+    "role":1,
+    "new_user":{
+        "username":"wendy",
+        "password":"Aqwerty123*",
+        "name":"Wendy",
+        "lastname":"Torres"
+    },
+    "expiration_date":"2020-1-1"
+}
+#### Actualizar agente
+PUT {{host}}/users/agent/wendy
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+
+{
+    "active":true
+}
+#### Crear tecnico
+POST {{host}}/users/tech
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+
+{
+    "username":"john2222",
+    "address":"asdasd",
+    "confirmed":true,
+    "ci":"89122620343",
+    "province":15,
+    "confirmation_photo": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABQAA",
+    "municipality":32,
+    "habilities":[34]
+}
+### Actualizar tecnico
+PUT {{host}}/users/tech/pepe
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+
+{
+    "active":true,
+    "expiration_date":null
+}
+
+### User funcs
+{{host}}/auth/user_info
+Authorization: Bearer {{auth}}

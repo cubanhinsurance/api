@@ -1,0 +1,15 @@
+### Get licenses types
+{{host}}/bussines/licenses/types
+Authorization: Bearer {{auth}}
+
+### Get licenses
+{{host}}/bussines/licenses/app
+Authorization: Bearer {{auth}}
+
+### Create license
+POST {{host}}/bussines/licenses/app
+Authorization: Bearer {{auth}}
+
+{
+    
+}

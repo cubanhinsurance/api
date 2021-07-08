@@ -1,3 +1,4 @@
+import { CoinsEntity } from 'src/modules/enums/entities/coins.entity';
 import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
 import { LicensesTypesEntity } from 'src/modules/enums/entities/licenses_types.entity';
 import { MunicialitiesEntity } from 'src/modules/enums/entities/municipalities.entity';
@@ -41,4 +42,20 @@ export class LicensesEntity {
     default: {},
   })
   config: object;
+
+  @Column()
+  price: number;
+
+  @ManyToOne(() => CoinsEntity)
+  @JoinColumn({ name: 'coin' })
+  coin: CoinsEntity;
+
+  @Column({ comment: 'Tiempo de duracion de la licencia' })
+  time: number;
+
+  @Column({ nullable: true })
+  photo: string;
+
+  @Column({ nullable: true })
+  description: string;
 }

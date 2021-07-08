@@ -1,7 +1,7 @@
 import { EnumsController } from './controllers/enums.controller';
-import { EnumsService } from './services/enums.service';
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { Coins, EnumsService } from './services/enums.service';
+import { Inject, Module } from '@nestjs/common';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { CountriesEntity } from './entities/countries.entity';
 import { MunicialitiesEntity } from './entities/municipalities.entity';
 import { ProvincesEntity } from './entities/provinces.entity';
@@ -15,6 +15,8 @@ import { CoinsEntity } from './entities/coins.entity';
 import { TransactionsTypesEntity } from './entities/transactions_types.entity';
 import { PayGatewaysEntity } from './entities/pay_gateways.entity';
 import { LicensesTypesEntity } from './entities/licenses_types.entity';
+import { EntityRepository, getRepository, Repository } from 'typeorm';
+import { TypeOrmRepo } from 'src/lib/typeorm/repository';
 
 @Module({
   imports: [
@@ -27,10 +29,10 @@ import { LicensesTypesEntity } from './entities/licenses_types.entity';
       HabilitiesRequirementsEntity,
       IssuesTypesEntity,
       IssuesStatesEntity,
-      CoinsEntity,
       TransactionsTypesEntity,
       PayGatewaysEntity,
       LicensesTypesEntity,
+      Coins,
     ]),
   ],
   controllers: [EnumsController],

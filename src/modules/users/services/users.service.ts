@@ -162,7 +162,11 @@ export class UsersService {
     await this.breakHotpCode(user);
   }
 
-  async sendVerificationEmail(username: string, email?: string) {
+  async sendVerificationEmail(
+    username: string,
+    email?: string,
+    ignoreConfirmed: boolean = true,
+  ) {
     const user = await findOrFail<UsersEntity>(
       {
         where: {
@@ -172,7 +176,7 @@ export class UsersService {
       this.usersEntity,
     );
 
-    if (user.confirmed)
+    if (!ignoreConfirmed && user.confirmed)
       throw new ConflictException('Usuario ya se encuentra confirmado');
 
     if (email && user.email != email) {

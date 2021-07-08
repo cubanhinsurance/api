@@ -241,4 +241,9 @@ export class EnumsController {
   async deleteIssueType(@Param('issue') issue: any) {
     await this.enumsService.deleteIssueType(issue);
   }
+
+  @Get('coins')
+  async getCoins() {
+    return await this.enumsService.coins.findAll();
+  }
 }

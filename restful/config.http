@@ -1,0 +1,23 @@
+
+#### dame configuracion
+GET {{host}}/config
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+
+
+#### Modificar configuracion
+POST {{host}}/config
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+
+{
+  "email": {
+    "host": "smtp.gmail.com",
+    "port": 587,
+    "secure": false,
+    "auth": {
+      "username": "abel.prieto1992@gmail.com",
+      "password": "Abelprieto1992"
+    }
+  }
+}

@@ -1,3 +1,5 @@
+import { LicensesService } from './modules/bussines/services/licenses.service';
+import { LicensesController } from './modules/bussines/controllers/licenses.controller';
 import { System_configModule } from './modules/system_config/system_config.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@atlasjs/config';

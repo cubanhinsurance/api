@@ -1,0 +1,32 @@
+### Retorna funcionalidades
+{{host}}/functionalities
+Authorization: Bearer {{auth}}
+### Retorna los roles
+{{host}}/roles
+Authorization: Bearer {{auth}}
+### Devuelve las provincias
+{{host}}/enums/provinces
+Authorization: Bearer {{auth}}
+### Devuelve los municipios de una provincia
+{{host}}/enums/municipalities/15
+Authorization: Bearer {{auth}}
+### Crea un rol
+POST {{host}}/roles
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+
+{
+    "name":"test2",
+    "functionalities":[
+        "manage_users",
+        "manage_roles"
+    ]
+}
+### Adiciona funcionalidades a un rol
+POST {{host}}/roles/3/manage_users,manage_capabilities
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+### Elimina funcionalidades a un rol
+DELETE {{host}}/roles/3/manage_users,manage_capabilities
+Authorization: Bearer {{auth}}
+Content-Type: application/json
