@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UploadedFile,
   UploadedFiles,
   UseInterceptors,
@@ -45,13 +46,20 @@ import {
   ISSUE_TREE_SCHEMA,
   UPDATE_ISSUE_TREE_NODE_SCHEMA,
 } from '../schemas/issues.schema';
-import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { imageFilter } from 'src/lib/multer/filter';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
+import { CoinsService } from '../services/coins.service';
+import { GetAll } from 'src/lib/typeorm-crud/typeorm.decorators';
+import { User } from 'src/modules/auth/decorators/user.decorator';
 
 @Controller('enums')
 export class EnumsController {
-  constructor(private enumsService: EnumsService) {}
+  public coins2 = 5;
+  constructor(
+    private enumsService: EnumsService,
+    private coins: CoinsService,
+  ) {}
 
   @ApiTags('Enums')
   @ApiOperation({
@@ -242,8 +250,10 @@ export class EnumsController {
     await this.enumsService.deleteIssueType(issue);
   }
 
-  @Get('coins')
-  async getCoins() {
-    return await this.enumsService.coins.findAll();
-  }
+  @ApiTags('Enums')
+  @GetAll<CoinsService>({
+    service: CoinsService,
+    handler: 'getCoins'
+  })
+  async getCoins(@User() user) {}
 }

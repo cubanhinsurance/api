@@ -46,3 +46,7 @@ Content-Type: application/json
 {
     "code":"653261"
 }
+
+### Enviar correo a usuario confirmado
+GET {{host}}/auth/confirmation
+Authorization: Bearer {{auth}}

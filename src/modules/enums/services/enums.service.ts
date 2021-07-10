@@ -24,10 +24,6 @@ import { HabilitiesRequirementsEntity } from '../entities/habilities_reqs.entity
 import { IssuesTypesEntity } from '../entities/issues_types.entity';
 import { MunicialitiesEntity } from '../entities/municipalities.entity';
 import { ProvincesEntity } from '../entities/provinces.entity';
-// import { Coins } from '../enums.module';
-
-@EntityRepository(CoinsEntity)
-export class Coins extends TypeOrmRepo<CoinsEntity> {}
 
 @Injectable()
 export class EnumsService {
@@ -44,7 +40,6 @@ export class EnumsService {
     private habilities_reqs: Repository<HabilitiesRequirementsEntity>,
     @InjectRepository(HabilitiesGroupsEntity)
     private habilities_groups: Repository<HabilitiesGroupsEntity>,
-    public coins: Coins, // @InjectRepository(CoinsEntity) // private coinsEntity: Repository<CoinsEntity>,
   ) {
     const a = 7;
   }
@@ -302,14 +297,14 @@ export class EnumsService {
     await this.issuesTypes.softDelete(id);
   }
 
-  // async getCoins() {
-  //   return await this.coinsEntity.find({
-  //     select: ['name', 'id'],
-  //     where: {
-  //       active: true,
-  //     },
-  //   });
-  // }
+  async getCoins() {
+    // return await this.coins.find({
+    //   select: ['name', 'id'],
+    //   where: {
+    //     active: true,
+    //   },
+    // });
+  }
 
   // async createCoin({ name, factor }: { name: string; factor: number }) {
   //   await this.coinsEntity.save({
