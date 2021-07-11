@@ -50,8 +50,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { imageFilter } from 'src/lib/multer/filter';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { CoinsService } from '../services/coins.service';
-import { GetAll } from 'src/lib/typeorm-crud/typeorm.decorators';
 import { User } from 'src/modules/auth/decorators/user.decorator';
+import { GetAll } from 'src/lib/typeorm-crud/decorators/getall.decorator';
+import { GetOne } from 'src/lib/typeorm-crud/decorators/getone.decorator';
+import { LicensesService } from 'src/modules/bussines/services/licenses.service';
+import { SelectQueryBuilder } from 'typeorm';
+import { LicensesEntity } from 'src/modules/bussines/entities/licenses.entity';
+import { CreateOne } from 'src/lib/typeorm-crud/decorators/createone.decorator';
 
 @Controller('enums')
 export class EnumsController {
@@ -253,7 +258,20 @@ export class EnumsController {
   @ApiTags('Enums')
   @GetAll<CoinsService>({
     service: CoinsService,
-    handler: 'getCoins'
+    handler: 'getCoins',
   })
-  async getCoins(@User() user) {}
+  async getCoins() {}
+
+  @ApiTags('Enums')
+  @GetOne<CoinsService>({
+    service: CoinsService,
+  })
+  async getCoin() {}
+
+  @ApiTags('Enums')
+  @CreateOne<CoinsService>({
+    service: CoinsService,
+    void: true,
+  })
+  async addCoin() {}
 }

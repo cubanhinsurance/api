@@ -5,8 +5,8 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { TYPEORM_ENTITY_SERVICE_META } from './typeorm.decorators';
+import { ApiBody, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { TYPEORM_ENTITY_SERVICE_META } from './decorators/typeorm.decorators';
 import {
   DefaultInterceptor,
   TYPEORM_CRUD_OPTIONS,
@@ -15,7 +15,7 @@ import {
 import { TypeOrmService } from './typeorm.service';
 import { singular as singularize, plural as pluralize } from 'pluralize';
 import j2s from 'joi-to-swagger';
-import { array } from 'joi';
+import { array, object } from 'joi';
 import { ROUTE_ARGS_METADATA } from '@nestjs/common/constants';
 
 const routeHandlerMethod = (path?: string): MethodDecorator => null;
@@ -33,8 +33,12 @@ export const prepareRoute = <Service>(
     swagger: { summary } = {},
     plural = false,
     void: isVoid = false,
-    params,
+    params = [],
+    responses,
+    response = ApiOkResponse,
     interceptor = DefaultInterceptor,
+    body: bodyFactory,
+    bodySchema,
   }: TYPEORM_CRUD_OPTIONS<Service>,
   routeHandler: typeof routeHandlerMethod,
   handler: Function,
@@ -62,26 +66,39 @@ export const prepareRoute = <Service>(
       })
     : null;
 
-  const sw_okresponse =
-    isVoid && !meta.model.schema
-      ? null
-      : ApiOkResponse({
-          schema: j2s(
-            plural ? array().items(meta.model.schema) : meta.model.schema,
-          ).swagger,
-        });
+  const sw_okresponse = response({
+    schema:
+      isVoid || !meta.model.schema
+        ? undefined
+        : j2s(plural ? array().items(meta.model.schema) : meta.model.schema)
+            .swagger,
+  });
+
+  const body = bodySchema ?? bodyFactory ? bodyFactory(meta) : null;
+
+  const sw_body = body
+    ? ApiBody({
+        schema: j2s(body).swagger,
+      })
+    : null;
 
   return (target: any, property: string, descriptor: PropertyDescriptor) => {
     const old = descriptor.value;
 
-    descriptor.value = async function () {
-      if (!(this as object).hasOwnProperty(id))
-        throw new NotImplementedException();
+    const a = Reflect.getMetadataKeys(target, property);
 
-      return customHandler
-        ? await this[id][customHandler](...arguments)
-        : await handler.call(this[id], ...arguments);
+    const method = {
+      [property]: async function () {
+        if (!(this as object).hasOwnProperty(id))
+          throw new NotImplementedException();
+
+        return customHandler
+          ? await this[id][customHandler](...arguments)
+          : await handler.call(this[id], ...arguments);
+      },
     };
+    descriptor.value = method[property];
+
     resolver(target, property, descriptor);
 
     if (params?.length > 0) {
@@ -90,15 +107,23 @@ export const prepareRoute = <Service>(
         target.constructor,
         property,
       );
-      let index = Object.keys(metadata).length;
+      let index = metadata ? Object.keys(metadata).length : 0;
       for (const paramDec of params) {
         paramDec(target, property, index);
         index++;
       }
     }
 
+    if (sw_body) sw_body(target, property, descriptor);
     if (sw_operation) sw_operation(target, property, descriptor);
     if (sw_okresponse) sw_okresponse(target, property, descriptor);
+
+    if (responses)
+      responses.forEach((rp) => {
+        rp(target, property, descriptor);
+      });
+
+    return descriptor;
   };
 };
 

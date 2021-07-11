@@ -204,7 +204,7 @@ export class AuthController {
     )
     { code, username },
   ) {
-    await this.auth.checkCode(username, code);
+    return await this.auth.checkCode(username, code);
   }
 
   @Put('recovery')

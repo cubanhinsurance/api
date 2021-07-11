@@ -10,11 +10,10 @@ import { UsersModule } from './modules/users/users.module';
 import { ExceptionsInterceptor } from './lib/interceptors/exceptions.interceptor';
 import { RolesModule } from './modules/roles/roles.module';
 import { EnumsModule } from './modules/enums/enums.module';
-import { MulterModule } from '@nestjs/platform-express';
 import { CookieInterceptor } from './modules/auth/interceptors/cookie.interceptor';
 import { ClientModule } from './modules/client/client.module';
 import { BussinesModule } from './modules/bussines/bussines.module';
-import { APP_MAIL_MODULE } from './common/mailer.module';
+
 import { MailModule } from './modules/mail/mail.module';
 import { System_configService } from './modules/system_config/services/system_config.service';
 import { MAIL_CONFIG } from './modules/mail/common';

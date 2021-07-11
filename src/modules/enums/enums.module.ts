@@ -16,7 +16,7 @@ import { TransactionsTypesEntity } from './entities/transactions_types.entity';
 import { PayGatewaysEntity } from './entities/pay_gateways.entity';
 import { LicensesTypesEntity } from './entities/licenses_types.entity';
 import { CoinsService } from './services/coins.service';
-import { getRepository, Repository } from 'typeorm';
+import { LicensesEntity } from '../bussines/entities/licenses.entity';
 
 @Module({
   imports: [
@@ -33,6 +33,7 @@ import { getRepository, Repository } from 'typeorm';
       PayGatewaysEntity,
       LicensesTypesEntity,
       CoinsEntity,
+      LicensesEntity,
     ]),
   ],
   controllers: [EnumsController],

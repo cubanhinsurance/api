@@ -4,7 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TypeOrmEntityService } from 'src/lib/typeorm-crud/typeorm.decorators';
+import { TypeOrmEntityService } from 'src/lib/typeorm-crud/decorators/typeorm.decorators';
 import { TypeOrmService } from '../../../lib/typeorm-crud/typeorm.service';
 import { CoinsEntity } from '../entities/coins.entity';
 import * as j2s from 'joi-to-swagger';

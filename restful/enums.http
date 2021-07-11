@@ -45,6 +45,14 @@ Content-Disposition: form-data; name="questions"
 ]
 --boundary--
 
-### Get coins
+### Get all coins
 {{host}}/enums/coins
+Authorization: Bearer {{auth}}
+
+### Get coin
+{{host}}/enums/coins/1
+Authorization: Bearer {{auth}}
+
+### Get active licenses
+{{host}}/enums/licenses
 Authorization: Bearer {{auth}}

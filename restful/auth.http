@@ -47,6 +47,24 @@ Content-Type: application/json
     "code":"653261"
 }
 
+#### Confirmar usuario autenticado
+POST {{host}}/auth/confirmation
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+
+{
+    "code":"077536"
+}
+
 ### Enviar correo a usuario confirmado
 GET {{host}}/auth/confirmation
 Authorization: Bearer {{auth}}
+
+### Verificar codigo
+POST {{host}}/auth/recovery
+Content-Type: application/json
+
+{
+    "code":"077536",
+    "username":"john"
+}

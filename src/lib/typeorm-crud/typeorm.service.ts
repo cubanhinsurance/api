@@ -1,3 +1,4 @@
+import { NotImplementedException } from '@nestjs/common';
 import {
   FindManyOptions,
   getRepository,
@@ -13,19 +14,28 @@ export class TypeOrmService<Entity = any> {
     return 'entity';
   }
 
-  get qr(): SelectQueryBuilder<Entity> {
-    return this.repository.createQueryBuilder(this.alias);
-  }
-
-  async find(
+  qr(
     interceptor: QueryInterceptor = DefaultInterceptor,
-  ): Promise<Entity[]> {
-    const qr = this.qr;
-    interceptor(qr);
-    return await qr.getMany();
+    ...args
+  ): SelectQueryBuilder<Entity> {
+    const qr = this.repository.createQueryBuilder(this.alias);
+    if (interceptor) interceptor(qr, ...args);
+    return qr;
   }
 
-  async findOne() {}
+  async find(interceptor?: QueryInterceptor): Promise<Entity[]> {
+    return await this.qr(interceptor).getMany();
+  }
 
-  async create() {}
+  async findOne(id: any, interceptor?: QueryInterceptor) {
+    const pk = this.repository.metadata.primaryColumns;
+    if (pk.length == 1) {
+      return await this.qr(interceptor, id).andWhereInIds(id).getOne();
+    } else {
+      //todo implement for multiple pks
+      throw new NotImplementedException();
+    }
+  }
+
+  async createOne() {}
 }

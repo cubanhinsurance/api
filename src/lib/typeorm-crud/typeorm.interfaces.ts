@@ -1,5 +1,5 @@
 import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
-import { AnySchema } from 'joi';
+import { AnySchema, ObjectSchema } from 'joi';
 import { SelectQueryBuilder } from 'typeorm';
 import { TypeOrmService } from './typeorm.service';
 import { SWAGGER_OPTIONS } from './typeorm.utils';
@@ -15,11 +15,15 @@ export interface TYPEORM_SERVICE_OPTIONS {
   operations?: {};
 }
 
-const interceptor = (qr: SelectQueryBuilder<any>): void => null;
+const interceptor = (qr: SelectQueryBuilder<any>, ...args): void => null;
 
 export type QueryInterceptor = typeof interceptor;
 
 export const DefaultInterceptor = (qt) => qt;
+
+const response = (...any): MethodDecorator => null;
+
+const bodyFactory = (definition: TYPEORM_SERVICE_OPTIONS): ObjectSchema => null;
 
 export interface TYPEORM_CRUD_OPTIONS<Service> {
   service: any;
@@ -30,4 +34,8 @@ export interface TYPEORM_CRUD_OPTIONS<Service> {
   void?: boolean;
   params?: ParameterDecorator[];
   interceptor?: QueryInterceptor;
+  responses?: MethodDecorator[];
+  response?: typeof response;
+  body?: typeof bodyFactory;
+  bodySchema?: ObjectSchema;
 }
