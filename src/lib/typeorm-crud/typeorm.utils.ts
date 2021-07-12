@@ -17,6 +17,7 @@ import { singular as singularize, plural as pluralize } from 'pluralize';
 import j2s from 'joi-to-swagger';
 import { array, object } from 'joi';
 import { ROUTE_ARGS_METADATA } from '@nestjs/common/constants';
+import { getBodySchema } from './swagger.helper';
 
 const routeHandlerMethod = (path?: string): MethodDecorator => null;
 
@@ -37,14 +38,16 @@ export const prepareRoute = <Service>(
     responses,
     response = ApiOkResponse,
     interceptor = DefaultInterceptor,
-    body: bodyFactory,
+    body: bodyFactory = getBodySchema,
     bodySchema,
+    operation,
+    withBody = false,
   }: TYPEORM_CRUD_OPTIONS<Service>,
   routeHandler: typeof routeHandlerMethod,
   handler: Function,
   path: string,
 ): MethodDecorator => {
-  const meta: TYPEORM_SERVICE_OPTIONS = Reflect.getMetadata(
+  const meta: TYPEORM_SERVICE_OPTIONS<any, any> = Reflect.getMetadata(
     TYPEORM_ENTITY_SERVICE_META,
     service,
   );
@@ -74,7 +77,22 @@ export const prepareRoute = <Service>(
             .swagger,
   });
 
-  const body = bodySchema ?? bodyFactory ? bodyFactory(meta) : null;
+  const columns =
+    meta.operations?.[operation]?.columns ??
+    (meta.model.columns || meta.model.relations
+      ? [
+          ...(meta.model.columns ?? ['*']),
+          ...Object.keys(meta.model.relations ?? {}),
+        ]
+      : null);
+
+  const body = withBody
+    ? operation && meta.operations?.[operation]?.schema
+      ? meta.operations?.[operation]?.schema
+      : bodySchema ?? bodyFactory
+      ? bodyFactory(meta, columns, operation)
+      : null
+    : null;
 
   const sw_body = body
     ? ApiBody({
@@ -85,8 +103,6 @@ export const prepareRoute = <Service>(
   return (target: any, property: string, descriptor: PropertyDescriptor) => {
     const old = descriptor.value;
 
-    const a = Reflect.getMetadataKeys(target, property);
-
     const method = {
       [property]: async function () {
         if (!(this as object).hasOwnProperty(id))
@@ -94,6 +110,8 @@ export const prepareRoute = <Service>(
 
         return customHandler
           ? await this[id][customHandler](...arguments)
+          : operation && meta.operations?.[operation].handler
+          ? await this[id][meta.operations?.[operation].handler](...arguments)
           : await handler.call(this[id], ...arguments);
       },
     };

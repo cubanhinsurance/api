@@ -3,19 +3,51 @@ https://docs.nestjs.com/controllers#controllers
 */
 
 import { Controller, Get } from '@nestjs/common';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { GetAll } from 'src/lib/typeorm-crud/decorators/getall.decorator';
 import { LicensesService } from '../services/licenses.service';
-
+import j2s from 'joi-to-swagger';
+import { array, number, object, string } from 'joi';
+import { CreateOne } from 'src/lib/typeorm-crud/decorators/createone.decorator';
 @Controller('bussines/licenses')
 export class LicensesController {
-  constructor(private licensesService: LicensesService) {}
+  constructor(private licenses: LicensesService) {}
 
   @Get('types')
+  @ApiTags('Bussines', 'Licenses')
+  @ApiOperation({
+    summary: 'Devuelve los tipos de licencias',
+  })
+  @ApiOkResponse({
+    schema: j2s(
+      array().items(
+        object({
+          id: number(),
+          name: string(),
+          description: string(),
+        }),
+      ),
+    ).swagger,
+  })
   async getLicensesTypes() {
-    return await this.licensesService.getLicensesTypes();
+    return await this.licenses.getLicensesTypes();
   }
 
-  @Get('app')
-  async getUsersLicenses() {
-    return await this.licensesService.getLicenses();
-  }
+  @ApiTags('Bussines', 'Licenses')
+  @GetAll(
+    {
+      service: LicensesService,
+    },
+    'app',
+  )
+  async getActiveLicenses() {}
+
+  @ApiTags('Bussines', 'Licenses')
+  @CreateOne(
+    {
+      service: LicensesService,
+    },
+    'app',
+  )
+  async createLicense() {}
 }

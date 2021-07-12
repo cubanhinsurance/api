@@ -5,34 +5,45 @@ https://docs.nestjs.com/providers#services
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmEntityService } from 'src/lib/typeorm-crud/decorators/typeorm.decorators';
+import { columns, rel } from 'src/lib/typeorm-crud/typeorm.interfaces';
+import { TypeOrmService } from 'src/lib/typeorm-crud/typeorm.service';
 import { findOrFail } from 'src/lib/typeorm/id_colection_handler';
 import { CoinsEntity } from 'src/modules/enums/entities/coins.entity';
 import { LicensesTypesEntity } from 'src/modules/enums/entities/licenses_types.entity';
+import { CoinsService } from 'src/modules/enums/services/coins.service';
 import { FindConditions, FindManyOptions, Repository } from 'typeorm';
 import { LicensesEntity } from '../entities/licenses.entity';
 import { UserLicensesEntity } from '../entities/user_licenses.entity';
 
-// @TypeOrmEntityService({
-//   model: {
-//     type: LicensesEntity,
-//     name: 'Licencias',
-//     id: 'license',
-//   },
-// })
-export class LicensesService {
+@TypeOrmEntityService<LicensesService, LicensesEntity>({
+  model: {
+    type: LicensesEntity,
+    name: 'Licencias',
+    id: 'licenses',
+    relations: rel<LicensesEntity>({
+      coin: {
+        // columns: columns<CoinsEntity>(['name']),
+      },
+      type: {},
+    }),
+  },
+})
+export class LicensesService extends TypeOrmService<LicensesEntity> {
   constructor(
-    @InjectRepository(UserLicensesEntity)
-    private userLicensesEntity: Repository<UserLicensesEntity>,
     @InjectRepository(LicensesEntity)
     private licensesEntity: Repository<LicensesEntity>,
     @InjectRepository(LicensesTypesEntity)
     private licensesTypesEntity: Repository<LicensesTypesEntity>,
     @InjectRepository(CoinsEntity)
     private coinsEntity: Repository<CoinsEntity>,
-  ) {}
+  ) {
+    super(licensesEntity);
+  }
 
   async getLicensesTypes() {
-    return await this.licensesTypesEntity.find();
+    return await this.licensesTypesEntity.find({
+      select: ['id', 'name', 'description'],
+    });
   }
 
   async getLicenses(actives: boolean = true) {

@@ -8,10 +8,11 @@ import { TypeOrmEntityService } from 'src/lib/typeorm-crud/decorators/typeorm.de
 import { TypeOrmService } from '../../../lib/typeorm-crud/typeorm.service';
 import { CoinsEntity } from '../entities/coins.entity';
 import * as j2s from 'joi-to-swagger';
-import { object } from 'joi';
+import { object, string } from 'joi';
 import { SelectQueryBuilder } from 'typeorm';
+import { TYPEORM_CRUD_OPERATIONS } from 'src/lib/typeorm-crud/operations';
 
-@TypeOrmEntityService({
+@TypeOrmEntityService<CoinsService,CoinsEntity>({
   model: {
     type: CoinsEntity,
     id: 'coins',
@@ -25,5 +26,9 @@ export class CoinsService extends TypeOrmService<CoinsEntity> {
 
   async getCoins() {
     return await this.find();
+  }
+
+  async a() {
+    return [];
   }
 }

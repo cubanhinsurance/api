@@ -1,3 +1,4 @@
+import { TransactionsEntity } from 'src/modules/bussines/entities/transactions.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,6 +6,7 @@ import {
   Index,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { CountriesEntity } from './countries.entity';
 
@@ -24,4 +26,7 @@ export class CoinsEntity {
 
   @Column({ default: true })
   active: boolean;
+
+  @OneToMany(() => TransactionsEntity, (t) => t.coin)
+  transactions: TransactionsEntity[];
 }

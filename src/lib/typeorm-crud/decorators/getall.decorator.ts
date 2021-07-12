@@ -1,4 +1,5 @@
 import { Get } from '@nestjs/common';
+import { TYPEORM_CRUD_OPERATIONS } from '../operations';
 import { TYPEORM_CRUD_OPTIONS } from '../typeorm.interfaces';
 import { TypeOrmService } from '../typeorm.service';
 import { ID_PARAM, mergeSwagger, prepareRoute } from '../typeorm.utils';
@@ -20,6 +21,7 @@ export const GetAll = <Service extends TypeOrmService>(
       ...{
         plural: true,
       },
+      operation: TYPEORM_CRUD_OPERATIONS.GET_All,
     },
     Get,
     async function () {

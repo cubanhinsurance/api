@@ -258,7 +258,7 @@ export class EnumsController {
   @ApiTags('Enums')
   @GetAll<CoinsService>({
     service: CoinsService,
-    handler: 'getCoins',
+    // handler: 'getCoins',
   })
   async getCoins() {}
 

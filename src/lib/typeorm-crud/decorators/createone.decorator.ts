@@ -3,7 +3,13 @@ import { ApiConflictResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { object } from 'joi';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import { ColumnMetadataArgs } from 'typeorm/metadata-args/ColumnMetadataArgs';
-import { getSchemaFromEntity } from '../swagger.helper';
+import { RelationMetadataArgs } from 'typeorm/metadata-args/RelationMetadataArgs';
+import { TYPEORM_CRUD_OPERATIONS } from '../operations';
+import {
+  entityColumn2JoiSchema,
+  getBodySchema,
+  getSchemaFromEntity,
+} from '../swagger.helper';
 import {
   TYPEORM_CRUD_OPTIONS,
   TYPEORM_SERVICE_OPTIONS,
@@ -33,14 +39,8 @@ export const CreateOne = <Service extends TypeOrmService>(
       void: options.void ?? true,
       responses: [ApiConflictResponse()],
       response: ApiCreatedResponse,
-      body: (def: TYPEORM_SERVICE_OPTIONS) => {
-        return getSchemaFromEntity(
-          def.model.type,
-          (def: ColumnMetadataArgs) => {
-            // if(def.options.primary)
-          },
-        );
-      },
+      operation: TYPEORM_CRUD_OPERATIONS.CREATE_ONE,
+      withBody: true,
     },
     Post,
     async function () {
