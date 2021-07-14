@@ -50,13 +50,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { imageFilter } from 'src/lib/multer/filter';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { CoinsService } from '../services/coins.service';
-import { User } from 'src/modules/auth/decorators/user.decorator';
-import { GetAll } from 'src/lib/typeorm-crud/decorators/getall.decorator';
-import { GetOne } from 'src/lib/typeorm-crud/decorators/getone.decorator';
-import { LicensesService } from 'src/modules/bussines/services/licenses.service';
-import { SelectQueryBuilder } from 'typeorm';
-import { LicensesEntity } from 'src/modules/bussines/entities/licenses.entity';
-import { CreateOne } from 'src/lib/typeorm-crud/decorators/createone.decorator';
+import { GetAll, GetOne, CreateOne } from '@atlasjs/typeorm-crud';
 
 @Controller('enums')
 export class EnumsController {

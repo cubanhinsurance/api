@@ -30,9 +30,7 @@ export class JoiPipe implements PipeTransform {
             continue;
           try {
             value[prop] = JSON.parse(value[prop]);
-          } catch (e) {
-            const b = 6;
-          }
+          } catch (e) {}
         }
       }
       const { error, value: converted } = this.schema.validate(

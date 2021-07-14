@@ -53,6 +53,17 @@ Authorization: Bearer {{auth}}
 {{host}}/enums/coins/1
 Authorization: Bearer {{auth}}
 
+### crear moneda
+POST {{host}}/enums/coins
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+
+{
+  "name": "string",
+  "factor": 1,
+  "active": true
+}
+
 ### Get active licenses
 {{host}}/enums/licenses
 Authorization: Bearer {{auth}}

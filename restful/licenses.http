@@ -3,13 +3,43 @@
 Authorization: Bearer {{auth}}
 
 ### Get licenses
-{{host}}/bussines/licenses/app
+{{host}}/bussines/licenses/app?page=6&count=false&page_size=2
 Authorization: Bearer {{auth}}
 
 ### Create license
 POST {{host}}/bussines/licenses/app
 Authorization: Bearer {{auth}}
+Content-Type: application/json
 
 {
-    
+    "price": 0,
+    "time": 0,
+    "photo": null,
+    "description": "string",
+    "type": 1,
+    "coin": 1,
+    "coins":[1]
 }
+
+### Reemplazar licencia
+PUT {{host}}/bussines/licenses/app/1
+Authorization: Bearer {{auth}}
+Content-Type: application/json
+
+{
+    "price": 0,
+    "time": 2,
+    "photo": null,
+    "description": "string",
+    "type": 1,
+    "coin": 1,
+    "coins":[1]
+}
+
+### Eliminar licencia
+DELETE {{host}}/bussines/licenses/app/6
+Authorization: Bearer {{auth}}
+
+### Registra una nueva moneda a la licencia
+POST {{host}}/bussines/licenses/app/7/coins/1
+Authorization: Bearer {{auth}}

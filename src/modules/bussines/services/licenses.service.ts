@@ -2,18 +2,18 @@
 https://docs.nestjs.com/providers#services
 */
 
-import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TypeOrmEntityService } from 'src/lib/typeorm-crud/decorators/typeorm.decorators';
-import { columns, rel } from 'src/lib/typeorm-crud/typeorm.interfaces';
-import { TypeOrmService } from 'src/lib/typeorm-crud/typeorm.service';
+import {
+  TypeOrmEntityService,
+  columns,
+  rel,
+  TypeOrmService,
+} from '@atlasjs/typeorm-crud';
 import { findOrFail } from 'src/lib/typeorm/id_colection_handler';
 import { CoinsEntity } from 'src/modules/enums/entities/coins.entity';
 import { LicensesTypesEntity } from 'src/modules/enums/entities/licenses_types.entity';
-import { CoinsService } from 'src/modules/enums/services/coins.service';
-import { FindConditions, FindManyOptions, Repository } from 'typeorm';
+import { FindConditions, Repository } from 'typeorm';
 import { LicensesEntity } from '../entities/licenses.entity';
-import { UserLicensesEntity } from '../entities/user_licenses.entity';
 
 @TypeOrmEntityService<LicensesService, LicensesEntity>({
   model: {
@@ -22,9 +22,12 @@ import { UserLicensesEntity } from '../entities/user_licenses.entity';
     id: 'licenses',
     relations: rel<LicensesEntity>({
       coin: {
-        // columns: columns<CoinsEntity>(['name']),
+        columns: columns<CoinsEntity>(['name', 'id']),
       },
       type: {},
+      coins: {
+        columns: columns<CoinsEntity>(['name', 'id']),
+      },
     }),
   },
 })
@@ -37,7 +40,7 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     @InjectRepository(CoinsEntity)
     private coinsEntity: Repository<CoinsEntity>,
   ) {
-    super(licensesEntity);
+    super(licensesEntity as any);
   }
 
   async getLicensesTypes() {
