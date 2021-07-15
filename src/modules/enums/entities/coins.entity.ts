@@ -31,6 +31,6 @@ export class CoinsEntity {
   @OneToMany(() => TransactionsEntity, (t) => t.coin)
   transactions: TransactionsEntity[];
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ select: false })
   deleted_at: Date;
 }

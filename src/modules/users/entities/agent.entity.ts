@@ -31,7 +31,7 @@ export class AgentsEntity {
   @Column({ default: true })
   active: boolean;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ select: false })
   deleted_at: Date;
 
   @CreateDateColumn()

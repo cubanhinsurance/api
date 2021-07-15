@@ -31,7 +31,7 @@ export class RolesEntity {
   @Column({ default: false })
   root: boolean;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ select: false })
   deleted_at: Date;
 
   @CreateDateColumn()

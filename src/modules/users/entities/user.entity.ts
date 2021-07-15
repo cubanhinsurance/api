@@ -61,7 +61,7 @@ export class UsersEntity extends BaseEntity {
   @Column({ nullable: true })
   photo: string;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ select: false })
   deleted_at: Date;
 
   @CreateDateColumn()

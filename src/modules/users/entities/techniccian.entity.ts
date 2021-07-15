@@ -54,7 +54,7 @@ export class TechniccianEntity {
   @JoinColumn({ name: 'municipality' })
   municipality: MunicialitiesEntity;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ select: false })
   deleted_at: Date;
 
   @CreateDateColumn()
