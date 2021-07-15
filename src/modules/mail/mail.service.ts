@@ -27,8 +27,8 @@ export class MailService {
       secure,
       port: port ?? 587,
       auth: {
-        user: auth.username,
-        pass: auth.password,
+        user: auth?.username,
+        pass: auth?.password,
       },
     });
   }

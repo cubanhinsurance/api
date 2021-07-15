@@ -49,20 +49,20 @@ Content-Disposition: form-data; name="questions"
 {{host}}/enums/coins
 Authorization: Bearer {{auth}}
 
-### Get coin
-{{host}}/enums/coins/1
-Authorization: Bearer {{auth}}
-
 ### crear moneda
 POST {{host}}/enums/coins
 Authorization: Bearer {{auth}}
 Content-Type: application/json
 
 {
-  "name": "string",
+  "name": "CUP",
   "factor": 1,
   "active": true
 }
+
+### Borrar moneda
+DELETE  {{host}}/enums/coins/1
+Authorization: Bearer {{auth}}
 
 ### Get active licenses
 {{host}}/enums/licenses

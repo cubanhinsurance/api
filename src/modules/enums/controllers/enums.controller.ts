@@ -50,7 +50,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { imageFilter } from 'src/lib/multer/filter';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { CoinsService } from '../services/coins.service';
-import { GetAll, GetOne, CreateOne } from '@atlasjs/typeorm-crud';
+import {
+  GetAll,
+  GetOne,
+  CreateOne,
+  DeleteOne,
+  UpdateOne,
+} from '@atlasjs/typeorm-crud';
 
 @Controller('enums')
 export class EnumsController {
@@ -257,15 +263,21 @@ export class EnumsController {
   async getCoins() {}
 
   @ApiTags('Enums')
-  @GetOne<CoinsService>({
-    service: CoinsService,
-  })
-  async getCoin() {}
-
-  @ApiTags('Enums')
   @CreateOne<CoinsService>({
     service: CoinsService,
-    void: true,
   })
   async addCoin() {}
+
+  @ApiTags('Enums')
+  @UpdateOne<CoinsService>({
+    service: CoinsService,
+  })
+  async updateCoin() {}
+
+  @ApiTags('Enums')
+  @DeleteOne<CoinsService>({
+    service: CoinsService,
+    softDelete: true,
+  })
+  async deleteCoin() {}
 }

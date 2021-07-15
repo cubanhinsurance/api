@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  DeleteDateColumn,
 } from 'typeorm';
 import { CountriesEntity } from './countries.entity';
 
@@ -29,4 +30,7 @@ export class CoinsEntity {
 
   @OneToMany(() => TransactionsEntity, (t) => t.coin)
   transactions: TransactionsEntity[];
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 }

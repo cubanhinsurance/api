@@ -65,16 +65,16 @@
     js-yaml "^4.0.0"
     lodash "^4.17.21"
 
-"@atlasjs/typeorm-crud@^1.0.1":
-  version "1.0.1"
-  resolved "https://npm.geocuba.cu/@atlasjs%2ftypeorm-crud/-/typeorm-crud-1.0.1.tgz#f926dada113e95a5ec43d2e978329d013d7b8e52"
-  integrity sha512-XLk6iNMfQ+z+YpH0QTCDeq5nGvQE2fAwDGiSPEX+UlAs6HJldSYZbUPDZFHymTYwRmgG/QmHa/1rPQNN9IyClQ==
+"@atlasjs/typeorm-crud@1.0.2":
+  version "1.0.2"
+  resolved "https://npm.geocuba.cu/@atlasjs%2ftypeorm-crud/-/typeorm-crud-1.0.2.tgz#47b3bc134dc1f2f3aac7787c89fc87986fc077b9"
+  integrity sha512-mPqPmnqoCpMUuVQayaS49iQ60/K6UF6ITfw92hMhiSB+dxvguUdQx26Bum/Ke7wgVvGSngxIX1BbejRs0hw+dw==
   dependencies:
     "@nestjs/common" "^6.10.0 || ^7.0.0"
     "@nestjs/core" "^8.0.2"
     "@nestjs/swagger" "^5.0.1"
     "@nestjs/typeorm" "^8.0.1"
-    joi "^17.4.1"
+    joi "^17.4.0"
     joi-to-swagger "^5.2.0"
     pluralize "^8.0.0"
     reflect-metadata "^0.1.13"
@@ -4071,17 +4071,6 @@ joi@^17.4.0:
   version "17.4.0"
   resolved "https://npm.geocuba.cu/joi/-/joi-17.4.0.tgz#b5c2277c8519e016316e49ababd41a1908d9ef20"
   integrity sha512-F4WiW2xaV6wc1jxete70Rw4V/VuMd6IN+a5ilZsxG4uYtUXWu2kq9W5P2dz30e7Gmw8RCbY/u/uk+dMPma9tAg==
-  dependencies:
-    "@hapi/hoek" "^9.0.0"
-    "@hapi/topo" "^5.0.0"
-    "@sideway/address" "^4.1.0"
-    "@sideway/formula" "^3.0.0"
-    "@sideway/pinpoint" "^2.0.0"
-
-joi@^17.4.1:
-  version "17.4.1"
-  resolved "https://npm.geocuba.cu/joi/-/joi-17.4.1.tgz#15d2f23c8cbe4d1baded2dd190c58f8dbe11cca0"
-  integrity sha512-gDPOwQ5sr+BUxXuPDGrC1pSNcVR/yGGcTI0aCnjYxZEa3za60K/iCQ+OFIkEHWZGVCUcUlXlFKvMmrlmxrG6UQ==
   dependencies:
     "@hapi/hoek" "^9.0.0"
     "@hapi/topo" "^5.0.0"

@@ -49,53 +49,7 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     });
   }
 
-  async getLicenses(actives: boolean = true) {
-    const filters: FindConditions<LicensesEntity> = {
-      active: actives,
-    };
+  async createLicense() {}
 
-    return await this.licensesEntity.find({
-      where: filters,
-    });
-  }
-
-  async createLicense({
-    coin,
-    price,
-    time,
-    type,
-    config,
-    expiration_date,
-    description,
-    photo,
-  }: {
-    type: number | LicensesTypesEntity;
-    expiration_date?: Date;
-    config?: any;
-    price: number;
-    coin: number | CoinsEntity;
-    time: number;
-    description?: string;
-    photo?: Buffer;
-  }) {
-    const created = await this.licensesEntity.save({
-      coin:
-        type instanceof CoinsEntity
-          ? type
-          : await findOrFail<CoinsEntity>(coin as number, this.coinsEntity),
-      type:
-        type instanceof LicensesTypesEntity
-          ? type
-          : await findOrFail<LicensesTypesEntity>(
-              type as number,
-              this.licensesTypesEntity,
-            ),
-      expiration_date,
-      description,
-      photo: photo ? photo.toString('base64') : null,
-      config,
-      time,
-      price,
-    });
-  }
+  async updateLicense() {}
 }
