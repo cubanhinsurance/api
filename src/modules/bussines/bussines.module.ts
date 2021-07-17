@@ -11,6 +11,7 @@ import { TechApplicantEntity } from './entities/tech_applicant.entity';
 import { TransactionsEntity } from './entities/transactions.entity';
 import { UserLicensesEntity } from './entities/user_licenses.entity';
 import { LicensesService } from './services/licenses.service';
+import { LicensesTypesService } from './services/licenses_types.service';
 
 @Module({
   imports: [
@@ -23,11 +24,11 @@ import { LicensesService } from './services/licenses.service';
       IssuesTypesEntity,
       IssuesTraces,
       LicensesTypesEntity,
-      CoinsEntity
+      CoinsEntity,
     ]),
   ],
   controllers: [LicensesController],
-  providers: [LicensesService],
-  exports: [LicensesService],
+  providers: [LicensesService, LicensesTypesService],
+  exports: [LicensesService, LicensesTypesService],
 })
 export class BussinesModule {}
