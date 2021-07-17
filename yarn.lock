@@ -65,10 +65,10 @@
     js-yaml "^4.0.0"
     lodash "^4.17.21"
 
-"@atlasjs/typeorm-crud@1.0.2":
-  version "1.0.2"
-  resolved "https://npm.geocuba.cu/@atlasjs%2ftypeorm-crud/-/typeorm-crud-1.0.2.tgz#47b3bc134dc1f2f3aac7787c89fc87986fc077b9"
-  integrity sha512-mPqPmnqoCpMUuVQayaS49iQ60/K6UF6ITfw92hMhiSB+dxvguUdQx26Bum/Ke7wgVvGSngxIX1BbejRs0hw+dw==
+"@atlasjs/typeorm-crud@1.0.5":
+  version "1.0.5"
+  resolved "https://npm.geocuba.cu/@atlasjs%2ftypeorm-crud/-/typeorm-crud-1.0.5.tgz#b9b99efccd606d7ede153077c2d2503850258997"
+  integrity sha512-5iVHCsW+mgKY1KLGPZiIxsqr1EjAv6lVryjmTt+kG/bACqIbtbyjrt8y563DKlYLxbRvyy7wJhyM+EKtQ3T9qA==
   dependencies:
     "@nestjs/common" "^6.10.0 || ^7.0.0"
     "@nestjs/core" "^8.0.2"

@@ -11,14 +11,19 @@ import {
   DeleteOne,
   AddRelation,
   DeleteRelation,
+  GetOne,
 } from '@atlasjs/typeorm-crud';
 import { LicensesService } from '../services/licenses.service';
 import j2s from 'joi-to-swagger';
 import { array, number, object, string } from 'joi';
 import { LicensesEntity } from '../entities/licenses.entity';
+import { LicensesTypesService } from '../services/licenses_types.service';
 @Controller('bussines/licenses')
 export class LicensesController {
-  constructor(private licenses: LicensesService) {}
+  constructor(
+    private licenses: LicensesService,
+    private licensesType: LicensesTypesService,
+  ) {}
 
   @Get('types')
   @ApiTags('Bussines', 'Licenses')
@@ -95,4 +100,30 @@ export class LicensesController {
     'app/:id/coins/:relation',
   )
   async removeCoin() {}
+
+  @GetAll({
+    service: LicensesTypesService,
+  })
+  async getLicenseTypes() {}
+
+  @GetOne({
+    service: LicensesTypesService,
+  })
+  async getLicenseType() {}
+
+  @CreateOne({
+    service: LicensesTypesService,
+  })
+  async createLicenseType() {}
+
+  @UpdateOne({
+    service: LicensesTypesService,
+  })
+  async updatetLicenseType() {}
+
+  @DeleteOne({
+    service: LicensesTypesService,
+    softDelete: true,
+  })
+  async deleteLicenseType() {}
 }

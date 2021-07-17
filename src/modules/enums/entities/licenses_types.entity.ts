@@ -5,6 +5,7 @@ import {
   Index,
   ManyToOne,
   JoinColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { CountriesEntity } from './countries.entity';
 
@@ -27,4 +28,7 @@ export class LicensesTypesEntity {
 
   @Column({ nullable: true })
   description: string;
+
+  @DeleteDateColumn({ select: false })
+  deleted_at: Date;
 }
