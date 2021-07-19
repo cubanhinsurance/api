@@ -10,7 +10,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   GetAll,
   CreateOne,
@@ -30,6 +30,7 @@ import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import { User } from 'src/modules/auth/decorators/user.decorator';
 import { imageFilter } from 'src/lib/multer/filter';
 import { FileInterceptor } from '@nestjs/platform-express';
+
 @Controller('bussines/licenses')
 export class LicensesController {
   constructor(
@@ -150,7 +151,11 @@ export class LicensesController {
   })
   async deleteLicenseType() {}
 
+  @ApiOperation({ description: 'Comprar una licencia' })
   @ApiTags('Bussines', 'Licenses')
+  @ApiBody({
+    schema: j2s(BUY_LICENSE_SCHEMA).swagger,
+  })
   @Post('buy')
   async buyLicense(
     @User('username') user,

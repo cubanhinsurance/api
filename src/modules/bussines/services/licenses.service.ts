@@ -16,6 +16,9 @@ import { FindConditions, Repository } from 'typeorm';
 import { LicensesEntity } from '../entities/licenses.entity';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { NotFoundException } from '@nestjs/common';
+import { createDecipheriv, createCipheriv, randomBytes } from 'crypto';
+import { ConfigService } from '@atlasjs/config';
+import { uuid } from 'uuid';
 
 @TypeOrmEntityService<LicensesService, LicensesEntity>({
   model: {
@@ -34,6 +37,8 @@ import { NotFoundException } from '@nestjs/common';
   },
 })
 export class LicensesService extends TypeOrmService<LicensesEntity> {
+  private iv = randomBytes(16);
+  private key = randomBytes(32);
   constructor(
     @InjectRepository(LicensesEntity)
     private licensesEntity: Repository<LicensesEntity>,
@@ -42,6 +47,7 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     @InjectRepository(CoinsEntity)
     private coinsEntity: Repository<CoinsEntity>,
     private usersService: UsersService,
+    private config: ConfigService,
   ) {
     super(licensesEntity as any);
   }
@@ -55,6 +61,25 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
   async createLicense(photo, data) {
     if (photo) data.photo = (photo.buffer as Buffer).toString('base64');
     await super.createOne(data);
+  }
+
+  get secret() {
+    return this.config.config.auth.secret;
+  }
+
+  encrypt(data: any) {
+    const cipher = createCipheriv(
+      'aes-256-ccm',
+      Buffer.from(this.key),
+      this.iv,
+    );
+    let encrypted = cipher.update(data);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return encrypted.toString('hex');
+  }
+
+  decrypt(data: string) {
+    const a = 6;
   }
 
   async buyLicense(username: string, license: number, amount: number) {
@@ -71,6 +96,13 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
 
     if (!licenseRow) throw new NotFoundException(`Licencia no existe`);
 
-    //todo
+    return {
+      user: {
+        username: user.username,
+        name: user.name,
+      },
+      license: licenseRow,
+      amount,
+    };
   }
 }
