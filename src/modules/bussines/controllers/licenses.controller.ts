@@ -2,7 +2,14 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   GetAll,
@@ -21,6 +28,8 @@ import { LicensesTypesService } from '../services/licenses_types.service';
 import { BUY_LICENSE_SCHEMA } from '../schemas/buyLicenses.schema';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import { User } from 'src/modules/auth/decorators/user.decorator';
+import { imageFilter } from 'src/lib/multer/filter';
+import { FileInterceptor } from '@nestjs/platform-express';
 @Controller('bussines/licenses')
 export class LicensesController {
   constructor(
@@ -58,13 +67,19 @@ export class LicensesController {
   async getActiveLicenses() {}
 
   @ApiTags('Bussines', 'Licenses')
-  @CreateOne(
+  @UseInterceptors(
+    FileInterceptor('photo', {
+      fileFilter: imageFilter,
+    }),
+  )
+  @CreateOne<LicensesService>(
     {
       service: LicensesService,
+      handler: 'createLicense',
     },
     'app',
   )
-  async createLicense() {}
+  async createLicense(@UploadedFile() photo) {}
 
   @ApiTags('Bussines', 'Licenses')
   @UpdateOne(

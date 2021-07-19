@@ -59,7 +59,7 @@ export class LicensesEntity {
   @Column({ nullable: true })
   description: string;
 
-  @ManyToMany(() => CoinsEntity)
+  @ManyToMany(() => CoinsEntity, { nullable: true })
   @JoinTable()
   coins: CoinsEntity[];
 }

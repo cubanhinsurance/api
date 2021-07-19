@@ -52,6 +52,11 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     });
   }
 
+  async createLicense(photo, data) {
+    if (photo) data.photo = (photo.buffer as Buffer).toString('base64');
+    await super.createOne(data);
+  }
+
   async buyLicense(username: string, license: number, amount: number) {
     const user = await this.usersService.findUserByUserName(username);
 
