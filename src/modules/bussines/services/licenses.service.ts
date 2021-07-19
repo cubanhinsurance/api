@@ -14,6 +14,8 @@ import { CoinsEntity } from 'src/modules/enums/entities/coins.entity';
 import { LicensesTypesEntity } from 'src/modules/enums/entities/licenses_types.entity';
 import { FindConditions, Repository } from 'typeorm';
 import { LicensesEntity } from '../entities/licenses.entity';
+import { UsersService } from 'src/modules/users/services/users.service';
+import { NotFoundException } from '@nestjs/common';
 
 @TypeOrmEntityService<LicensesService, LicensesEntity>({
   model: {
@@ -39,6 +41,7 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     private licensesTypesEntity: Repository<LicensesTypesEntity>,
     @InjectRepository(CoinsEntity)
     private coinsEntity: Repository<CoinsEntity>,
+    private usersService: UsersService,
   ) {
     super(licensesEntity as any);
   }
@@ -49,7 +52,20 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     });
   }
 
-  async createLicense() {}
+  async buyLicense(username: string, license: number, amount: number) {
+    const user = await this.usersService.findUserByUserName(username);
 
-  async updateLicense() {}
+    if (!user) throw new NotFoundException(`Usuario: ${username} no existe`);
+
+    const licenseRow = await this.repository.findOne({
+      where: {
+        id: license,
+        active: true,
+      },
+    });
+
+    if (!licenseRow) throw new NotFoundException(`Licencia no existe`);
+
+    //todo
+  }
 }

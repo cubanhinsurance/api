@@ -2,7 +2,7 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   GetAll,
@@ -18,6 +18,9 @@ import j2s from 'joi-to-swagger';
 import { array, number, object, string } from 'joi';
 import { LicensesEntity } from '../entities/licenses.entity';
 import { LicensesTypesService } from '../services/licenses_types.service';
+import { BUY_LICENSE_SCHEMA } from '../schemas/buyLicenses.schema';
+import { JoiPipe } from 'src/lib/pipes/joi.pipe';
+import { User } from 'src/modules/auth/decorators/user.decorator';
 @Controller('bussines/licenses')
 export class LicensesController {
   constructor(
@@ -101,29 +104,43 @@ export class LicensesController {
   )
   async removeCoin() {}
 
+  @ApiTags('Bussines', 'LicensesTypes')
   @GetAll({
     service: LicensesTypesService,
   })
   async getLicenseTypes() {}
 
+  @ApiTags('Bussines', 'LicensesTypes')
   @GetOne({
     service: LicensesTypesService,
   })
   async getLicenseType() {}
 
+  @ApiTags('Bussines', 'LicensesTypes')
   @CreateOne({
     service: LicensesTypesService,
   })
   async createLicenseType() {}
 
+  @ApiTags('Bussines', 'LicensesTypes')
   @UpdateOne({
     service: LicensesTypesService,
   })
   async updatetLicenseType() {}
 
+  @ApiTags('Bussines', 'LicensesTypes')
   @DeleteOne({
     service: LicensesTypesService,
     softDelete: true,
   })
   async deleteLicenseType() {}
+
+  @ApiTags('Bussines', 'Licenses')
+  @Post('buy')
+  async buyLicense(
+    @User('username') user,
+    @Body(new JoiPipe(BUY_LICENSE_SCHEMA)) { username, license, amount },
+  ) {
+    return await this.licenses.buyLicense(username ?? user, license, amount);
+  }
 }
