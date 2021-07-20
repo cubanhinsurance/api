@@ -13,8 +13,10 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { UserLicensesEntity } from './user_licenses.entity';
 
 @Entity({
   schema: 'mod_bussines',
@@ -62,4 +64,7 @@ export class LicensesEntity {
   @ManyToMany(() => CoinsEntity, { nullable: true })
   @JoinTable()
   coins: CoinsEntity[];
+
+  @OneToMany(() => UserLicensesEntity, (ul) => ul.type)
+  users: UserLicensesEntity;
 }

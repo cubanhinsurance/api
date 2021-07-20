@@ -7,10 +7,17 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   GetAll,
   CreateOne,
@@ -22,7 +29,7 @@ import {
 } from '@atlasjs/typeorm-crud';
 import { LicensesService } from '../services/licenses.service';
 import j2s from 'joi-to-swagger';
-import { array, number, object, string } from 'joi';
+import { array, boolean, number, object, string } from 'joi';
 import { LicensesEntity } from '../entities/licenses.entity';
 import { LicensesTypesService } from '../services/licenses_types.service';
 import { BUY_LICENSE_SCHEMA } from '../schemas/buyLicenses.schema';
@@ -162,5 +169,23 @@ export class LicensesController {
     @Body(new JoiPipe(BUY_LICENSE_SCHEMA)) { username, license, amount },
   ) {
     return await this.licenses.buyLicense(username ?? user, license, amount);
+  }
+
+  @ApiOperation({
+    description: 'Obtener todas las licencias para los usuarios',
+  })
+  @ApiTags('Bussines', 'UserLicenses')
+  @ApiQuery({
+    name: 'userOnly',
+    description:
+      'Define si solo se deben cargar las licencias activas del usuario',
+    required: false,
+  })
+  @Get('users')
+  async getUsersLicences(
+    @User('username') user,
+    @Query('userOnly', new JoiPipe(boolean().optional())) userOnly,
+  ) {
+    return await this.licenses.getUsersLicences(user, userOnly);
   }
 }

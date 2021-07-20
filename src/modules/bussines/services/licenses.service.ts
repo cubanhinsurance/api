@@ -58,6 +58,33 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     });
   }
 
+  async getUsersLicences(username: string, userOnly: boolean = false) {
+    const qr = this.repository
+      .createQueryBuilder('r')
+      .select([
+        'r.id',
+        'r.expiration_date',
+        'r.price',
+        'r.time',
+        'r.photo',
+        'r.description',
+      ])
+      .leftJoinAndSelect('r.coin', 'coin')
+      .innerJoin('r.type', 'type')
+      .addSelect(['type.id', 'type.name', 'type.description'])
+      .leftJoin('r.users', 'u')
+      .addSelect(['u.id', 'u.type', 'u.expiration', 'u.renewed_date']);
+
+    qr.andWhere(`(${userOnly ? '1=2' : 'r.active=true'} or (
+      u.active=true
+    ))`);
+
+    qr.orderBy('u.expiration,r.expiration_date', 'DESC');
+    const resp = await qr.getMany();
+
+    return resp;
+  }
+
   async createLicense(photo, data) {
     if (photo) data.photo = (photo.buffer as Buffer).toString('base64');
     await super.createOne(data);
