@@ -280,4 +280,10 @@ export class EnumsController {
     softDelete: true,
   })
   async deleteCoin() {}
+
+  @ApiOperation({ description: 'Obtiene los metodos de pagos' })
+  @Get('payment')
+  async getPayGateways() {
+    return await this.enumsService.getPayGateways();
+  }
 }

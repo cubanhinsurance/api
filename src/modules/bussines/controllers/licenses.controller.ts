@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBody,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -32,7 +33,10 @@ import j2s from 'joi-to-swagger';
 import { array, boolean, number, object, string } from 'joi';
 import { LicensesEntity } from '../entities/licenses.entity';
 import { LicensesTypesService } from '../services/licenses_types.service';
-import { BUY_LICENSE_SCHEMA } from '../schemas/buyLicenses.schema';
+import {
+  BUY_LICENSE_SCHEMA,
+  PAYMENT_EXECUTION_SCHEMA,
+} from '../schemas/buyLicenses.schema';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import { User } from 'src/modules/auth/decorators/user.decorator';
 import { imageFilter } from 'src/lib/multer/filter';
@@ -187,5 +191,16 @@ export class LicensesController {
     @Query('userOnly', new JoiPipe(boolean().optional())) userOnly,
   ) {
     return await this.licenses.getUsersLicences(user, userOnly);
+  }
+
+  @ApiOperation({ description: 'Ejecutar pago de licencia' })
+  @ApiBody({
+    schema: j2s(PAYMENT_EXECUTION_SCHEMA).swagger,
+  })
+  @Post('users/buy')
+  @ApiOkResponse({ description: 'La operacion se inicio con exito' })
+  @ApiNoContentResponse({ description: 'La operacion no se pudo ejecutar' })
+  async executePayment(@Body(new JoiPipe(PAYMENT_EXECUTION_SCHEMA)) data) {
+    return await this.licenses.executePayment(data);
   }
 }

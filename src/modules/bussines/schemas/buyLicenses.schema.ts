@@ -5,3 +5,9 @@ export const BUY_LICENSE_SCHEMA = object({
   username: string().optional(),
   amount: number().optional().default(1),
 });
+
+export const PAYMENT_EXECUTION_SCHEMA = object({
+  operationId: string().required(),
+  payGateway: number().required(),
+  amount: number().required(),
+});

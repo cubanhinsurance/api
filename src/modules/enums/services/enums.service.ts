@@ -23,6 +23,7 @@ import { HabilitiesGroupsEntity } from '../entities/habilities_groups.entity';
 import { HabilitiesRequirementsEntity } from '../entities/habilities_reqs.entity';
 import { IssuesTypesEntity } from '../entities/issues_types.entity';
 import { MunicialitiesEntity } from '../entities/municipalities.entity';
+import { PayGatewaysEntity } from '../entities/pay_gateways.entity';
 import { ProvincesEntity } from '../entities/provinces.entity';
 
 @Injectable()
@@ -36,6 +37,8 @@ export class EnumsService {
     private muncs: Repository<MunicialitiesEntity>,
     @InjectRepository(HabilitiesEntity)
     private habilities: Repository<HabilitiesEntity>,
+    @InjectRepository(PayGatewaysEntity)
+    private payGateways: Repository<PayGatewaysEntity>,
     @InjectRepository(HabilitiesRequirementsEntity)
     private habilities_reqs: Repository<HabilitiesRequirementsEntity>,
     @InjectRepository(HabilitiesGroupsEntity)
@@ -314,4 +317,10 @@ export class EnumsService {
   // }
 
   async updateCoin() {}
+
+  async getPayGateways() {
+    return await this.payGateways.find({
+      select: ['id', 'name', 'avatar'],
+    });
+  }
 }

@@ -24,4 +24,7 @@ export class PayGatewaysEntity {
     default: {},
   })
   config: object;
+
+  @Column({ nullable: true })
+  avatar: string;
 }

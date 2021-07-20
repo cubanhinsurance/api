@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoinsEntity } from '../enums/entities/coins.entity';
 import { IssuesTypesEntity } from '../enums/entities/issues_types.entity';
 import { LicensesTypesEntity } from '../enums/entities/licenses_types.entity';
+import { PayGatewaysEntity } from '../enums/entities/pay_gateways.entity';
 import { UsersModule } from '../users/users.module';
 import { LicensesController } from './controllers/licenses.controller';
 import { IssuesTraces } from './entities/issues.entity';
@@ -27,6 +28,7 @@ import { LicensesTypesService } from './services/licenses_types.service';
       IssuesTraces,
       LicensesTypesEntity,
       CoinsEntity,
+      PayGatewaysEntity,
     ]),
   ],
   controllers: [LicensesController],

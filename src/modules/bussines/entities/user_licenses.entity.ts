@@ -41,7 +41,7 @@ export class UserLicensesEntity {
   @ManyToOne(() => TransactionsEntity)
   @JoinColumn({ name: 'transaction' })
   @Index()
-  transaction: TransactionsEntity[];
+  transaction: TransactionsEntity;
 
   @Column()
   @Index()

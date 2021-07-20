@@ -15,10 +15,22 @@ import { LicensesTypesEntity } from 'src/modules/enums/entities/licenses_types.e
 import { FindConditions, Repository } from 'typeorm';
 import { LicensesEntity } from '../entities/licenses.entity';
 import { UsersService } from 'src/modules/users/services/users.service';
-import { NotFoundException } from '@nestjs/common';
-import { createDecipheriv, createCipheriv, randomBytes } from 'crypto';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  createDecipheriv,
+  createCipheriv,
+  randomBytes,
+  createHmac,
+} from 'crypto';
 import { ConfigService } from '@atlasjs/config';
 import { uuid } from 'uuid';
+import { PayGatewaysEntity } from 'src/modules/enums/entities/pay_gateways.entity';
+
+export enum TRANSACTION_TYPE {
+  BUY = 'buy',
+  RENEW = 'renew',
+  CHANGE = 'change',
+}
 
 @TypeOrmEntityService<LicensesService, LicensesEntity>({
   model: {
@@ -42,6 +54,8 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
   constructor(
     @InjectRepository(LicensesEntity)
     private licensesEntity: Repository<LicensesEntity>,
+    @InjectRepository(PayGatewaysEntity)
+    private payGatewaysEntity: Repository<PayGatewaysEntity>,
     @InjectRepository(LicensesTypesEntity)
     private licensesTypesEntity: Repository<LicensesTypesEntity>,
     @InjectRepository(CoinsEntity)
@@ -58,7 +72,11 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     });
   }
 
-  async getUsersLicences(username: string, userOnly: boolean = false) {
+  async getUsersLicences(
+    username: string,
+    userOnly: boolean = false,
+    licenseType?: number,
+  ): Promise<LicensesEntity[]> {
     const qr = this.repository
       .createQueryBuilder('r')
       .select([
@@ -73,11 +91,17 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
       .innerJoin('r.type', 'type')
       .addSelect(['type.id', 'type.name', 'type.description'])
       .leftJoin('r.users', 'u')
-      .addSelect(['u.id', 'u.type', 'u.expiration', 'u.renewed_date']);
+      .addSelect(['u.id', 'u.type', 'u.expiration', 'u.renewed_date'])
+      .leftJoin('u.transaction', 't')
+      .addSelect(['t.state']);
 
     qr.andWhere(`(${userOnly ? '1=2' : 'r.active=true'} or (
       u.active=true
     ))`);
+
+    if (licenseType !== undefined) {
+      qr.andWhere(`type.id=:licenseType`, { licenseType });
+    }
 
     qr.orderBy('u.expiration,r.expiration_date', 'DESC');
     const resp = await qr.getMany();
@@ -115,6 +139,7 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     if (!user) throw new NotFoundException(`Usuario: ${username} no existe`);
 
     const licenseRow = await this.repository.findOne({
+      relations: ['type'],
       where: {
         id: license,
         active: true,
@@ -123,7 +148,20 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
 
     if (!licenseRow) throw new NotFoundException(`Licencia no existe`);
 
-    return {
+    const licenses = await this.getUsersLicences(
+      username,
+      true,
+      licenseRow.type.id,
+    );
+
+    const operationInfo = {
+      transactionType:
+        licenses.length == 0
+          ? TRANSACTION_TYPE.BUY
+          : !!licenses.find((l) => l.id != license)
+          ? TRANSACTION_TYPE.CHANGE
+          : TRANSACTION_TYPE.RENEW,
+      currentTransactions: licenses?.[0]?.users,
       user: {
         username: user.username,
         name: user.name,
@@ -131,5 +169,37 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
       license: licenseRow,
       amount,
     };
+
+    const payload = Buffer.from(
+      JSON.stringify({
+        transactionType: operationInfo.transactionType,
+        username,
+        license,
+      }),
+    ).toString('base64');
+    const hash = createHmac('sha256', this.secret)
+      .update(payload)
+      .digest('hex');
+
+    (operationInfo as any).operationId = `${hash}.${payload}`;
+    return operationInfo;
+  }
+
+  async executePayment({
+    amount,
+    operationId,
+    payGateway,
+  }: {
+    operationId: string;
+    payGateway: number;
+    amount: number;
+  }) {
+    const [key, payload] = operationId.split('.');
+    const hash = createHmac('sha256', this.secret)
+      .update(payload)
+      .digest('hex');
+
+    if (key != hash) throw new ForbiddenException();
+    const a = 7;
   }
 }
