@@ -23,8 +23,14 @@ import {
   createHmac,
 } from 'crypto';
 import { ConfigService } from '@atlasjs/config';
-import { uuid } from 'uuid';
+import { v4 } from 'uuid';
 import { PayGatewaysEntity } from 'src/modules/enums/entities/pay_gateways.entity';
+import { UserLicensesEntity } from '../entities/user_licenses.entity';
+import * as moment from 'moment';
+import {
+  TransactionsEntity,
+  TRANSACTION_STATE,
+} from '../entities/transactions.entity';
 
 export enum TRANSACTION_TYPE {
   BUY = 'buy',
@@ -54,8 +60,12 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
   constructor(
     @InjectRepository(LicensesEntity)
     private licensesEntity: Repository<LicensesEntity>,
+    @InjectRepository(TransactionsEntity)
+    private transactionsEntity: Repository<TransactionsEntity>,
     @InjectRepository(PayGatewaysEntity)
     private payGatewaysEntity: Repository<PayGatewaysEntity>,
+    @InjectRepository(UserLicensesEntity)
+    private userLicensesEntity: Repository<UserLicensesEntity>,
     @InjectRepository(LicensesTypesEntity)
     private licensesTypesEntity: Repository<LicensesTypesEntity>,
     @InjectRepository(CoinsEntity)
@@ -189,10 +199,12 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     amount,
     operationId,
     payGateway,
+    coin,
   }: {
     operationId: string;
     payGateway: number;
     amount: number;
+    coin?: number;
   }) {
     const [key, payload] = operationId.split('.');
     const hash = createHmac('sha256', this.secret)
@@ -200,6 +212,88 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
       .digest('hex');
 
     if (key != hash) throw new ForbiddenException();
-    const a = 7;
+
+    const { license, transactionType, username, ...p } = JSON.parse(
+      Buffer.from(payload, 'base64').toString(),
+    );
+
+    const {
+      price,
+      time,
+      type: licenseType,
+      coin: licenseCoin,
+    } = await this.licensesEntity.findOne({
+      where: { id: license },
+      relations: ['type', 'coin'],
+    });
+
+    const coinObject =
+      coin == undefined
+        ? licenseCoin
+        : await this.coinsEntity.findOne({
+            where: { id: coin },
+          });
+
+    const licensePrice = price * amount;
+    const expiration = moment()
+      .add(time * amount, 'days')
+      .toDate();
+
+    const gatewayObj = await this.payGatewaysEntity.findOne({
+      where: { id: payGateway },
+    });
+
+    const user = await this.usersService.findUserByUserName(username);
+
+    const transactionId = v4();
+
+    //todo executeTransaction
+    const transactionCreated = await this.transactionsEntity.save({
+      amount: licensePrice * coinObject.factor,
+      coin: coinObject,
+      date: new Date(),
+      from: user,
+      gateway: gatewayObj,
+      state: TRANSACTION_STATE.PENDENT,
+      type: 2 as any,
+      transaction_id: transactionId,
+    });
+    const created = await this.userLicensesEntity.save({
+      expiration,
+      transaction: transactionCreated,
+      type: licenseType,
+      user,
+    });
+
+    setTimeout(() => {
+      this.updateTransaction(transactionId);
+    }, 10000);
+
+    return transactionId;
+  }
+
+  async transactionConfirmed(transaction_id: string) {
+    const transaction = await this.transactionsEntity.findOne({
+      where: { transaction_id },
+    });
+
+    if (!transaction) throw new NotFoundException();
+
+    return transaction.state == TRANSACTION_STATE.COMPLETED;
+  }
+
+  async updateTransaction(
+    transaction_id: string,
+    state: TRANSACTION_STATE = TRANSACTION_STATE.COMPLETED,
+  ) {
+    const transaction = await this.transactionsEntity.findOne({
+      where: { transaction_id },
+    });
+
+    if (!transaction) throw new NotFoundException();
+
+    transaction.state = state;
+
+    const updated = await this.transactionsEntity.save(transaction);
   }
 }

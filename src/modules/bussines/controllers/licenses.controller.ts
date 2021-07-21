@@ -6,6 +6,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   UploadedFile,
@@ -14,6 +15,7 @@ import {
 import {
   ApiBody,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -202,5 +204,13 @@ export class LicensesController {
   @ApiNoContentResponse({ description: 'La operacion no se pudo ejecutar' })
   async executePayment(@Body(new JoiPipe(PAYMENT_EXECUTION_SCHEMA)) data) {
     return await this.licenses.executePayment(data);
+  }
+
+  @ApiOperation({ description: 'Verificar que se ejecuto una transaccion' })
+  @Get('users/buy/:transaction_id')
+  @ApiOkResponse({ description: 'La transaccion esta completada?' })
+  @ApiNotFoundResponse({ description: 'La transaccion no existe' })
+  async confirmPayment(@Param('transaction_id') transaction) {
+    return await this.licenses.transactionConfirmed(transaction);
   }
 }

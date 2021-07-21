@@ -10,4 +10,5 @@ export const PAYMENT_EXECUTION_SCHEMA = object({
   operationId: string().required(),
   payGateway: number().required(),
   amount: number().required(),
+  coin: number().optional(),
 });
