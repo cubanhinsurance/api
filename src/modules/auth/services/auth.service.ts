@@ -210,6 +210,10 @@ export class AuthService {
     );
   }
 
+  async userLicenses(username: string) {
+    return await this.usersService.getUserLicenses(username);
+  }
+
   async getUserInfo(username: string): Promise<USER_INFO> {
     if (this.isRoot(username))
       return {

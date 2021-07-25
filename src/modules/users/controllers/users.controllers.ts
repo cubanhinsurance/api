@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -19,6 +20,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiQuery,
   ApiSecurity,
   ApiTags,
@@ -27,6 +29,9 @@ import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import {
   AGENTS_SCHEMA,
   REGISTER_USER_SCHEMA,
+  TECH_APPLICANTS_SCHEMA,
+  TECH_APPLICANT_SCHEMA,
+  TECH_APP_SCHEMA,
   TECH_SCHEMA,
   UPDATE_AGENT_SCHEMA,
   UPDATE_TECH_SCHEMA,
@@ -46,10 +51,16 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { imageFilter } from 'src/lib/multer/filter';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
+import { User } from 'src/modules/auth/decorators/user.decorator';
+import { TechApplicationsService } from '../services/tech_applications.service';
+import { boolean } from 'joi';
 
 @Controller('users')
 export class UsersController {
-  constructor(private users: UsersService) {}
+  constructor(
+    private users: UsersService,
+    private techApp: TechApplicationsService,
+  ) {}
 
   @ApiTags('Users')
   @ApiOperation({ summary: 'Devuelve listado de usuarios del sistema' })
@@ -264,5 +275,85 @@ export class UsersController {
     if (photo) user.photo = photo.buffer;
     const created = await this.users.createUser({ ...user, confirmed: false });
     return await this.users.sendVerificationEmail(user.username);
+  }
+
+  @ApiTags('Users', 'TechApplication')
+  @Post('tech_application')
+  @ApiOperation({
+    summary: 'Crear una solicitud de creacion/actualizacion de un tecnico',
+  })
+  @ApiBody({
+    schema: j2s(TECH_APP_SCHEMA).swagger,
+  })
+  @UseInterceptors(
+    FileInterceptor('confirmation_photo', {
+      fileFilter: imageFilter,
+    }),
+  )
+  async createTechApplicant(
+    @User('username') username,
+    @UploadedFile() confirmation_photo,
+    @Body(new JoiPipe(TECH_APP_SCHEMA, true, ['habilities'])) tech: any,
+  ) {
+    if (confirmation_photo) tech.confirmation_photo = confirmation_photo.buffer;
+    else
+      throw new BadRequestException(
+        'La foto (confirmation_photo) es obligatoria',
+      );
+
+    tech.username = username;
+    const updated = await this.techApp.createApplicant(tech);
+  }
+
+  @ApiTags('Users', 'TechApplication')
+  @Get('tech_application/:tech_application_id')
+  @ApiOperation({
+    summary: 'Devuelve los detalles de una aplicacion a tecnico sin resolver',
+  })
+  @ApiOkResponse({
+    schema: j2s(TECH_APPLICANT_SCHEMA).swagger,
+  })
+  async getApplicantDetails(@Param('tech_application_id') id: number) {
+    return await this.techApp.getApplicantInfo(id);
+  }
+
+  @ApiTags('Users', 'TechApplication')
+  @Put('tech_application/:tech_application_id/:confirmed')
+  @ApiOperation({
+    summary: 'Devuelve los detalles de una aplicacion a tecnico sin resolver',
+  })
+  @ApiParam({
+    name: 'confirmed',
+    type: Boolean,
+  })
+  @ApiQuery({
+    name: 'description',
+    required: false,
+    description: 'Razon de la decision tomada',
+  })
+  async confirmTechApplication(
+    @User('username') username,
+    @Param('tech_application_id') id: number,
+    @Query('description') description,
+    @Param('confirmed', new JoiPipe(boolean().required())) confirmed: boolean,
+  ) {
+    return await this.techApp.confirmTechApplication(
+      username,
+      id,
+      confirmed,
+      description,
+    );
+  }
+
+  @ApiTags('Users', 'TechApplication')
+  @Get('tech_applications')
+  @ApiOperation({
+    summary: 'Devuelve las solicitudes de tecnicos sin confirmar',
+  })
+  @ApiOkResponse({
+    schema: j2s(TECH_APPLICANTS_SCHEMA).swagger,
+  })
+  async getApplications(@PageSize() ps: number, @Page() p: number) {
+    return await this.techApp.getApplicants(p, ps);
   }
 }

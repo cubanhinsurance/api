@@ -31,4 +31,7 @@ export class LicensesTypesEntity {
 
   @DeleteDateColumn({ select: false })
   deleted_at: Date;
+
+  @Column({ type: 'jsonb', nullable: true, default: [] })
+  features: string[];
 }

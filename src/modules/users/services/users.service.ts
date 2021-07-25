@@ -88,6 +88,17 @@ export class UsersService {
     if (!!exists)
       throw new ConflictException(`Usuario ${user.username} ya existe`);
 
+    const repatedEmail = await this.usersEntity.findOne({
+      where: {
+        email: user.email,
+      },
+    });
+
+    if (!!repatedEmail)
+      throw new ConflictException(
+        `Ya existe un usuario con ese correo registrado en el sistema`,
+      );
+
     await userDto.generatePassword();
     try {
       return await this.usersEntity.save(userDto as any);
@@ -349,6 +360,16 @@ export class UsersService {
 
     const m = await this.municipalities.findOne(municipality);
     if (!m) throw new NotFoundException('No existe el municipio');
+
+    const usedCi = await this.techsEntity.findOne({
+      where: { ci },
+    });
+
+    if (usedCi)
+      throw new ConflictException(
+        `Ya existe un tecnico con esa identificacion`,
+      );
+
     try {
       const ph = confirmation_photo
         ? (confirmation_photo as any).toString('base64')
@@ -367,6 +388,7 @@ export class UsersService {
           ? moment(expiration_date).toDate()
           : null,
       });
+      return created;
     } catch (e) {
       throw new InternalServerErrorException();
     }
@@ -423,6 +445,32 @@ export class UsersService {
   }
 
   async getUserPrivateData(username: string) {
+    return await this.usersEntity
+      .createQueryBuilder('u')
+      .select([
+        'u.id',
+        'u.name',
+        'u.lastname',
+        'u.username',
+        'u.email',
+        'u.phone_number',
+        'u.telegram_id',
+        'u.active',
+        'u.expiration_date',
+        'u.photo',
+      ])
+      .leftJoin('u.agent_info', 'ag')
+      .leftJoinAndSelect('ag.role', 'agrole')
+      .leftJoin('u.techniccian_info', 't')
+      .leftJoinAndSelect('t.habilities', 'habilities')
+      .leftJoin('t.province', 'province')
+      .addSelect(['province.id', 'province.name'])
+      .leftJoin('t.municipality', 'municipality')
+      .addSelect(['municipality.id', 'municipality.name'])
+      .leftJoinAndSelect('habilities.group', 'habilities_group')
+      .where('u.username=:username', { username })
+      .getOne();
+
     return await this.usersEntity.findOne({
       select: [
         'id',
@@ -440,7 +488,7 @@ export class UsersService {
         'techniccian_info',
         'techniccian_info.habilities',
         'techniccian_info.province',
-        'techniccian_info.municipality',
+        'techniccian_info.habilities',
         'techniccian_info.habilities.group',
         'agent_info',
         'agent_info.role',
@@ -623,5 +671,27 @@ export class UsersService {
     );
 
     await this.techsEntity.softDelete(user);
+  }
+
+  async getUserLicenses(username: string) {
+    return await this.usersEntity
+      .createQueryBuilder('u')
+      .innerJoin('u.licenses', 'l')
+      .innerJoin('l.transaction', 'trans')
+      .innerJoinAndSelect('l.type', 'type')
+      .select([
+        'u.username',
+        'l.id',
+        'l.expiration',
+        'l.active',
+        'l.renewed_date',
+        'trans.transaction_id',
+        'trans.amount',
+        'trans.date',
+      ])
+      .where(`u.username=:username and l.active=true and l.expiration<=now()`, {
+        username,
+      })
+      .getMany();
   }
 }

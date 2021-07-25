@@ -1,3 +1,4 @@
+import { UserLicensesEntity } from 'src/modules/bussines/entities/user_licenses.entity';
 import { RolesEntity } from 'src/modules/roles/entities/roles.entity';
 import {
   Entity,
@@ -10,6 +11,7 @@ import {
   DeleteDateColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { AgentsEntity } from './agent.entity';
 import { TechniccianEntity } from './techniccian.entity';
@@ -81,4 +83,7 @@ export class UsersEntity extends BaseEntity {
 
   @Column({ default: false })
   enable_totp: boolean;
+
+  @OneToMany(() => UserLicensesEntity, (u) => u.user)
+  licenses: UserLicensesEntity[];
 }

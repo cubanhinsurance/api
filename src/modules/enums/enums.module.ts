@@ -17,9 +17,11 @@ import { PayGatewaysEntity } from './entities/pay_gateways.entity';
 import { LicensesTypesEntity } from './entities/licenses_types.entity';
 import { CoinsService } from './services/coins.service';
 import { LicensesEntity } from '../bussines/entities/licenses.entity';
+import { RedisCacheModule } from 'src/lib/cache/redis';
 
 @Module({
   imports: [
+    RedisCacheModule('redis', null, 600),
     TypeOrmModule.forFeature([
       CountriesEntity,
       ProvincesEntity,

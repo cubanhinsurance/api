@@ -36,6 +36,11 @@ import { object, string } from 'joi';
 export class AuthController {
   constructor(private auth: AuthService) {}
 
+  @Get('time')
+  time() {
+    return new Date();
+  }
+
   @ApiTags('Auth')
   @Post('signin')
   @Public()
@@ -140,7 +145,7 @@ export class AuthController {
   })
   @Get('user_info')
   async userFuncs(@Req() { user }: any) {
-    return user;
+    return { ...user, licenses: await this.auth.userLicenses(user.username) };
   }
 
   @Get('confirmation')

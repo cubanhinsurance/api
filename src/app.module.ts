@@ -18,9 +18,11 @@ import { MailModule } from './modules/mail/mail.module';
 import { System_configService } from './modules/system_config/services/system_config.service';
 import { MAIL_CONFIG } from './modules/mail/common';
 import { Observable } from 'rxjs';
+import { IoModule } from './modules/io/io.module';
 
 @Module({
   imports: [
+    IoModule,
     System_configModule,
     AuthModule,
     RolesModule,

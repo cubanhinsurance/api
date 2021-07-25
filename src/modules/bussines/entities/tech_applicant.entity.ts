@@ -35,7 +35,7 @@ export class TechApplicantEntity {
   @JoinTable()
   habilities: HabilitiesEntity[];
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   @Column()
@@ -59,7 +59,7 @@ export class TechApplicantEntity {
   @Index()
   agent: AgentsEntity;
 
-  @Column()
+  @Column({ nullable: true })
   @Index()
   response_date: Date;
 

@@ -63,10 +63,20 @@ export const TECH_SCHEMA = object({
   confirmation_photo: binary().optional(),
   address: string().required(),
   confirmed: boolean().required(),
-  ci: string().required().length(11),
+  ci: string().pattern(/\d{11,11}/),
   province: number().required(),
   municipality: number().required(),
 }).xor('username', 'new_user');
+
+export const TECH_APP_SCHEMA = object({
+  habilities: array().items(number()).min(1).required(),
+  address: string().required(),
+  ci: string()
+    .pattern(/\d{11,11}/)
+    .required(),
+  province: number().required(),
+  municipality: number().required(),
+});
 
 export const UPDATE_TECH_SCHEMA = object({
   active: boolean().optional(),
@@ -75,7 +85,9 @@ export const UPDATE_TECH_SCHEMA = object({
   confirmation_photo: binary().optional(),
   address: string().optional(),
   confirmed: boolean().optional(),
-  ci: string().optional().length(11),
+  ci: string()
+    .pattern(/\d{11,11}/)
+    .optional(),
   province: number().optional(),
   municipality: number().optional(),
 })
@@ -128,4 +140,41 @@ export const USERS_FILTERS = object({
   tech_municipalities: array().items(number()).optional().min(1),
   tech_rating: number().optional().min(1).max(5),
   habilities: array().items(number()).optional().min(1),
+});
+
+export const TECH_APPLICANTS_SCHEMA = object({
+  page: number(),
+  page_size: number(),
+  total: number(),
+  pages: number(),
+  data: array().items(
+    object({
+      id: number().required(),
+      user: object({
+        username: string(),
+        name: string(),
+        lastname: string(),
+      }),
+      province: object({ id: number(), name: string() }),
+      municipality: object({ id: number(), name: string() }),
+      ci: string(),
+      date: date(),
+    }),
+  ),
+});
+
+export const TECH_APPLICANT_SCHEMA = object({
+  id: number().required(),
+  user: object({
+    username: string(),
+    name: string(),
+    lastname: string(),
+  }),
+  ci: string(),
+  date: date(),
+  address: string(),
+  province: object({ id: number(), name: string() }),
+  municipality: object({ id: number(), name: string() }),
+  habilities: array().items(HABILITIES_SCHEMA),
+  confirmation_photo: string().base64(),
 });
