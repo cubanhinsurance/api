@@ -263,6 +263,7 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
       transaction: transactionCreated,
       type: licenseType,
       user,
+      active: true,
     });
 
     setTimeout(() => {
