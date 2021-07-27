@@ -76,6 +76,7 @@ export const TECH_APP_SCHEMA = object({
     .required(),
   province: number().required(),
   municipality: number().required(),
+  confirmation_photo: binary().optional(),
 });
 
 export const UPDATE_TECH_SCHEMA = object({
