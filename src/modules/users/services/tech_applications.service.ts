@@ -1,9 +1,11 @@
 import {
+  CacheStore,
   ForbiddenException,
   Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  OnModuleInit,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,7 +26,7 @@ import { UsersEntity } from '../entities/user.entity';
 import { UsersService } from './users.service';
 
 @Injectable()
-export class TechApplicationsService {
+export class TechApplicationsService implements OnModuleInit {
   constructor(
     @Inject('BROKER') private broker: ClientProxy,
     @InjectRepository(TechApplicantEntity)
@@ -41,10 +43,13 @@ export class TechApplicationsService {
     @InjectRepository(AgentsEntity)
     private agentsEntity: Repository<AgentsEntity>,
     private usersService: UsersService,
+    @Inject('CACHE_MANAGER') private cache: CacheStore,
   ) {}
 
-  async getApplicants(page: number, page_size: number = 10) {
-    const [rows, total] = await this.techApplicantRepo
+  async onModuleInit() {}
+
+  async getApplicants(page: number | null, page_size: number = 10) {
+    const qr = this.techApplicantRepo
       .createQueryBuilder('t')
       .select(['t.id', 't.ci', 't.date'])
       .innerJoin('t.user', 'u')
@@ -55,8 +60,13 @@ export class TechApplicationsService {
       .addSelect(['prov.id', 'prov.name'])
       .innerJoin('t.municipality', 'munc')
       .addSelect(['munc.id', 'munc.name'])
-      .where('t.approved isnull')
-      .getManyAndCount();
+      .where('t.approved isnull');
+
+    if (page !== null) {
+      qr.take(page_size).skip(skip(page, page_size));
+    }
+
+    const [rows, total] = await qr.getManyAndCount();
 
     return paginate(rows, page, page_size, total);
   }
@@ -151,6 +161,26 @@ export class TechApplicationsService {
       });
     } catch (e) {
       throw new InternalServerErrorException();
+    }
+  }
+
+  async getUserLatestApplication(username: string) {
+    try {
+      return await this.techApplicantRepo
+        .createQueryBuilder('t')
+        .select(['t.address', 't.ci', 't.date', 't.id'])
+        .innerJoin('t.user', 'u')
+        .innerJoinAndSelect('t.habilities', 'h')
+        .innerJoinAndSelect('h.group', 'hg')
+        .innerJoin('t.province', 'prov')
+        .addSelect(['prov.id', 'prov.name'])
+        .innerJoin('t.municipality', 'munc')
+        .addSelect(['munc.id', 'munc.name'])
+        .where('u.username=:username and t.approved isnull ', { username })
+        .orderBy('t.id', 'DESC')
+        .getOne();
+    } catch (e) {
+      const a = 7;
     }
   }
 

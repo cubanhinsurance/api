@@ -17,6 +17,7 @@ import { UsersEntity } from 'src/modules/users/entities/user.entity';
 import { RolesService } from 'src/modules/roles/services/roles.service';
 import { FunctionalitiesService } from 'src/modules/functionalities/services/functionalities.service';
 import { ClientProxy } from '@nestjs/microservices';
+import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
 
 export interface USER_SIGN_INFO {
   username: string;
@@ -24,6 +25,10 @@ export interface USER_SIGN_INFO {
   tech?: TechniccianEntity;
   isRoot: boolean;
   confirmed?: boolean;
+}
+
+export interface TECH_INFO {
+  awaiting_request?: any;
 }
 
 export interface USER_INFO {
@@ -37,12 +42,14 @@ export interface USER_INFO {
   username: string;
   confirmed?: boolean;
   tools: string[];
+  pendent_request?: any;
 }
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
+    private techApplicantsService: TechApplicationsService,
     private functionalitiesService: FunctionalitiesService,
     private rolesService: RolesService,
     private configService: ConfigService,
@@ -210,8 +217,20 @@ export class AuthService {
     );
   }
 
-  async userLicenses(username: string) {
-    return await this.usersService.getUserLicenses(username);
+  async updateUserInfo(user: USER_INFO) {
+    const data = {
+      ...user,
+      licenses: await this.usersService.getUserLicenses(user.username),
+    };
+
+    if (!data.isTech) {
+      const pendent = await this.techApplicantsService.getUserLatestApplication(
+        user.username,
+      );
+      if (pendent) data.pendent_request = pendent;
+    }
+
+    return data;
   }
 
   async getUserInfo(username: string): Promise<USER_INFO> {

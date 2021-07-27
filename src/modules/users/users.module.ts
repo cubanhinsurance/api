@@ -12,6 +12,7 @@ import { APP_MAIL_MODULE } from '../../common/mailer.module';
 import { TechApplicantEntity } from '../bussines/entities/tech_applicant.entity';
 import { TechApplicationsService } from './services/tech_applications.service';
 import { REDIS_BROKER } from 'src/lib/microservice/broker';
+import { RedisCacheModule } from 'src/lib/cache/redis';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { REDIS_BROKER } from 'src/lib/microservice/broker';
       MunicialitiesEntity,
       TechApplicantEntity,
     ]),
+    RedisCacheModule('redis'),
   ],
   controllers: [UsersController],
   providers: [UsersService, TechApplicationsService],

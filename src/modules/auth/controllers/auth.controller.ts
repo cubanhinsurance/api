@@ -145,7 +145,8 @@ export class AuthController {
   })
   @Get('user_info')
   async userFuncs(@Req() { user }: any) {
-    return { ...user, licenses: await this.auth.userLicenses(user.username) };
+    return await this.auth.updateUserInfo(user);
+    // return { ...user, licenses: await this.auth.userLicenses(user.username) };
   }
 
   @Get('confirmation')
