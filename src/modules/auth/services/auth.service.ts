@@ -18,6 +18,7 @@ import { RolesService } from 'src/modules/roles/services/roles.service';
 import { FunctionalitiesService } from 'src/modules/functionalities/services/functionalities.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
+import { LicensesService } from 'src/modules/bussines/services/licenses.service';
 
 export interface USER_SIGN_INFO {
   username: string;
@@ -43,12 +44,16 @@ export interface USER_INFO {
   confirmed?: boolean;
   tools: string[];
   pendent_request?: any;
+  techniccian_info?: any;
+  agent_info?: any;
+  licenses?: any[];
 }
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
+    private userLicensesService: LicensesService,
     private techApplicantsService: TechApplicationsService,
     private functionalitiesService: FunctionalitiesService,
     private rolesService: RolesService,
@@ -218,16 +223,30 @@ export class AuthService {
   }
 
   async updateUserInfo(user: USER_INFO) {
-    const data = {
+    let data = {
       ...user,
       licenses: await this.usersService.getUserLicenses(user.username),
     };
+
+    const {
+      techniccian_info,
+      agent_info,
+    } = await this.usersService.getUserPrivateData(user.username);
+
+    if (techniccian_info) data.techniccian_info = techniccian_info;
+    if (agent_info) data.agent_info = agent_info;
 
     if (!data.isTech) {
       const pendent = await this.techApplicantsService.getUserLatestApplication(
         user.username,
       );
       if (pendent) data.pendent_request = pendent;
+    }
+
+    if (data.isTech) {
+      data.licenses = (await this.userLicensesService.getUserActiveLicenses(
+        user.username,
+      )) as any;
     }
 
     return data;

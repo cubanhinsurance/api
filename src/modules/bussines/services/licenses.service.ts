@@ -31,6 +31,7 @@ import {
   TransactionsEntity,
   TRANSACTION_STATE,
 } from '../entities/transactions.entity';
+import { paginate, paginate_qr } from 'src/lib/pagination.results';
 
 export enum TRANSACTION_TYPE {
   BUY = 'buy',
@@ -83,7 +84,7 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
   }
 
   async getUsersLicences(
-    username: string,
+    username?: string,
     userOnly: boolean = false,
     licenseType?: number,
   ): Promise<LicensesEntity[]> {
@@ -99,15 +100,29 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
       ])
       .leftJoinAndSelect('r.coin', 'coin')
       .innerJoin('r.type', 'type')
-      .addSelect(['type.id', 'type.name', 'type.description'])
-      .leftJoin('r.users', 'u')
-      .addSelect(['u.id', 'u.type', 'u.expiration', 'u.renewed_date'])
-      .leftJoin('u.transaction', 't')
-      .addSelect(['t.state']);
+      .addSelect(['type.id', 'type.name', 'type.description']);
 
-    qr.andWhere(`(${userOnly ? '1=2' : 'r.active=true'} or (
-      u.active=true
-    ))`);
+    if (username !== undefined) {
+      qr.leftJoin('r.users', 'u')
+        .addSelect(['u.id', 'u.type', 'u.expiration', 'u.renewed_date'])
+        .leftJoin('u.user', 'luser')
+        .leftJoin('u.transaction', 't')
+        .addSelect(['t.state'])
+        .andWhere(
+          `(
+            (
+              luser.username=:username and u.active=true
+            ) 
+            or 
+            (
+              r.active=true and ${userOnly ? '1=2' : '1=1'}
+            )
+          )`,
+          { username },
+        );
+    } else {
+      qr.andWhere('r.active=true');
+    }
 
     if (licenseType !== undefined) {
       qr.andWhere(`type.id=:licenseType`, { licenseType });
@@ -218,6 +233,7 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     );
 
     const {
+      id,
       price,
       time,
       type: licenseType,
@@ -234,9 +250,16 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
             where: { id: coin },
           });
 
+    const [renew] = await this.getUserActiveLicenses(username, licenseType.id);
+
+    const extraTime = renew
+      ? moment(renew.expiration).diff(moment(), 'days')
+      : 0;
+
     const licensePrice = price * amount;
-    const expiration = moment()
+    let expiration = moment()
       .add(time * amount, 'days')
+      .add(extraTime, 'days')
       .toDate();
 
     const gatewayObj = await this.payGatewaysEntity.findOne({
@@ -247,30 +270,40 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
 
     const transactionId = v4();
 
-    //todo executeTransaction
-    const transactionCreated = await this.transactionsEntity.save({
-      amount: licensePrice * coinObject.factor,
-      coin: coinObject,
-      date: new Date(),
-      from: user,
-      gateway: gatewayObj,
-      state: TRANSACTION_STATE.PENDENT,
-      type: 2 as any,
-      transaction_id: transactionId,
-    });
-    const created = await this.userLicensesEntity.save({
-      expiration,
-      transaction: transactionCreated,
-      type: licenseType,
-      user,
-      active: true,
-    });
+    try {
+      //todo executeTransaction
+      const transactionCreated = await this.transactionsEntity.save({
+        amount: licensePrice * coinObject.factor,
+        coin: coinObject,
+        date: new Date(),
+        from: user,
+        gateway: gatewayObj,
+        state: TRANSACTION_STATE.PENDENT,
+        type: 2 as any,
+        transaction_id: transactionId,
+      });
+      const created = await this.userLicensesEntity.save({
+        expiration,
+        transaction: transactionCreated,
+        type: { id },
+        user,
+        active: true,
+      });
 
-    setTimeout(() => {
-      this.updateTransaction(transactionId);
-    }, 10000);
+      if (renew) {
+        renew.renewed_date = new Date();
+        renew.active = false;
+        await this.userLicensesEntity.save(renew);
+      }
 
-    return transactionId;
+      setTimeout(() => {
+        this.updateTransaction(transactionId);
+      }, 10000);
+
+      return transactionId;
+    } catch (e) {
+      const a = 7;
+    }
   }
 
   async transactionConfirmed(transaction_id: string) {
@@ -296,5 +329,80 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     transaction.state = state;
 
     const updated = await this.transactionsEntity.save(transaction);
+  }
+
+  async getUserActiveLicenses(username: string, type?: number) {
+    const qr = await this.userLicensesEntity
+      .createQueryBuilder('ul')
+      .select(['ul.id', 'ul.expiration'])
+      .innerJoin('ul.type', 'l')
+      .addSelect([
+        'l.id',
+        'l.description',
+        'l.active',
+        'l.photo',
+        'l.time',
+        'l.price',
+        'l.expiration_date',
+      ])
+      .innerJoinAndSelect('l.coin', 'lcoin')
+      .innerJoin('l.type', 'ltype')
+      .addSelect([
+        'ltype.id',
+        'ltype.description',
+        'ltype.features',
+        'ltype.name',
+      ])
+      .innerJoinAndSelect('ul.transaction', 't')
+      .innerJoinAndSelect('t.coin', 'tcoin')
+      .innerJoin('ul.user', 'u')
+      .where(
+        `
+        (
+          u.username=:username and 
+        ul.active=true and 
+        ul.expiration::date>=now()::date and
+        t.state='${TRANSACTION_STATE.COMPLETED}'
+        )
+        `,
+        { username },
+      );
+
+    if (type !== undefined) {
+      qr.andWhere('ltype.id=:type', { type });
+    }
+
+    return await qr.getMany();
+  }
+
+  async getUserTransactions(username: string, page: number, page_size: number) {
+    const qr = await this.userLicensesEntity
+      .createQueryBuilder('ul')
+      .select(['ul.id', 'ul.expiration'])
+      .innerJoin('ul.type', 'l')
+      .addSelect([
+        'l.id',
+        'l.description',
+        'l.active',
+        'l.photo',
+        'l.time',
+        'l.price',
+        'l.expiration_date',
+      ])
+      .innerJoinAndSelect('l.coin', 'lcoin')
+      .innerJoin('l.type', 'ltype')
+      .addSelect([
+        'ltype.id',
+        'ltype.description',
+        'ltype.features',
+        'ltype.name',
+      ])
+      .innerJoinAndSelect('ul.transaction', 't')
+      .innerJoinAndSelect('t.coin', 'tcoin')
+      .innerJoin('ul.user', 'u')
+      .where(`u.username=:username`, { username })
+      .orderBy('t.date', 'DESC');
+
+    return await paginate_qr(page, page_size, qr);
   }
 }

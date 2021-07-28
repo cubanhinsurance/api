@@ -15,6 +15,7 @@ import { MunicialitiesEntity } from 'src/modules/enums/entities/municipalities.e
 import { ProvincesEntity } from 'src/modules/enums/entities/provinces.entity';
 import {
   TECH_APPLICANT,
+  TECH_APPLICANT_CANCELLED,
   TECH_APPLICANT_CONFIRMED,
 } from 'src/modules/io/io.constants';
 import { In, IsNull, Repository } from 'typeorm';
@@ -164,6 +165,37 @@ export class TechApplicationsService implements OnModuleInit {
     }
   }
 
+  async cancelTechApplication(username: string, id: number) {
+    const application = await this.techApplicantRepo.findOne({
+      relations: [
+        'user',
+        'user.techniccian_info',
+        'province',
+        'municipality',
+        'habilities',
+      ],
+      where: {
+        id,
+        approved: IsNull(),
+      },
+    });
+
+    if (!application) throw new NotFoundException();
+
+    if (application.user.username != username) throw new ForbiddenException();
+
+    try {
+      await this.techApplicantRepo.softDelete(application);
+
+      this.broker.emit(TECH_APPLICANT_CANCELLED, {
+        username,
+        date: new Date(),
+      });
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
   async getUserLatestApplication(username: string) {
     try {
       return await this.techApplicantRepo
@@ -184,11 +216,24 @@ export class TechApplicationsService implements OnModuleInit {
     }
   }
 
+  async cancelapplication(applicant: number) {}
+
   async getApplicantInfo(applicant: number) {
     return await this.techApplicantRepo
       .createQueryBuilder('t')
       .innerJoin('t.user', 'u')
-      .addSelect(['u.username', 'u.name', 'u.lastname'])
+      .addSelect([
+        'u.username',
+        'u.name',
+        'u.lastname',
+        'u.active',
+        'u.email',
+        'u.expiration_date',
+        'u.id',
+        'u.phone_number',
+        'u.photo',
+        'u.telegram_id',
+      ])
 
       .innerJoinAndSelect('t.habilities', 'h')
       .innerJoinAndSelect('h.group', 'hg')

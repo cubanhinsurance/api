@@ -14,9 +14,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { RolesModule } from '../roles/roles.module';
 import { FunctionalitiesModule } from '../functionalities/functionalities.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { BussinesModule } from '../bussines/bussines.module';
 
 @Module({
   imports: [
+    BussinesModule,
     UsersModule,
     RolesModule,
     FunctionalitiesModule,

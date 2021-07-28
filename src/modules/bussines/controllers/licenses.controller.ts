@@ -43,6 +43,10 @@ import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import { User } from 'src/modules/auth/decorators/user.decorator';
 import { imageFilter } from 'src/lib/multer/filter';
 import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  Page,
+  PageSize,
+} from 'src/lib/decorators/pagination_queries.decorator';
 
 @Controller('bussines/licenses')
 export class LicensesController {
@@ -212,5 +216,15 @@ export class LicensesController {
   @ApiNotFoundResponse({ description: 'La transaccion no existe' })
   async confirmPayment(@Param('transaction_id') transaction) {
     return await this.licenses.transactionConfirmed(transaction);
+  }
+
+  @ApiOperation({ description: 'Ver historial de transacciones del usuario' })
+  @Get('users/history')
+  async getLicensesHistory(
+    @Page() page,
+    @PageSize() page_size,
+    @User('username') username,
+  ) {
+    return await this.licenses.getUserTransactions(username, page, page_size);
   }
 }

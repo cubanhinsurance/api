@@ -320,7 +320,7 @@ export class UsersController {
   @ApiTags('Users', 'TechApplication')
   @Put('tech_application/:tech_application_id/:confirmed')
   @ApiOperation({
-    summary: 'Devuelve los detalles de una aplicacion a tecnico sin resolver',
+    summary: 'Confirma o deniega una solicitud a tecnico',
   })
   @ApiParam({
     name: 'confirmed',
@@ -342,6 +342,21 @@ export class UsersController {
       id,
       confirmed,
       description,
+    );
+  }
+
+  @ApiTags('Users', 'TechApplication')
+  @Delete('tech_application/:tech_application_id')
+  @ApiOperation({
+    summary: 'Cancela una solicitud',
+  })
+  async cancelTechApplication(
+    @User('username') username,
+    @Param('tech_application_id') id: number,
+  ) {
+    return await this.techApp.cancelTechApplication(
+      username,
+      id
     );
   }
 

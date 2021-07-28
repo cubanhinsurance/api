@@ -5,6 +5,7 @@ import { AgentsEntity } from 'src/modules/users/entities/agent.entity';
 import { UsersEntity } from 'src/modules/users/entities/user.entity';
 import {
   Column,
+  DeleteDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -68,4 +69,7 @@ export class TechApplicantEntity {
 
   @Column()
   confirmation_photo: string;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 }

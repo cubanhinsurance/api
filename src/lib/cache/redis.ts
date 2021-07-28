@@ -8,7 +8,7 @@ export const RedisCacheModule = (
   max?: number, //MemoryCacheModule(ttl, max);
 ) =>
   CacheModule.register({
-    store: redisStore,
+    store: redisStore as any,
     host,
     port,
     ttl: ttl ?? null,

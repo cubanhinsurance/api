@@ -459,9 +459,9 @@ export class UsersService {
         'u.expiration_date',
         'u.photo',
       ])
-      .leftJoin('u.agent_info', 'ag')
+      .leftJoinAndSelect('u.agent_info', 'ag')
       .leftJoinAndSelect('ag.role', 'agrole')
-      .leftJoin('u.techniccian_info', 't')
+      .leftJoinAndSelect('u.techniccian_info', 't')
       .leftJoinAndSelect('t.habilities', 'habilities')
       .leftJoin('t.province', 'province')
       .addSelect(['province.id', 'province.name'])
@@ -470,31 +470,6 @@ export class UsersService {
       .leftJoinAndSelect('habilities.group', 'habilities_group')
       .where('u.username=:username', { username })
       .getOne();
-
-    return await this.usersEntity.findOne({
-      select: [
-        'id',
-        'name',
-        'lastname',
-        'username',
-        'email',
-        'phone_number',
-        'telegram_id',
-        'active',
-        'expiration_date',
-        'photo',
-      ],
-      relations: [
-        'techniccian_info',
-        'techniccian_info.habilities',
-        'techniccian_info.province',
-        'techniccian_info.habilities',
-        'techniccian_info.habilities.group',
-        'agent_info',
-        'agent_info.role',
-      ],
-      where: { username },
-    });
   }
 
   async getUsers(
