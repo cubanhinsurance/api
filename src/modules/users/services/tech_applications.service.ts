@@ -167,13 +167,7 @@ export class TechApplicationsService implements OnModuleInit {
 
   async cancelTechApplication(username: string, id: number) {
     const application = await this.techApplicantRepo.findOne({
-      relations: [
-        'user',
-        'user.techniccian_info',
-        'province',
-        'municipality',
-        'habilities',
-      ],
+      relations: ['user'],
       where: {
         id,
         approved: IsNull(),

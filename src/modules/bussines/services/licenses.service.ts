@@ -12,7 +12,7 @@ import {
 import { findOrFail } from 'src/lib/typeorm/id_colection_handler';
 import { CoinsEntity } from 'src/modules/enums/entities/coins.entity';
 import { LicensesTypesEntity } from 'src/modules/enums/entities/licenses_types.entity';
-import { FindConditions, Repository } from 'typeorm';
+import { FindConditions, LessThanOrEqual, Repository } from 'typeorm';
 import { LicensesEntity } from '../entities/licenses.entity';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
@@ -173,20 +173,35 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
 
     if (!licenseRow) throw new NotFoundException(`Licencia no existe`);
 
-    const licenses = await this.getUsersLicences(
+    const [renew] = await this.getUserActiveLicenses(
       username,
-      true,
       licenseRow.type.id,
     );
 
+    const price = licenseRow.price;
+    const time = licenseRow.time;
+    const extraTime = renew
+      ? moment(renew.expiration).diff(moment(), 'days')
+      : 0;
+
+    const licensePrice = price * amount;
+
+    let expiration = moment()
+      .add(time * amount, 'days')
+      .add(extraTime, 'days')
+      .toDate();
+
     const operationInfo = {
-      transactionType:
-        licenses.length == 0
-          ? TRANSACTION_TYPE.BUY
-          : !!licenses.find((l) => l.id != license)
-          ? TRANSACTION_TYPE.CHANGE
-          : TRANSACTION_TYPE.RENEW,
-      currentTransactions: licenses?.[0]?.users,
+      transactionType: !renew
+        ? TRANSACTION_TYPE.BUY
+        : renew.type.id != licenseRow.type.id
+        ? TRANSACTION_TYPE.CHANGE
+        : TRANSACTION_TYPE.RENEW,
+      activeLicense: renew,
+      newLicense: {
+        price: licensePrice,
+        expiration,
+      },
       user: {
         username: user.username,
         name: user.name,
