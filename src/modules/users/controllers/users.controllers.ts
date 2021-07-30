@@ -354,10 +354,7 @@ export class UsersController {
     @User('username') username,
     @Param('tech_application_id') id: number,
   ) {
-    return await this.techApp.cancelTechApplication(
-      username,
-      id
-    );
+    return await this.techApp.cancelTechApplication(username, id);
   }
 
   @ApiTags('Users', 'TechApplication')
@@ -370,5 +367,18 @@ export class UsersController {
   })
   async getApplications(@PageSize() ps: number, @Page() p: number) {
     return await this.techApp.getApplicants(p, ps);
+  }
+
+  @ApiTags('Users', 'TechApplication')
+  @Get('tech_applications/user')
+  @ApiOperation({
+    summary: 'Devuelve las solicitudes de tecnicos de un usuario',
+  })
+  async getUserApplications(
+    @PageSize() page_size,
+    @Page() page,
+    @User('username') username,
+  ) {
+    return await this.techApp.getUserApplications(username, page, page_size);
   }
 }

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { paginate, skip } from 'src/lib/pagination.results';
+import { paginate, paginate_qr, skip } from 'src/lib/pagination.results';
 import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
 import { MunicialitiesEntity } from 'src/modules/enums/entities/municipalities.entity';
 import { ProvincesEntity } from 'src/modules/enums/entities/provinces.entity';
@@ -329,5 +329,35 @@ export class TechApplicationsService implements OnModuleInit {
     });
 
     this.broker.emit(TECH_APPLICANT, username);
+  }
+
+  async getUserApplications(
+    username: string,
+    page: number,
+    page_size: number = 10,
+  ) {
+    return await paginate_qr(
+      page,
+      page_size,
+      this.techApplicantRepo
+        .createQueryBuilder('app')
+        .innerJoinAndSelect('app.habilities', 'habilities')
+        .innerJoinAndSelect('habilities.group', 'hgroup')
+        .innerJoin('app.province', 'prov')
+        .addSelect(['prov.id', 'prov.name'])
+        .innerJoin('app.municipality', 'munc')
+        .addSelect(['munc.id', 'munc.name'])
+        .leftJoin('app.agent', 'agent')
+        .leftJoin('agent.user', 'user')
+        .addSelect([
+          'user.id',
+          'user.name',
+          'user.lastname',
+          'user.email',
+          'user.username',
+        ])
+        .innerJoin('app.user', 'appuser')
+        .where(`appuser.username=:username`, { username }),
+    );
   }
 }
