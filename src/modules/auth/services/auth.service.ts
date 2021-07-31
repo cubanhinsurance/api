@@ -229,9 +229,13 @@ export class AuthService {
     };
 
     const {
+      name,
+      lastname,
       techniccian_info,
       agent_info,
     } = await this.usersService.getUserPrivateData(user.username);
+
+    data = { ...data, name, lastname };
 
     if (techniccian_info) data.techniccian_info = techniccian_info;
     if (agent_info) data.agent_info = agent_info;

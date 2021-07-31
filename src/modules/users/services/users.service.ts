@@ -64,14 +64,18 @@ export class UsersService {
   async findUserByUserName(
     username: string,
     query?: FindConditions<UsersEntity>,
+    onlyId: boolean = false,
   ) {
     return await this.usersEntity.findOne({
-      relations: [
-        'techniccian_info',
-        'agent_info',
-        'agent_info.role',
-        'agent_info.role.functionalities',
-      ],
+      select: onlyId ? ['id'] : undefined,
+      relations: onlyId
+        ? []
+        : [
+            'techniccian_info',
+            'agent_info',
+            'agent_info.role',
+            'agent_info.role.functionalities',
+          ],
       where: {
         username,
         ...query,
@@ -235,7 +239,7 @@ export class UsersService {
     if (data.name) curr.name = data.name;
     if (data.username) curr.username = data.username;
     if (!!data.photo) {
-      data.photo =
+      curr.photo =
         typeof data.photo != 'undefined' ? data.photo.toString('base64') : null;
     }
     if (data.lastname) curr.lastname = data.lastname;
@@ -244,6 +248,7 @@ export class UsersService {
     if (data.expiration_date || data.expiration_date === null)
       curr.expiration_date = data.expiration_date;
     const updated = await this.usersEntity.save(curr);
+    const a = 7;
   }
 
   async createAgent({ username, role, new_user, expiration_date }: AgentDto) {
@@ -445,7 +450,7 @@ export class UsersService {
   }
 
   async getUserPrivateData(username: string) {
-    return await this.usersEntity
+    const data = await this.usersEntity
       .createQueryBuilder('u')
       .select([
         'u.id',
@@ -470,6 +475,10 @@ export class UsersService {
       .leftJoinAndSelect('habilities.group', 'habilities_group')
       .where('u.username=:username', { username })
       .getOne();
+
+    (data.techniccian_info as any).rating = Math.random() * (5 - 0) + 0;
+
+    return data;
   }
 
   async getUsers(
@@ -592,7 +601,7 @@ export class UsersService {
     const results = await paginate_qr<UsersEntity>(page, page_size, qr);
     for (const u of results.data) {
       if (u.techniccian_info) {
-        (u.techniccian_info as any).rating = Math.random() * (5 - 1) + 1;
+        (u.techniccian_info as any).rating = Math.random() * (5 - 0) + 0;
         if (!!u.techniccian_info.expiration_date && u.techniccian_info.active) {
           u.techniccian_info.active = moment(
             u.techniccian_info.expiration_date,

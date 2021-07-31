@@ -3,6 +3,7 @@ import { ProvincesEntity } from 'src/modules/enums/entities/provinces.entity';
 import { UsersEntity } from 'src/modules/users/entities/user.entity';
 import {
   Column,
+  DeleteDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -47,4 +48,7 @@ export class ClientLocationsEntity {
   @JoinColumn({ name: 'user' })
   @Index()
   user: UsersEntity;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 }
