@@ -57,7 +57,7 @@ export class GisController {
       'Obtiene el bbox a partir de id de dpa para la navegacion en el mapa',
   })
   @ApiOkResponse({
-    description: 'Devuelve GeoJson<Polygon> representando el bbox del dpa',
+    description: 'Devuelve GeoJson(Polygon) representando el bbox del dpa',
   })
   @ApiNotFoundResponse({ description: 'No se encontro ese dpa' })
   async zoom2Province(
