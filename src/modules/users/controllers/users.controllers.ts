@@ -374,6 +374,15 @@ export class UsersController {
   @ApiOperation({
     summary: 'Devuelve las solicitudes de tecnicos de un usuario',
   })
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'page_size',
+    type: Number,
+    required: false,
+  })
   async getUserApplications(
     @PageSize() page_size,
     @Page() page,

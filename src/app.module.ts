@@ -1,3 +1,4 @@
+import { GisModule } from './modules/gis/gis.module';
 import { System_configModule } from './modules/system_config/system_config.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@atlasjs/config';
@@ -22,6 +23,7 @@ import { IoModule } from './modules/io/io.module';
 
 @Module({
   imports: [
+    GisModule,
     IoModule,
     System_configModule,
     AuthModule,
