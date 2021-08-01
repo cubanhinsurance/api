@@ -7,7 +7,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CREATE_USER_LOCATION_SCHEMA,
   UPDATE_USER_LOCATION_SCHEMA,
@@ -27,6 +27,9 @@ export class LocationsController {
   @ApiOperation({
     description: 'Crea una ubicacion(casa/pto de interes) de un cliente',
   })
+  @ApiBody({
+    schema: j2s(CREATE_USER_LOCATION_SCHEMA).swagger,
+  })
   async createUserLocations(
     @User('username') username: string,
     @Body(new JoiPipe(CREATE_USER_LOCATION_SCHEMA, true, ['geom'])) data,
@@ -38,6 +41,9 @@ export class LocationsController {
   @ApiTags('UserLocations')
   @ApiOperation({
     description: 'Actualiza una ubicacion(casa/pto de interes) de un cliente',
+  })
+  @ApiBody({
+    schema: j2s(UPDATE_USER_LOCATION_SCHEMA).swagger,
   })
   async updateUserLocations(
     @User('username') username: string,
