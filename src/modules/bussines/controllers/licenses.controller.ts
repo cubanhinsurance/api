@@ -100,13 +100,19 @@ export class LicensesController {
   async createLicense(@UploadedFile() photo) {}
 
   @ApiTags('Bussines', 'Licenses')
-  @UpdateOne(
+  @UseInterceptors(
+    FileInterceptor('photo', {
+      fileFilter: imageFilter,
+    }),
+  )
+  @UpdateOne<LicensesService>(
     {
       service: LicensesService,
+      handler: 'updateLicense',
     },
     'app/:id',
   )
-  async replaceLicense() {}
+  async replaceLicense(@UploadedFile() photo) {}
 
   @ApiTags('Bussines', 'Licenses')
   @DeleteOne(

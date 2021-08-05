@@ -65,21 +65,12 @@
     js-yaml "^4.0.0"
     lodash "^4.17.21"
 
-"@atlasjs/typeorm-crud@1.0.6":
-  version "1.0.6"
-  resolved "https://npm.geocuba.cu/@atlasjs%2ftypeorm-crud/-/typeorm-crud-1.0.6.tgz#23c1d5ff6e24968ecf47c3668d04fe3fe0237002"
-  integrity sha512-/xutvhACDnNb3TeApl+ndHOXz0WnbxRiL1zMN+LnTnI/sWaaQ255hiDkqhNYrNRP95zYruPNkYxfNX5XeOzoEw==
+"@atlasjs/typeorm-crud@1.0.17":
+  version "1.0.17"
+  resolved "https://npm.geocuba.cu/@atlasjs%2ftypeorm-crud/-/typeorm-crud-1.0.17.tgz#50bbe280a21bff5093dd314463dfc0277514555a"
+  integrity sha512-lM7PVjwgJxb0dzpz2RCUwTEd5NHyAagPcjq8qA1lrKNU5LIip6cAqKA4rBgPr76lRHD8VJ4wNSNOCYRS6TbGPg==
   dependencies:
-    "@nestjs/common" "^6.10.0 || ^7.0.0"
-    "@nestjs/core" "^8.0.2"
-    "@nestjs/swagger" "^5.0.1"
-    "@nestjs/typeorm" "^8.0.1"
-    joi "^17.4.0"
-    joi-to-swagger "^5.2.0"
     pluralize "^8.0.0"
-    reflect-metadata "^0.1.13"
-    rxjs "^6.6.6"
-    typeorm "^0.2.32"
 
 "@babel/code-frame@7.12.11":
   version "7.12.11"
@@ -623,7 +614,7 @@
     webpack "5.28.0"
     webpack-node-externals "2.5.2"
 
-"@nestjs/common@^6.10.0 || ^7.0.0", "@nestjs/common@^7.6.13":
+"@nestjs/common@^7.6.13":
   version "7.6.18"
   resolved "https://npm.geocuba.cu/@nestjs%2fcommon/-/common-7.6.18.tgz#d89e6d248985eec13af60507a8725cb2142d660a"
   integrity sha512-BUJQHNhWzwWOkS4Ryndzd4HTeRObcAWV2Fh+ermyo3q3xYQQzNoEWclJVL/wZec8AONELwIJ+PSpWI53VP0leg==
@@ -646,19 +637,6 @@
     tslib "2.2.0"
     uuid "8.3.2"
 
-"@nestjs/core@^8.0.2":
-  version "8.0.2"
-  resolved "https://npm.geocuba.cu/@nestjs%2fcore/-/core-8.0.2.tgz#9840ed8011a40f79097679904df4d5bccbceb3b3"
-  integrity sha512-zRXD33FR8wcbMsWuMXsAxjz74PG6JvfqlZO+FKAWZaY0kAwQuNnIfhmWYh1WIVZCy+HHbXmt/x0FbZBGG1x/1A==
-  dependencies:
-    "@nuxtjs/opencollective" "0.3.2"
-    fast-safe-stringify "2.0.8"
-    iterare "1.2.1"
-    object-hash "2.2.0"
-    path-to-regexp "3.2.0"
-    tslib "2.3.0"
-    uuid "8.3.2"
-
 "@nestjs/jwt@^7.2.0":
   version "7.2.0"
   resolved "https://npm.geocuba.cu/@nestjs%2fjwt/-/jwt-7.2.0.tgz#d55d15c861b3e0d67a852cbe6131b14c85246852"
@@ -671,11 +649,6 @@
   version "0.4.0"
   resolved "https://npm.geocuba.cu/@nestjs%2fmapped-types/-/mapped-types-0.4.0.tgz#352b9a661d6d36863cf48b2057616cef1b2c802d"
   integrity sha512-TVtd/aTb7EqPhVczdeuvzF9dY0fyE3ivvCstc2eO+AkNqrfzSG1kXYYiUUznKjd0qDa8g2TmPSmHUQ21AXsV1Q==
-
-"@nestjs/mapped-types@1.0.0":
-  version "1.0.0"
-  resolved "https://npm.geocuba.cu/@nestjs%2fmapped-types/-/mapped-types-1.0.0.tgz#52a0441795f6da8144a35970d3ebc19281f31cfd"
-  integrity sha512-26AW5jHadLXtvHs+M+Agd9KZ92dDlBrmD0rORlBlvn2KvsWs4JRaKl2mUsrW7YsdZeAu3Hc4ukqyYyDdyCmMWQ==
 
 "@nestjs/microservices@^7.6.17":
   version "7.6.18"
@@ -730,15 +703,6 @@
     lodash "4.17.21"
     path-to-regexp "3.2.0"
 
-"@nestjs/swagger@^5.0.1":
-  version "5.0.1"
-  resolved "https://npm.geocuba.cu/@nestjs%2fswagger/-/swagger-5.0.1.tgz#be6ed9441c6c82853b20c96b96ddf1d8e36fa0da"
-  integrity sha512-cQu+0a2OGZAUmHvBE+PocQlkBYPNi51eoow1QXnmHIQz5MeOCp88PAekWGBPaTMp9YkCEMZ7EVPNBXiq+3rAXQ==
-  dependencies:
-    "@nestjs/mapped-types" "1.0.0"
-    lodash "4.17.21"
-    path-to-regexp "3.2.0"
-
 "@nestjs/testing@^7.5.1":
   version "7.6.15"
   resolved "https://npm.geocuba.cu/@nestjs%2ftesting/-/testing-7.6.15.tgz#eed34846a8b2b5ddb0ff6bd74cdcb4344c364c40"
@@ -760,13 +724,6 @@
   integrity sha512-utE1FkYM/gyCXUqw3zKYYS0YZ3DfkAnzsCx4T48cNnSDTCeWS+u3yt0FMDFjwSiQSaLrzpiSff/FaxJQvRlYow==
   dependencies:
     uuid "8.3.1"
-
-"@nestjs/typeorm@^8.0.1":
-  version "8.0.1"
-  resolved "https://npm.geocuba.cu/@nestjs%2ftypeorm/-/typeorm-8.0.1.tgz#2bd4acd687058aefa70f8d1d3261f662db1ac3f0"
-  integrity sha512-710zOLk4j5kkv7STkKVNPpqBaGAhFjDblLaUHllqogw9z4gkjuPv59xfnqzwle4oAex25nihh0QGqtpB21zw7w==
-  dependencies:
-    uuid "8.3.2"
 
 "@nestjs/websockets@^8.0.4":
   version "8.0.4"
@@ -3082,11 +3039,6 @@ fast-safe-stringify@2.0.7, fast-safe-stringify@^2.0.7:
   version "2.0.7"
   resolved "https://npm.geocuba.cu/fast-safe-stringify/-/fast-safe-stringify-2.0.7.tgz#124aa885899261f68aedb42a7c080de9da608743"
   integrity sha512-Utm6CdzT+6xsDk2m8S6uL8VHxNwI6Jub+e9NYTcAms28T84pTa25GJQV9j0CY0N1rM8hK4x6grpF2BQf+2qwVA==
-
-fast-safe-stringify@2.0.8:
-  version "2.0.8"
-  resolved "https://npm.geocuba.cu/fast-safe-stringify/-/fast-safe-stringify-2.0.8.tgz#dc2af48c46cf712b683e849b2bbd446b32de936f"
-  integrity sha512-lXatBjf3WPjmWD6DpIZxkeSsCOwqI0maYMpgDlx8g4U2qi4lbjA9oH/HD2a87G+KfsUmo5WbJFmqBZlPxtptag==
 
 fastq@^1.6.0:
   version "1.11.0"
@@ -5808,7 +5760,7 @@ rxjs@6.6.3:
   dependencies:
     tslib "^1.9.0"
 
-rxjs@^6.6.0, rxjs@^6.6.3, rxjs@^6.6.6:
+rxjs@^6.6.0, rxjs@^6.6.3:
   version "6.6.7"
   resolved "https://npm.geocuba.cu/rxjs/-/rxjs-6.6.7.tgz#90ac018acabf491bf65044235d5863c4dab804c9"
   integrity sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==

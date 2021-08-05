@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@atlasjs/config": "^1.0.0",
-    "@atlasjs/typeorm-crud": "1.0.6",
+    "@atlasjs/typeorm-crud": "1.0.17",
     "@nestjs/common": "^7.6.13",
     "@nestjs/core": "^7.6.13",
     "@nestjs/jwt": "^7.2.0",

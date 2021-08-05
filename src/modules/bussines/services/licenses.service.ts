@@ -139,6 +139,11 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
     await super.createOne(data);
   }
 
+  async updateLicense(photo, id, data) {
+    if (photo) data.photo = (photo.buffer as Buffer).toString('base64');
+    await super.replaceOne(id, data);
+  }
+
   get secret() {
     return this.config.config.auth.secret;
   }
