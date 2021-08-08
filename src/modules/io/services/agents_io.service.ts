@@ -1,10 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ClientProxy } from '@nestjs/microservices';
 import {
   WebSocketGateway,
   WebSocketServer,
   OnGatewayConnection,
   WsException,
+  OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
@@ -23,7 +25,8 @@ export interface IoMessage {
 @WebSocketGateway({
   namespace: 'agents',
 })
-export class AgentsIoService implements OnGatewayConnection {
+export class AgentsIoService
+  implements OnGatewayConnection, OnGatewayDisconnect {
   clients: Map<string, WsClient>;
 
   @WebSocketServer()
@@ -31,6 +34,7 @@ export class AgentsIoService implements OnGatewayConnection {
 
   constructor(
     private jwt: JwtService,
+    @Inject('BROKER') private broker: ClientProxy,
     private techApplicants: TechApplicationsService,
   ) {
     this.clients = new Map<string, any>();
@@ -65,5 +69,9 @@ export class AgentsIoService implements OnGatewayConnection {
       type: 'techApplicantsCount',
       data: await this.techApplicants.getApplicantsCount(),
     } as IoMessage);
+  }
+
+  handleDisconnect(client: Socket) {
+    this.clients.delete(client.id);
   }
 }

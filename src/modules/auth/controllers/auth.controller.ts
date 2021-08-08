@@ -72,8 +72,36 @@ export class AuthController {
   async signin(
     @Body(new JoiPipe(SIGN_IN_SCHEMA)) { username, password },
     @User() user: object,
+    @Req() req,
   ) {
-    return await this.auth.login(user);
+    return await this.auth.login(user, req);
+  }
+
+  @ApiTags('Auth')
+  @Post('refresh')
+  @Public()
+  @ApiOperation({
+    summary: 'Refrescar token',
+  })
+  @ApiBody({
+    schema: j2s(
+      object({
+        refresh_token: string().required(),
+      }),
+    ).swagger,
+  })
+  async refresh(
+    @Body(
+      new JoiPipe(
+        object({
+          refresh_token: string().required(),
+        }),
+      ),
+    )
+    { refresh_token },
+    @Req() req,
+  ) {
+    return await this.auth.validateRefresh(refresh_token, req);
   }
 
   @ApiTags('Auth')
@@ -103,8 +131,9 @@ export class AuthController {
   async signinAgent(
     @Body(new JoiPipe(SIGN_IN_SCHEMA)) { username, password },
     @User() user: object,
+    @Req() req,
   ) {
-    return await this.auth.login(user);
+    return await this.auth.login(user, req);
   }
 
   @ApiTags('Auth')
@@ -134,8 +163,9 @@ export class AuthController {
   async signinTechnichian(
     @Body(new JoiPipe(SIGN_IN_SCHEMA)) { username, password },
     @User() user: object,
+    @Req() req,
   ) {
-    return await this.auth.login(user);
+    return await this.auth.login(user, req);
   }
 
   @ApiTags('Auth')

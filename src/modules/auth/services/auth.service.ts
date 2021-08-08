@@ -19,6 +19,7 @@ import { FunctionalitiesService } from 'src/modules/functionalities/services/fun
 import { ClientProxy } from '@nestjs/microservices';
 import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
 import { LicensesService } from 'src/modules/bussines/services/licenses.service';
+import { hashSync } from 'bcryptjs';
 
 export interface USER_SIGN_INFO {
   username: string;
@@ -83,7 +84,7 @@ export class AuthService {
 
   async validateUser(
     username: string,
-    password: string,
+    password?: string,
   ): Promise<USER_SIGN_INFO> {
     const { config } = this.configService;
 
@@ -115,7 +116,10 @@ export class AuthService {
         );
       }
 
-      if (!(await compare(password, user.password))) return;
+      if (password !== undefined && !(await compare(password, user.password)))
+        return;
+
+      delete user?.techniccian_info?.confirmation_photo;
 
       return {
         username: user.username,
@@ -209,11 +213,52 @@ export class AuthService {
     return userInfo;
   }
 
-  async login(user: any) {
+  async login(user: any, req: any) {
+    const remote =
+      req?.headers?.['x-forwarded-for'] ?? req?.socket?.remoteAddress;
+
+    const access_token = this.jwtService.sign(user);
+
+    const hashed = hashSync(
+      JSON.stringify({
+        access_token,
+        username: user.username,
+        remote,
+      }),
+      10,
+    );
     return {
-      access_token: this.jwtService.sign(user),
+      access_token,
+      refresh_token: this.jwtService.sign({
+        access_token,
+        hashed,
+      }),
       expires_in: this.configService.config.auth.expiresIn,
     };
+  }
+
+  async validateRefresh(refresh: string, req: any) {
+    try {
+      const remote =
+        req?.headers?.['x-forwarded-for'] ?? req?.socket?.remoteAddress;
+
+      const { access_token, hashed }: any = this.jwtService.decode(refresh);
+      const { username }: any = this.jwtService.decode(access_token);
+      const v = await compare(
+        JSON.stringify({
+          access_token,
+          username,
+          remote,
+        }),
+        hashed,
+      );
+      if (!v) throw new UnauthorizedException();
+
+      return await this.login(await this.validateUser(username), req);
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
+    const a = 6;
   }
 
   async getAllTools() {

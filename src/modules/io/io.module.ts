@@ -6,11 +6,12 @@ import { UsersModule } from '../users/users.module';
 import { IoController } from './controllers/io.controller';
 import { AgentsIoService } from './services/agents_io.service';
 import { ClientsIoService } from './services/clients_io.service';
+import { TechsIoService } from './services/techs_io.service';
 
 @Module({
   imports: [
     UsersModule,
-    // REDIS_BROKER,
+    REDIS_BROKER,
     JwtModule.registerAsync({
       useFactory: (c: ConfigService) => {
         return {
@@ -22,7 +23,7 @@ import { ClientsIoService } from './services/clients_io.service';
     }),
   ],
   controllers: [IoController],
-  providers: [AgentsIoService, ClientsIoService],
-  exports: [AgentsIoService, ClientsIoService],
+  providers: [AgentsIoService, ClientsIoService, TechsIoService],
+  exports: [AgentsIoService, ClientsIoService, TechsIoService],
 })
 export class IoModule {}

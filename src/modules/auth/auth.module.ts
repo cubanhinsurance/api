@@ -26,7 +26,7 @@ import { BussinesModule } from '../bussines/bussines.module';
       useFactory({ config }: ConfigService) {
         return {
           secret: config.auth.secret,
-          signOptions: { expiresIn: config.auth.expiresIn },
+          signOptions: { expiresIn: config.auth.expiresIn, },
         };
       },
       inject: [ConfigService],

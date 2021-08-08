@@ -7,12 +7,14 @@ import {
 } from '../io.constants';
 import { AgentsIoService } from '../services/agents_io.service';
 import { ClientsIoService } from '../services/clients_io.service';
+import { TechsIoService } from '../services/techs_io.service';
 
 @Controller('io')
 export class IoController {
   constructor(
     private agentsIoService: AgentsIoService,
     private clientsIoService: ClientsIoService,
+    private techsIoService: TechsIoService,
   ) {}
 
   @MessagePattern(TECH_APPLICANT)

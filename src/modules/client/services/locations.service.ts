@@ -92,6 +92,8 @@ export class LocationsService {
       } = geom;
       const { province, municipality } = await this.gisService.whereis(x, y);
       location.geom = () => `st_setsrid(st_point(${x},${y}),4326)`;
+      location.province = province;
+      location.municipality = municipality as any;
     }
 
     const updated = await this.cliensLocationsRepo

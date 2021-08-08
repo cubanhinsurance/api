@@ -1,0 +1,37 @@
+{
+  "name": "osrm-nestjs-module",
+  "version": "1.0.0",
+  "description": "Osrm client module for Nestjs",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p tsconfig.json",
+    "prepublish:npm": "npm run build",
+    "publish:npm": "npm publish --access public",
+    "prepublish:next": "npm run build",
+    "publish:next": "npm publish --access public --tag next",
+    "prerelease": "npm run build",
+    "release": "release-it"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cubanhinsurance/osrm-nestjs-module.git"
+  },
+  "keywords": [
+    "osrm",
+    "nestjs"
+  ],
+  "author": "john891226@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cubanhinsurance/osrm-nestjs-module/issues"
+  },
+  "homepage": "https://github.com/cubanhinsurance/osrm-nestjs-module#readme",
+  "dependencies": {
+    "typescript": "^4.3.5"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^7.6.13",
+    "@nestjs/core": "^7.6.13"
+  }
+}
