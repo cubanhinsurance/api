@@ -1,3 +1,4 @@
+import { ClientLocationsEntity } from 'src/modules/client/entities/locations.entity';
 import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
 import { IssuesTypesEntity } from 'src/modules/enums/entities/issues_types.entity';
 import { LicensesTypesEntity } from 'src/modules/enums/entities/licenses_types.entity';
@@ -107,6 +108,10 @@ export class IssuesEntity {
   @ManyToMany(() => IssuesTraces)
   @JoinTable()
   traces: IssuesTraces[];
+
+  @ManyToOne(() => ClientLocationsEntity, { nullable: true })
+  @Index()
+  client_location: ClientLocationsEntity;
 }
 
 @Entity({

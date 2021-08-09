@@ -107,16 +107,20 @@ export class TechsIoService
     return this.clients.get(id)?.user;
   }
 
-  updateTechStatus(id: string, status: TECH_STATUS_UPDATE) {}
+  updateTechStatus(id: string, status: TECH_STATUS_UPDATE) {
+    const tech = this.availableTechs.get(id);
+    if (!tech) return;
+    tech.status = status;
+  }
 
   @UseGuards(ValidTechLicense)
   @SubscribeMessage('gps')
-  async handleGps(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-    const a = 7;
+  async handleGps(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() status: TECH_STATUS_UPDATE,
+  ) {
+    this.updateTechStatus(client.id, status);
   }
 
-  @SubscribeMessage('wendy')
-  async wendy(@MessageBody() d, @ConnectedSocket() client: Socket) {
-    const a = 6;
-  }
+  
 }

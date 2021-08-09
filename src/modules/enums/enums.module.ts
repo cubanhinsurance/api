@@ -40,5 +40,6 @@ import { RedisCacheModule } from 'src/lib/cache/redis';
   ],
   controllers: [EnumsController],
   providers: [EnumsService, CoinsService],
+  exports: [EnumsService],
 })
 export class EnumsModule {}

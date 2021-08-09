@@ -322,4 +322,8 @@ export class EnumsService {
       select: ['id', 'name', 'avatar'],
     });
   }
+
+  async getIssueType(type:number){
+    return await this.issuesTypes.findOne(type)
+  }
 }

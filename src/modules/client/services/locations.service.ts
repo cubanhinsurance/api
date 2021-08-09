@@ -120,4 +120,14 @@ export class LocationsService {
       relations: ['province', 'municipality'],
     });
   }
+
+  async getLocation(username: string, location: number) {
+    return await this.cliensLocationsRepo
+      .createQueryBuilder('l')
+      .innerJoin('l.user', 'u')
+      .innerJoinAndSelect('l.province', 'province')
+      .innerJoinAndSelect('l.municipality', 'municipality')
+      .where(`u.username=username`, { username })
+      .getOne();
+  }
 }
