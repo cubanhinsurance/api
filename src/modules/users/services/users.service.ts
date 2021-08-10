@@ -678,4 +678,23 @@ export class UsersService {
       })
       .getMany();
   }
+
+  async getTechnichianInfo(username: string) {
+    return await this.techsEntity
+      .createQueryBuilder('t')
+      .select([
+        't.expiration_date',
+        't.active',
+        't.confirmed',
+        't.ci',
+        't.address',
+      ])
+      .innerJoin('t.user', 'u')
+      .addSelect(['u.username', 'u.name', 'u.lastname'])
+      .leftJoinAndSelect('t.habilities', 'h')
+      .leftJoinAndSelect('t.province', 'province')
+      .leftJoinAndSelect('t.municipality', 'municipality')
+      .where('u.username=username', { username })
+      .getOne();
+  }
 }

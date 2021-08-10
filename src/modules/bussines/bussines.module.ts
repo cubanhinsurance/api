@@ -6,6 +6,7 @@ import { IssuesTypesEntity } from '../enums/entities/issues_types.entity';
 import { LicensesTypesEntity } from '../enums/entities/licenses_types.entity';
 import { PayGatewaysEntity } from '../enums/entities/pay_gateways.entity';
 import { EnumsModule } from '../enums/enums.module';
+import { GisModule } from '../gis/gis.module';
 import { IoModule } from '../io/io.module';
 import { UsersModule } from '../users/users.module';
 import { IssuesController } from './controllers/issues.controller';
@@ -26,6 +27,7 @@ import { LicensesTypesService } from './services/licenses_types.service';
     IoModule,
     ClientModule,
     EnumsModule,
+    GisModule,
     TypeOrmModule.forFeature([
       TechApplicantEntity,
       LicensesEntity,

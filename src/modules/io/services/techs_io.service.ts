@@ -13,7 +13,11 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { ValidTechLicense } from 'src/modules/auth/guards/activeTech.guard';
+import { IssuesTypesEntity } from 'src/modules/enums/entities/issues_types.entity';
+import { TechniccianEntity } from 'src/modules/users/entities/techniccian.entity';
+import { UsersEntity } from 'src/modules/users/entities/user.entity';
 import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
+import { UsersService } from 'src/modules/users/services/users.service';
 import { IoMessage, WsClient } from './clients_io.service';
 
 export enum TRANSPORT_PROFILE {
@@ -33,19 +37,23 @@ export interface TECH_STATUS_UPDATE {
 }
 
 export interface AvailableTech {
-  user: any;
+  user: TechniccianEntity;
   status: TECH_STATUS_UPDATE;
+}
+
+export interface ClientIndex {
+  ws: Socket;
+  user: UsersEntity;
 }
 
 @Injectable()
 @WebSocketGateway({
   namespace: '/techs',
-  //path: 'techs',
 })
 export class TechsIoService
   implements OnGatewayConnection, OnGatewayDisconnect {
   clients: Map<string, WsClient>;
-  availableTechs: Map<string, AvailableTech>;
+  availableTechs: Map<string, TECH_STATUS_UPDATE>;
 
   @WebSocketServer()
   server: Server;
@@ -53,9 +61,10 @@ export class TechsIoService
   constructor(
     @Inject('BROKER') private broker: ClientProxy,
     private jwt: JwtService,
+    private usersService: UsersService,
   ) {
     this.clients = new Map<string, any>();
-    this.availableTechs = new Map<string, AvailableTech>();
+    this.availableTechs = new Map<string, TECH_STATUS_UPDATE>();
   }
 
   async handleConnection(client: Socket) {
@@ -74,8 +83,10 @@ export class TechsIoService
         throw new WsException('unauthorized');
       }
 
+      const user = await this.usersService.getTechnichianInfo(valid.username);
+
       this.clients.set(client.id, {
-        user: valid as any,
+        user,
         ws: client,
       });
 
@@ -108,9 +119,9 @@ export class TechsIoService
   }
 
   updateTechStatus(id: string, status: TECH_STATUS_UPDATE) {
-    const tech = this.availableTechs.get(id);
-    if (!tech) return;
-    tech.status = status;
+    let tech = this.availableTechs.get(id);
+    if (!tech && !status.available) return;
+    this.availableTechs.set(id, status);
   }
 
   @UseGuards(ValidTechLicense)
@@ -122,5 +133,15 @@ export class TechsIoService
     this.updateTechStatus(client.id, status);
   }
 
-  
+  async *getAvailableTechsByRules({ rules }: IssuesTypesEntity) {
+    const max = 200;
+
+    let res = [];
+    for (const [id, data] of this.availableTechs) {
+      const { user, ws } = this.clients.get(id);
+      const a = 6;
+    }
+
+    const a = 7;
+  }
 }

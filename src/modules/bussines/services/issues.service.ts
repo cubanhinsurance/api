@@ -19,7 +19,7 @@ export class IssuesService {
   constructor(
     @InjectRepository(IssuesEntity)
     private issuesRepo: Repository<IssuesEntity>,
-    private ioService: TechsIoService,
+    private techsIoService: TechsIoService,
     private usersService: UsersService,
     private locationsService: LocationsService,
     private enumsService: EnumsService,
@@ -57,11 +57,7 @@ export class IssuesService {
     if (!loc) throw new NotFoundException('Ubicacion no existe');
 
     const issue = await this.enumsService.getIssueType(type);
-    // STRING = 'string',
-    // BOOL = 'boolean',
-    // NUMBER = 'number',
-    // PHOTO = 'photo',
-    // OPTIONS = 'options',
+
     if (!issue) throw new NotFoundException('Tipo de incidencia no existe');
 
     let questionsSchema = {};
@@ -101,10 +97,13 @@ export class IssuesService {
     data = value;
 
     try {
-      const issueCreated = await this.issuesRepo
+      const {
+        identifiers: [{ id }],
+      } = await this.issuesRepo
         .createQueryBuilder('i')
         .insert()
         .values({
+          type: issue,
           date: date ?? new Date(),
           description,
           scheduled,
@@ -117,13 +116,34 @@ export class IssuesService {
         })
         .execute();
 
+      const i = await this.getIssue(id);
+      this.notifyIssueTechs(i);
       const b = 6;
     } catch (e) {
       const a = 8;
     }
   }
 
-  async findAvailableTechsByRules(issue: IssuesTypesEntity) {
-    const a = 7;
+  async getIssue(id: number): Promise<IssuesEntity> {
+    return await this.issuesRepo.findOne({
+      relations: [
+        'type',
+        'client_location',
+        'client_location.province',
+        'client_location.municipality',
+      ],
+      where: {
+        id,
+      },
+    });
+  }
+
+  async notifyIssueTechs(issue: IssuesEntity) {
+    for await (const techs of this.techsIoService.getAvailableTechsByRules(
+      issue.type,
+    )) {
+      const a = 7;
+    }
+    const a = 6;
   }
 }
