@@ -25,6 +25,10 @@ import { MunicialitiesEntity } from '../entities/municipalities.entity';
 import { PayGatewaysEntity } from '../entities/pay_gateways.entity';
 import { ProvincesEntity } from '../entities/provinces.entity';
 
+interface IssuesTypesListItem extends IssuesTypesEntity {
+  path?: string;
+}
+
 @Injectable()
 export class EnumsService {
   constructor(
@@ -131,6 +135,28 @@ export class EnumsService {
     }
 
     return issues;
+  }
+
+  private turn2List(childs: IssuesTypesEntity[], parents: string[] = []) {
+    let list: IssuesTypesListItem[] = [];
+    for (const chld of childs) {
+      if (chld.childs?.length > 0) {
+        const chlds = this.turn2List(chld.childs, [...parents, chld.name]);
+        list = [...list, ...chlds];
+      } else {
+        list.push({
+          ...chld,
+          path: parents ? parents.join('/') : null,
+        });
+      }
+    }
+    return list;
+  }
+
+  async getIssuesList() {
+    const issuesTree = await this.getIssuesTree();
+
+    return this.turn2List(issuesTree) as any;
   }
 
   async createIssueType(
@@ -241,6 +267,16 @@ export class EnumsService {
         `Ya existe una incidencia con el nombre :"${name}" en esa categoria`,
       );
 
+    const issueObj = await this.issuesTypes.findOne({
+      relations: ['parent'],
+      where: {
+        id: issue_id,
+      },
+    });
+
+    if (!issueObj)
+      throw new NotFoundException(`Incidencia ${issue_id} no existe`);
+
     if (rules) {
       let habilitiesIds = [];
       for (const rule of rules) {
@@ -251,17 +287,8 @@ export class EnumsService {
         this.habilities,
         'No se encontraron las habilidades ',
       );
+      issueObj.rules = rules;
     }
-
-    const issueObj = await this.issuesTypes.findOne({
-      relations: ['parent'],
-      where: {
-        id: issue_id,
-      },
-    });
-
-    if (!issueObj)
-      throw new NotFoundException(`Incidencia ${issue_id} no existe`);
 
     if (typeof name != 'undefined') issueObj.name = name;
     if (typeof avatar != 'undefined') issueObj.avatar = base64;
@@ -323,7 +350,7 @@ export class EnumsService {
     });
   }
 
-  async getIssueType(type:number){
-    return await this.issuesTypes.findOne(type)
+  async getIssueType(type: number) {
+    return await this.issuesTypes.findOne(type);
   }
 }

@@ -13,6 +13,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { ValidTechLicense } from 'src/modules/auth/guards/activeTech.guard';
+import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
 import { IssuesTypesEntity } from 'src/modules/enums/entities/issues_types.entity';
 import { TechniccianEntity } from 'src/modules/users/entities/techniccian.entity';
 import { UsersEntity } from 'src/modules/users/entities/user.entity';
@@ -43,7 +44,7 @@ export interface AvailableTech {
 
 export interface ClientIndex {
   ws: Socket;
-  user: UsersEntity;
+  user: TechniccianEntity;
 }
 
 @Injectable()
@@ -63,7 +64,7 @@ export class TechsIoService
     private jwt: JwtService,
     private usersService: UsersService,
   ) {
-    this.clients = new Map<string, any>();
+    this.clients = new Map<string, WsClient>();
     this.availableTechs = new Map<string, TECH_STATUS_UPDATE>();
   }
 
@@ -133,13 +134,27 @@ export class TechsIoService
     this.updateTechStatus(client.id, status);
   }
 
-  async *getAvailableTechsByRules({ rules }: IssuesTypesEntity) {
+  isPrepared(tech: TechniccianEntity, { rules }: IssuesTypesEntity): boolean {
+    if (!rules || rules?.length == 0 || rules?.[0]?.length == 0) return true;
+
+    const [ors] = rules;
+
+    return !!tech.habilities.find(
+      (h: HabilitiesEntity) => !!ors.find((id) => id == h.id),
+    );
+    const a = 6;
+  }
+
+  async *getAvailableTechsByRules(issue: IssuesTypesEntity) {
     const max = 200;
 
     let res = [];
     for (const [id, data] of this.availableTechs) {
       const { user, ws } = this.clients.get(id);
-      const a = 6;
+
+      if (!this.isPrepared(user, issue)) continue;
+
+      const b = 7;
     }
 
     const a = 7;

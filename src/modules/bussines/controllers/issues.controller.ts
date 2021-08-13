@@ -26,4 +26,12 @@ export class IssuesController {
   ) {
     await this.issuesService.addIssue(username, location, data);
   }
+
+  @ApiOperation({
+    description: 'Devuelve listado de incidencias incidencias abiertas'
+  })
+  @Get('open')
+  async getOpenIssues(@User('username') username){
+
+  }
 }

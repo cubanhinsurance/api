@@ -62,6 +62,10 @@ export const ISSUE_SCHEMA = object({
   rules: array().items(array().items(HABILITIES_SCHEMA)),
 });
 
+export const ISSUE_SCHEMA_LIST = ISSUE_SCHEMA.keys({
+  path: string(),
+});
+
 export const ISSUE_TREE_SCHEMA = array().items(
   ISSUE_SCHEMA.keys({
     childs: array().items(ISSUE_SCHEMA).optional(),

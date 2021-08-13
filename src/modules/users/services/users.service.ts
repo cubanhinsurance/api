@@ -694,7 +694,7 @@ export class UsersService {
       .leftJoinAndSelect('t.habilities', 'h')
       .leftJoinAndSelect('t.province', 'province')
       .leftJoinAndSelect('t.municipality', 'municipality')
-      .where('u.username=username', { username })
+      .where(`u.username = :username`, { username })
       .getOne();
   }
 }

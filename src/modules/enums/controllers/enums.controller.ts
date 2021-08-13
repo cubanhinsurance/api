@@ -43,6 +43,7 @@ import {
 import {
   CREATE_ISSUE_TREE_NODE_SCHEMA,
   ISSUE_SCHEMA,
+  ISSUE_SCHEMA_LIST,
   ISSUE_TREE_SCHEMA,
   UPDATE_ISSUE_TREE_NODE_SCHEMA,
 } from '../schemas/issues.schema';
@@ -177,6 +178,19 @@ export class EnumsController {
   @Get('issues')
   async getIssues() {
     return await this.enumsService.getIssuesTree();
+  }
+
+  @ApiTags('Enums', 'Issues')
+  @ApiOperation({
+    summary:
+      'Devuelve el listado de Tipos de incidencias en forma de lista con atributo con las migas de pan representando el camino a esta issue',
+  })
+  @ApiOkResponse({
+    schema: j2s(array().items(ISSUE_SCHEMA_LIST)).swagger,
+  })
+  @Get('issues_list')
+  async getIssuesLists() {
+    return await this.enumsService.getIssuesList();
   }
 
   @ApiTags('Enums')
