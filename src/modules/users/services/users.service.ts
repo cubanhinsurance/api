@@ -605,13 +605,13 @@ export class UsersService {
         if (!!u.techniccian_info.expiration_date && u.techniccian_info.active) {
           u.techniccian_info.active = moment(
             u.techniccian_info.expiration_date,
-          ).isAfter(moment());
+          ).isBefore(moment());
         }
       }
 
       if (u.agent_info) {
         if (!!u.agent_info.expiration_date && u.agent_info.active) {
-          u.agent_info.active = moment(u.agent_info.expiration_date).isAfter(
+          u.agent_info.active = moment(u.agent_info.expiration_date).isBefore(
             moment(),
           );
         }

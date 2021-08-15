@@ -20,6 +20,7 @@ import { System_configService } from './modules/system_config/services/system_co
 import { MAIL_CONFIG } from './modules/mail/common';
 import { Observable } from 'rxjs';
 import { IoModule } from './modules/io/io.module';
+import { OsrmModule } from './modules/osrm/src/osrm.module';
 
 @Module({
   imports: [
@@ -50,6 +51,18 @@ import { IoModule } from './modules/io/io.module';
       },
       inject: [ConfigService],
     }),
+    OsrmModule.forRootAsnc({
+      global: true,
+      useFactory({ config }: ConfigService) {
+        const a = 6;
+        return {
+          bike_api: config.osrm.bike,
+          foot_api: config.osrm.foot,
+          car_api: config.osrm.car,
+        };
+      },
+      inject: [ConfigService],
+    }),
     FunctionalitiesModule,
     MailModule.registerAsync({
       global: true,
@@ -68,6 +81,7 @@ import { IoModule } from './modules/io/io.module';
       },
       inject: ['APP_CONFIG'],
     }),
+
     UsersModule,
     EnumsModule,
   ],

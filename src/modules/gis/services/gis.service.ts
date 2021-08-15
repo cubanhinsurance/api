@@ -1,7 +1,9 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
+  OnModuleInit,
 } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { MunicialitiesEntity } from 'src/modules/enums/entities/municipalities.entity';
@@ -9,14 +11,34 @@ import { ProvincesEntity } from 'src/modules/enums/entities/provinces.entity';
 import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
-export class GisService {
+export class GisService implements OnModuleInit {
+  private municipalitiesCache: Map<number, any>;
   constructor(
     @InjectEntityManager() private entityManager: EntityManager,
     @InjectRepository(ProvincesEntity)
     private provincesRepo: Repository<ProvincesEntity>,
     @InjectRepository(MunicialitiesEntity)
     private muncsRepo: Repository<MunicialitiesEntity>,
-  ) {}
+  ) {
+    this.municipalitiesCache = new Map<number, any>();
+  }
+
+  async onModuleInit() {
+    Logger.log('Loading municipalities cache ...', 'GisService');
+    const muncs = await this.muncsRepo
+      .createQueryBuilder('m')
+      .select(['m.id'])
+      .addSelect('st_asgeojson(st_centroid(m.geom))', 'centroid')
+      .getRawMany();
+
+    for (const { m_id, centroid } of muncs) {
+      this.municipalitiesCache.set(m_id, JSON.parse(centroid));
+    }
+
+    Logger.log('Municipalities cache loaded !!!', 'GisService');
+
+    const b = 7;
+  }
 
   async whereis(x: number, y: number) {
     const response = await this.muncsRepo
@@ -78,5 +100,9 @@ export class GisService {
         throw new NotFoundException();
       }
     }
+  }
+
+  getMunicipalityCentroid(id: number) {
+    return this.municipalitiesCache.get(id);
   }
 }

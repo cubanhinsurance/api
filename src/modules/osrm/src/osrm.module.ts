@@ -2,7 +2,10 @@ import { DynamicModule, HttpModule, Module } from '@nestjs/common';
 import { OsrmService } from './osrm.service';
 
 export interface OsrmModuleOptions {
-  api: string;
+  api?: string;
+  car_api?: string;
+  bike_api?: string;
+  foot_api?: string;
 }
 
 export interface SyncOsrmModuleOptions extends OsrmModuleOptions {
@@ -10,7 +13,7 @@ export interface SyncOsrmModuleOptions extends OsrmModuleOptions {
   timeout?: number;
 }
 
-const factory = (): OsrmModuleOptions => null;
+const factory = (...any): OsrmModuleOptions => null;
 
 export interface AsyncOsrmModuleOptions {
   global?: boolean;

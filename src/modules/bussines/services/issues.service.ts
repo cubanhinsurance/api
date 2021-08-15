@@ -1,17 +1,20 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { array, boolean, number, object, string } from 'joi';
 import { LocationsController } from 'src/modules/client/controllers/locations.controller';
 import { LocationsService } from 'src/modules/client/services/locations.service';
 import { IssuesTypesEntity } from 'src/modules/enums/entities/issues_types.entity';
 import { EnumsService } from 'src/modules/enums/services/enums.service';
+import { ISSUE_CREATED } from 'src/modules/io/io.constants';
 import { TechsIoService } from 'src/modules/io/services/techs_io.service';
 import { UsersService } from 'src/modules/users/services/users.service';
-import { Repository } from 'typeorm';
+import { FindConditions, Repository } from 'typeorm';
 import { IssuesEntity, ISSUE_STATE } from '../entities/issues.entity';
 
 @Injectable()
@@ -19,7 +22,7 @@ export class IssuesService {
   constructor(
     @InjectRepository(IssuesEntity)
     private issuesRepo: Repository<IssuesEntity>,
-    private techsIoService: TechsIoService,
+    @Inject('BROKER') private broker: ClientProxy,
     private usersService: UsersService,
     private locationsService: LocationsService,
     private enumsService: EnumsService,
@@ -31,13 +34,14 @@ export class IssuesService {
     {
       type,
       description,
-      maxDistance,
+      maxDistance = 100000,
       date,
       expiration_date,
-      max,
+      max = 100,
       scheduled,
       scheduled_description,
       data = {},
+      photos = [],
     }: {
       type: number;
       scheduled?: boolean;
@@ -48,6 +52,7 @@ export class IssuesService {
       max?: number;
       maxDistance?: number;
       data?: object;
+      photos?: any[];
     },
   ) {
     const user = await this.usersService.findUserByUserName(username);
@@ -111,20 +116,31 @@ export class IssuesService {
           state: ISSUE_STATE.CREATED,
           data: data ?? {},
           expiration_date,
+          max_distance: maxDistance,
+          max_techs: max,
           location: () => `st_geomfromgeojson('${JSON.stringify(loc.geom)}')`,
           client_location: loc,
         })
         .execute();
 
-      const i = await this.getIssue(id);
-      this.notifyIssueTechs(i);
-      const b = 6;
+      const i = await this.getOpennedIssue(id);
+
+      this.broker.emit(ISSUE_CREATED, i);
     } catch (e) {
       const a = 8;
     }
   }
 
-  async getIssue(id: number): Promise<IssuesEntity> {
+  async getOpennedIssue(id: number) {
+    return await this.getIssueFromDb(id, {
+      state: ISSUE_STATE.CREATED,
+    });
+  }
+
+  async getIssueFromDb(
+    id: number,
+    extraConditions: FindConditions<IssuesEntity> = {},
+  ): Promise<IssuesEntity> {
     return await this.issuesRepo.findOne({
       relations: [
         'type',
@@ -134,16 +150,8 @@ export class IssuesService {
       ],
       where: {
         id,
+        ...extraConditions,
       },
     });
-  }
-
-  async notifyIssueTechs(issue: IssuesEntity) {
-    for await (const techs of this.techsIoService.getAvailableTechsByRules(
-      issue.type,
-    )) {
-      const a = 7;
-    }
-    const a = 6;
   }
 }

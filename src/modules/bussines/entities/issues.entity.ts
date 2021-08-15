@@ -112,6 +112,12 @@ export class IssuesEntity {
   @ManyToOne(() => ClientLocationsEntity, { nullable: true })
   @Index()
   client_location: ClientLocationsEntity;
+
+  @Column({ nullable: true })
+  max_techs: number;
+
+  @Column({ nullable: true })
+  max_distance: number;
 }
 
 @Entity({

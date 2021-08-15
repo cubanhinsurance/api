@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { REDIS_BROKER } from 'src/lib/microservice/broker';
 import { ClientModule } from '../client/client.module';
 import { CoinsEntity } from '../enums/entities/coins.entity';
 import { IssuesTypesEntity } from '../enums/entities/issues_types.entity';
@@ -23,6 +24,7 @@ import { LicensesTypesService } from './services/licenses_types.service';
 
 @Module({
   imports: [
+    REDIS_BROKER,
     UsersModule,
     IoModule,
     ClientModule,

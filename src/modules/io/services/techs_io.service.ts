@@ -13,34 +13,14 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { ValidTechLicense } from 'src/modules/auth/guards/activeTech.guard';
+import { IssuesEntity } from 'src/modules/bussines/entities/issues.entity';
 import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
 import { IssuesTypesEntity } from 'src/modules/enums/entities/issues_types.entity';
 import { TechniccianEntity } from 'src/modules/users/entities/techniccian.entity';
 import { UsersEntity } from 'src/modules/users/entities/user.entity';
 import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
 import { UsersService } from 'src/modules/users/services/users.service';
-import { IoMessage, WsClient } from './clients_io.service';
-
-export enum TRANSPORT_PROFILE {
-  FOOT = 'foot',
-  BICYCLE = 'bicycle',
-  CAR = 'car',
-}
-
-export interface TECH_STATUS_UPDATE {
-  available?: boolean;
-  gps?: {
-    x: number;
-    y: number;
-  };
-  profile?: TRANSPORT_PROFILE;
-  maxDistance?: number;
-}
-
-export interface AvailableTech {
-  user: TechniccianEntity;
-  status: TECH_STATUS_UPDATE;
-}
+import { IssuesCacheService, TECH_STATUS_UPDATE } from './issues_cache.service';
 
 export interface ClientIndex {
   ws: Socket;
@@ -53,20 +33,13 @@ export interface ClientIndex {
 })
 export class TechsIoService
   implements OnGatewayConnection, OnGatewayDisconnect {
-  clients: Map<string, WsClient>;
-  availableTechs: Map<string, TECH_STATUS_UPDATE>;
-
   @WebSocketServer()
   server: Server;
 
   constructor(
-    @Inject('BROKER') private broker: ClientProxy,
     private jwt: JwtService,
-    private usersService: UsersService,
-  ) {
-    this.clients = new Map<string, WsClient>();
-    this.availableTechs = new Map<string, TECH_STATUS_UPDATE>();
-  }
+    private techsHandler: IssuesCacheService,
+  ) {}
 
   async handleConnection(client: Socket) {
     try {
@@ -84,21 +57,19 @@ export class TechsIoService
         throw new WsException('unauthorized');
       }
 
-      const user = await this.usersService.getTechnichianInfo(valid.username);
-
-      this.clients.set(client.id, {
-        user,
-        ws: client,
-      });
+      this.techsHandler.techConnected(valid.username, client);
 
       Logger.log(
         `Tecnico conectado: ${valid.username} - ${client.handshake.address}`,
       );
-    } catch (e) {}
+    } catch (e) {
+      const b = 7;
+    }
   }
 
   handleDisconnect(client: Socket) {
-    this.clients.delete(client.id);
+    Logger.warn(`Tecnico disconnected: ${client.id}`);
+    this.techsHandler.techDisconnected(client);
   }
 
   @UseGuards(ValidTechLicense)
@@ -108,21 +79,17 @@ export class TechsIoService
     @MessageBody() status: TECH_STATUS_UPDATE,
   ) {
     if (!status.available) {
-      this.availableTechs.delete(client.id);
+      Logger.warn(`Tecnico unavailable: ${client.id}`);
+      this.techsHandler.techUnavailable(client);
       return;
     }
 
-    this.updateTechStatus(client.id, status);
+    Logger.log(`Tecnico available: ${client.id} (${client.handshake.address})`);
+    this.techsHandler.techAvailable(client.id, status);
   }
 
   getTechUser(id: string) {
-    return this.clients.get(id)?.user;
-  }
-
-  updateTechStatus(id: string, status: TECH_STATUS_UPDATE) {
-    let tech = this.availableTechs.get(id);
-    if (!tech && !status.available) return;
-    this.availableTechs.set(id, status);
+    return this.techsHandler.getTechUser(id);
   }
 
   @UseGuards(ValidTechLicense)
@@ -131,32 +98,10 @@ export class TechsIoService
     @ConnectedSocket() client: Socket,
     @MessageBody() status: TECH_STATUS_UPDATE,
   ) {
-    this.updateTechStatus(client.id, status);
+    this.techsHandler.updateTechStatus(client.id, status);
   }
 
-  isPrepared(tech: TechniccianEntity, { rules }: IssuesTypesEntity): boolean {
-    if (!rules || rules?.length == 0 || rules?.[0]?.length == 0) return true;
-
-    const [ors] = rules;
-
-    return !!tech.habilities.find(
-      (h: HabilitiesEntity) => !!ors.find((id) => id == h.id),
-    );
-    const a = 6;
-  }
-
-  async *getAvailableTechsByRules(issue: IssuesTypesEntity) {
-    const max = 200;
-
-    let res = [];
-    for (const [id, data] of this.availableTechs) {
-      const { user, ws } = this.clients.get(id);
-
-      if (!this.isPrepared(user, issue)) continue;
-
-      const b = 7;
-    }
-
-    const a = 7;
+  async issueCreated(data) {
+    this.techsHandler.issueCreated(data);
   }
 }
