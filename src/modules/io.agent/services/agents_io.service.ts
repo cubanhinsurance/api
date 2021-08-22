@@ -23,9 +23,9 @@ export interface IoMessage {
 
 @Injectable()
 @WebSocketGateway({
-  namespace: 'clients',
+  namespace: '/agents',
 })
-export class ClientsIoService
+export class AgentsIoService
   implements OnGatewayConnection, OnGatewayDisconnect {
   clients: Map<string, WsClient>;
 
@@ -64,21 +64,11 @@ export class ClientsIoService
     }
   }
 
-  async emitTechConfirmation(data) {
-    for (const id in this.clients) {
-      const {
-        user: { username: u },
-        ws,
-      } = this.clients[id];
-
-      if (data.username == u) {
-        (ws as Socket).send({
-          type: 'tecjApplicantConfirmation',
-          data,
-        } as IoMessage);
-        break;
-      }
-    }
+  async emitNewTechApp(techApp) {
+    this.server.send({
+      type: 'techApplicantsCount',
+      data: await this.techApplicants.getApplicantsCount(),
+    } as IoMessage);
   }
 
   handleDisconnect(client: Socket) {

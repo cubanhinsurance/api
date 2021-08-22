@@ -13,6 +13,7 @@ import { TechApplicantEntity } from '../bussines/entities/tech_applicant.entity'
 import { TechApplicationsService } from './services/tech_applications.service';
 import { REDIS_BROKER } from 'src/lib/microservice/broker';
 import { RedisCacheModule } from 'src/lib/cache/redis';
+import { RatingsEntity } from '../bussines/entities/ratings.entity';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RedisCacheModule } from 'src/lib/cache/redis';
       ProvincesEntity,
       MunicialitiesEntity,
       TechApplicantEntity,
+      RatingsEntity,
     ]),
     RedisCacheModule('redis'),
   ],

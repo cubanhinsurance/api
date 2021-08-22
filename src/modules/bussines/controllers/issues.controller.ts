@@ -5,17 +5,22 @@ import {
   Param,
   Post,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { number } from 'joi';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import { User } from 'src/modules/auth/decorators/user.decorator';
 import j2s from 'joi-to-swagger';
-import { CREATE_ISSUE_SCHEMA } from '../schemas/issues.schema';
+import {
+  CREATE_ISSUE_SCHEMA,
+  ISSUE_APPLICATION,
+} from '../schemas/issues.schema';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IssuesService } from '../services/issues.service';
 import { imageFilter } from 'src/lib/multer/filter';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { HttpValidTechLicense } from 'src/modules/auth/guards/activeTech.guard';
 
 @ApiTags('Issues')
 @Controller('issues')
@@ -52,4 +57,19 @@ export class IssuesController {
   })
   @Get('open')
   async getOpenIssues(@User('username') username) {}
+
+  @ApiOperation({
+    description: 'Aplicar para una incidencia',
+  })
+  @ApiBody({
+    schema: j2s(ISSUE_APPLICATION).swagger,
+  })
+  @Post('application/:issue')
+  async addIssueApplication(
+    @Param('issue') issue: number,
+    @User('username') username: string,
+    @Body(new JoiPipe(ISSUE_APPLICATION)) app,
+  ) {
+    await this.issuesService.createIssueApplication(username, issue, app);
+  }
 }

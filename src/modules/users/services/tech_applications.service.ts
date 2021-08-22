@@ -17,7 +17,7 @@ import {
   TECH_APPLICANT,
   TECH_APPLICANT_CANCELLED,
   TECH_APPLICANT_CONFIRMED,
-} from 'src/modules/io/io.constants';
+} from 'src/modules/bussines/io.constants';
 import { In, IsNull, Repository } from 'typeorm';
 import { TechApplicantEntity } from '../../bussines/entities/tech_applicant.entity';
 import { TechDto } from '../dtos/user.dto';

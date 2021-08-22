@@ -16,6 +16,7 @@ import {
   IsNull,
   LessThanOrEqual,
   Repository,
+  SelectQueryBuilder,
 } from 'typeorm';
 import { AgentDto, TechDto, UserDto } from '../dtos/user.dto';
 import { UsersEntity } from '../entities/user.entity';
@@ -35,12 +36,15 @@ import { hotp, totp } from 'otplib';
 import { createTransport } from 'nodemailer';
 import { InjectMailService } from 'src/modules/mail/common';
 import { MailService } from 'src/modules/mail/mail.service';
+import { RatingsEntity } from 'src/modules/bussines/entities/ratings.entity';
 
 export enum USER_TYPE {
   USER = 'user',
   TECH = 'tech',
   AGENT = 'agent',
 }
+
+const ratingsInterceptor = (qb: SelectQueryBuilder<RatingsEntity>): void => {};
 
 @Injectable()
 export class UsersService {
@@ -56,6 +60,9 @@ export class UsersService {
     private provinces: Repository<ProvincesEntity>,
     @InjectRepository(MunicialitiesEntity)
     private municipalities: Repository<MunicialitiesEntity>,
+
+    @InjectRepository(RatingsEntity)
+    private usersRatingsRepo: Repository<RatingsEntity>,
     @InjectMailService() private mail: MailService,
   ) {
     // const b = 7;
@@ -476,8 +483,6 @@ export class UsersService {
       .where('u.username=:username', { username })
       .getOne();
 
-    (data.techniccian_info as any).rating = Math.random() * (5 - 0) + 0;
-
     return data;
   }
 
@@ -696,5 +701,59 @@ export class UsersService {
       .leftJoinAndSelect('t.municipality', 'municipality')
       .where(`u.username = :username`, { username })
       .getOne();
+  }
+
+  async getUserReview(username: string, qb?: typeof ratingsInterceptor) {
+    const ctQb = await this.usersRatingsRepo
+      .createQueryBuilder('r')
+      .innerJoin('r.from', 'from')
+      .innerJoin('r.to', 'to')
+      .groupBy('r.like')
+      .select('count(r.id)', 'ct')
+      .addSelect('r.like', 'like')
+      .where('to.username=:username', { username });
+
+    if (qb) qb(ctQb);
+
+    const ct = await ctQb.getRawMany();
+
+    let likes = 0;
+    let dislikes = 0;
+
+    for (const { ct: c, like } of ct) {
+      if (like) likes = +c;
+      else dislikes = +c;
+    }
+
+    const avgQb = await this.usersRatingsRepo
+      .createQueryBuilder('r')
+      .innerJoin('r.from', 'from')
+      .innerJoin('r.to', 'to')
+      .where('to.username=:username', { username })
+      .select('avg(r.rating)', 'avg')
+      .groupBy('r.to');
+
+    if (qb) qb(avgQb);
+
+    const avg = await avgQb.getRawOne();
+
+    return {
+      rating: avg ? +avg.avg : 0,
+      reviews: likes + dislikes,
+      likes,
+      dislikes,
+    };
+  }
+
+  async getTechniccianReview(username: string) {
+    return await this.getUserReview(username, (qb) => {
+      qb.innerJoin('to.techniccian_info', 'tinfo').andWhere(
+        'r.tech_review=true',
+      );
+    });
+  }
+
+  async getClientReview(username: string) {
+    return await this.getUserReview(username, (qb) => {});
   }
 }

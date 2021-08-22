@@ -45,4 +45,7 @@ export class RatingsEntity {
 
   @Column({ default: true })
   like: boolean;
+
+  @Column({ default: true })
+  tech_review: boolean;
 }

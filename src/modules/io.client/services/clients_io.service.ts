@@ -9,6 +9,8 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
+import { IssueApplication } from 'src/modules/bussines/entities/issues_applications.entity';
+import { IssuesCacheService } from 'src/modules/bussines/services/issues_cache.service';
 import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
 
 export interface WsClient {
@@ -23,11 +25,13 @@ export interface IoMessage {
 
 @Injectable()
 @WebSocketGateway({
-  namespace: 'agents',
+  namespace: '/clients',
 })
-export class AgentsIoService
+export class ClientsIoService
   implements OnGatewayConnection, OnGatewayDisconnect {
   clients: Map<string, WsClient>;
+
+  usersIndex: Record<string, string>;
 
   @WebSocketServer()
   server: Server;
@@ -36,8 +40,10 @@ export class AgentsIoService
     private jwt: JwtService,
     @Inject('BROKER') private broker: ClientProxy,
     private techApplicants: TechApplicationsService,
+    private issuesCache: IssuesCacheService,
   ) {
     this.clients = new Map<string, any>();
+    this.usersIndex = {};
   }
 
   async handleConnection(client: Socket) {
@@ -55,7 +61,7 @@ export class AgentsIoService
         throw new WsException('unauthorized');
       }
 
-      this.clients.set(client.id, {
+      this.clients.set(valid.username, {
         user: valid as any,
         ws: client,
       });
@@ -64,14 +70,28 @@ export class AgentsIoService
     }
   }
 
-  async emitNewTechApp(techApp) {
-    this.server.send({
-      type: 'techApplicantsCount',
-      data: await this.techApplicants.getApplicantsCount(),
-    } as IoMessage);
+  async emitTechConfirmation(data) {
+    for (const id in this.clients) {
+      const {
+        user: { username: u },
+        ws,
+      } = this.clients[id];
+
+      if (data.username == u) {
+        (ws as Socket).send({
+          type: 'techApplicantConfirmation',
+          data,
+        } as IoMessage);
+        break;
+      }
+    }
   }
 
   handleDisconnect(client: Socket) {
     this.clients.delete(client.id);
+  }
+
+  newIssueApplication(app: IssueApplication) {
+    const a = 7;
   }
 }

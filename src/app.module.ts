@@ -19,13 +19,17 @@ import { MailModule } from './modules/mail/mail.module';
 import { System_configService } from './modules/system_config/services/system_config.service';
 import { MAIL_CONFIG } from './modules/mail/common';
 import { Observable } from 'rxjs';
-import { IoModule } from './modules/io/io.module';
 import { OsrmModule } from './modules/osrm/src/osrm.module';
+import { IoClientModule } from './modules/io.client/io_client.module';
+import { IoAgentModule } from './modules/io.agent/io_agent.module';
+import { IoTechsModule } from './modules/io.tech/io_techs.module';
 
 @Module({
   imports: [
     GisModule,
-    IoModule,
+    IoClientModule,
+    IoAgentModule,
+    IoTechsModule,
     System_configModule,
     AuthModule,
     RolesModule,

@@ -1,7 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IssuesEntity } from 'src/modules/bussines/entities/issues.entity';
-import { IssuesService } from 'src/modules/bussines/services/issues.service';
-import { IoMessage, WsClient } from './clients_io.service';
 import { TechniccianEntity } from 'src/modules/users/entities/techniccian.entity';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { Socket } from 'socket.io';
@@ -12,10 +10,29 @@ import { GisService } from 'src/modules/gis/services/gis.service';
 import { distance, point } from '@turf/turf';
 import { OsrmService, Point, PROFILE } from 'src/modules/osrm/src/osrm.service';
 import { InjectEntityManager } from '@nestjs/typeorm';
+import { IssueApplication } from 'src/modules/bussines/entities/issues_applications.entity';
+import {
+  ISSUE_CREATED,
+  ISSUE_UNAVAILABLE,
+  NEW_ISSUE_APPLICATION,
+} from 'src/modules/bussines/io.constants';
+
+export interface WsClient {
+  ws: Socket;
+  user: any;
+}
+
+export interface IoMessage {
+  type: string;
+  data: any;
+}
+
+type Techs = Map<string, DISTANCE_INFO>;
 
 export interface OPEN_ISSUES {
   issue: IssuesEntity;
-  techs: AVAILABLE_FOR_ISSUE_INFO[];
+  techs: Techs;
+  applications: Techs;
 }
 
 export enum TRANSPORT_PROFILE {
@@ -46,11 +63,28 @@ export interface AVAILABLE_FOR_ISSUE_INFO {
 
 export interface TECH_DISTANCE_INFO {}
 
+export interface WsTech {
+  ws: Socket;
+  reviews: any;
+  user: TechniccianEntity;
+}
+
+export interface DISTANCE_INFO {
+  id: string;
+  tech: TechniccianEntity;
+  status: TECH_STATUS_UPDATE;
+  distance: number;
+  duration?: number;
+  reviews?: any;
+  linearDistance: number;
+  route?: any;
+}
+
 @Injectable()
 export class IssuesCacheService {
-  clients: Map<string, WsClient>;
+  clients: Map<string, WsTech>;
   availableTechs: Map<string, TECH_STATUS_UPDATE>;
-  private openIssues: Map<number, OPEN_ISSUES>;
+  openIssues: Map<number, OPEN_ISSUES>;
   constructor(
     @Inject('BROKER') private broker: ClientProxy,
     private usersService: UsersService,
@@ -59,15 +93,17 @@ export class IssuesCacheService {
     @InjectEntityManager() private manager,
   ) {
     this.openIssues = new Map<number, OPEN_ISSUES>();
-    this.clients = new Map<string, WsClient>();
+    this.clients = new Map<string, WsTech>();
     this.availableTechs = new Map<string, TECH_STATUS_UPDATE>();
   }
 
   async techConnected(username: string, client: Socket) {
     const user = await this.usersService.getTechnichianInfo(username);
+    const reviews = await this.usersService.getTechniccianReview(username);
 
     this.clients.set(client.id, {
       user,
+      reviews,
       ws: client,
     });
   }
@@ -80,12 +116,33 @@ export class IssuesCacheService {
 
   techUnavailable(client: Socket) {
     this.availableTechs.delete(client.id);
-    //todo emitir evento unavailable
+
+    const { user, ws } = this.clients.get(client.id);
+    this.unRegisterTechFromOppendIssues(user.user.username);
   }
 
-  techAvailable(id: string, status: TECH_STATUS_UPDATE) {
+  async techAvailable(id: string, status: TECH_STATUS_UPDATE) {
+    const first = !this.availableTechs.get(id);
     this.updateTechStatus(id, status);
-    //todo emitir evento unavailable
+
+    const { user, ws, reviews } = this.clients.get(id);
+
+    if (first) {
+      for (const [issueId, { issue, techs, applications }] of this.openIssues) {
+        if (!!techs.get(user.user.username)) continue;
+        if (!!applications.get(user.user.username)) continue;
+        if (!this.isPrepared(user, issue.type)) continue;
+        const distanceInfo = await this.distanceInfo(id, user, status, issue);
+        if (!distanceInfo) {
+          Logger.error(
+            'Ocurrio un error obteniendo la informacion de distancia de un tecnico recien conectado',
+            'IssuesCache',
+          );
+          continue;
+        }
+        this.registerTech2OpennedIssue(issueId, distanceInfo);
+      }
+    }
   }
 
   getTechUser(id: string) {
@@ -96,15 +153,6 @@ export class IssuesCacheService {
     let tech = this.availableTechs.get(id);
     if (!tech && !status.available) return;
     this.availableTechs.set(id, status);
-  }
-
-  private async cacheOpenedIssue(i: IssuesEntity): Promise<OPEN_ISSUES> {
-    this.openIssues.set(i.id, {
-      issue: i,
-      techs: [],
-    });
-
-    return this.openIssues.get(i.id);
   }
 
   async getIssue(id: number) {
@@ -184,11 +232,12 @@ export class IssuesCacheService {
     const res = [];
     for (const [id, data] of this.availableTechs) {
       if (!this.clients.has(id)) continue;
-      const { user, ws } = this.clients.get(id);
+      const { user, ws, reviews } = this.clients.get(id);
       if (this.isPrepared(user, issue.type))
         res.push({
           id,
           data,
+          reviews,
           user,
         });
     }
@@ -231,45 +280,101 @@ export class IssuesCacheService {
     tech: TechniccianEntity,
     status: TECH_STATUS_UPDATE,
     issue: IssuesEntity,
-  ) {
+  ): Promise<DISTANCE_INFO> {
+    if (tech.province.id != issue.client_location.province.id) {
+      return null;
+    }
+
+    const linearDistance = this.getLinearDistance(tech, status, issue);
+    if (
+      status.maxDistance != undefined &&
+      linearDistance > status.maxDistance + 1000
+    ) {
+      return null;
+    }
+
+    const route = await this.getRoute(tech, status, issue);
+
+    let distance = linearDistance;
+    let duration = null;
+    if (route?.routes?.[0]) {
+      distance = route?.routes?.[0].distance;
+      duration = route?.routes?.[0].duration;
+    }
+
     return {
       id,
       tech,
       status,
-      linearDistance: this.getLinearDistance(tech, status, issue),
-      route: await this.getRoute(tech, status, issue),
+      distance,
+      duration,
+      reviews: this.clients.get(id)?.reviews,
+      linearDistance,
+      route,
     };
   }
 
-  async getClosests2Issue(issue: IssuesEntity, preparedTechs: any[]) {
-    const distances = await Promise.all(
+  async getClosests2Issue(
+    issue: IssuesEntity,
+    preparedTechs: any[],
+  ): Promise<DISTANCE_INFO[]> {
+    const distances = ((await Promise.all(
       preparedTechs.map(({ id, data, user }) => {
         return this.distanceInfo(id, user, data, issue);
       }),
-    );
+    )) as any[]).filter((v) => !!v);
 
     const { max_distance, max_techs } = issue;
 
-    //todo me quede aqui
-    const g = 8;
+    return distances;
+  }
+
+  async registerTech2OpennedIssue(issue: number, tech: DISTANCE_INFO) {
+    const { techs, issue: i } = this.openIssues.get(issue);
+
+    techs.set(tech.tech.user.username, tech);
+
+    const client = this.clients.get(tech.id);
+    if (!client) return;
+
+    client.ws.emit(ISSUE_CREATED, {
+      distance: tech.distance,
+      duration: tech.duration,
+      linearDistance: tech.linearDistance,
+      route: tech.route,
+      issue: i,
+    });
+  }
+
+  async unRegisterTechFromOppendIssues(username: string, cause?: string) {
+    for (const [issueId, { issue, techs }] of this.openIssues) {
+      if (!techs.get(username)) continue;
+      techs.delete(username);
+    }
   }
 
   async issueCreated(issue: IssuesEntity) {
-    const max = 200;
+    this.openIssues.set(issue.id, {
+      issue,
+      techs: new Map<string, DISTANCE_INFO>(),
+      applications: new Map<string, DISTANCE_INFO>(),
+    });
 
-    let res = [];
+    if (issue.applications?.length > 0) {
+      for (const app of issue.applications) {
+        this.broker.emit(NEW_ISSUE_APPLICATION, app);
+      }
+    }
+
     const preparedTechs = this.getPreparedTechs(issue);
     const closests = await this.getClosests2Issue(issue, preparedTechs);
 
-    for (const [id, data] of this.availableTechs) {
-      if (!this.clients.has(id)) continue;
-      const { user, ws } = this.clients.get(id);
-
-      const availableInfo = await this.getAvailableInfo(user, issue, data);
-
-      const b = 7;
+    for (const tech of closests) {
+      this.registerTech2OpennedIssue(issue.id, tech);
     }
+  }
 
+  async newApplication(app: IssueApplication) {
     const a = 7;
   }
 }

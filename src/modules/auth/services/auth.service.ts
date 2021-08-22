@@ -271,6 +271,7 @@ export class AuthService {
     let data = {
       ...user,
       licenses: await this.usersService.getUserLicenses(user.username),
+      reviews: await this.usersService.getClientReview(user.username),
     };
 
     const {
@@ -296,6 +297,10 @@ export class AuthService {
       data.licenses = (await this.userLicensesService.getUserActiveLicenses(
         user.username,
       )) as any;
+
+      data.techniccian_info.reviews = await this.usersService.getTechniccianReview(
+        user.username,
+      );
     }
 
     return data;

@@ -17,9 +17,11 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { IssueApplication } from './issues_applications.entity';
 
 export enum ISSUE_STATE {
   CREATED = 'created',
@@ -118,6 +120,9 @@ export class IssuesEntity {
 
   @Column({ nullable: true })
   max_distance: number;
+
+  @OneToMany(()=>IssueApplication,a=>a.issue)
+  applications: IssueApplication[]
 }
 
 @Entity({

@@ -1,27 +1,40 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Inject,
   Injectable,
   NotFoundException,
+  OnModuleInit,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { array, boolean, number, object, string } from 'joi';
+import { findOrFail } from 'src/lib/typeorm/id_colection_handler';
 import { LocationsController } from 'src/modules/client/controllers/locations.controller';
 import { LocationsService } from 'src/modules/client/services/locations.service';
 import { IssuesTypesEntity } from 'src/modules/enums/entities/issues_types.entity';
 import { EnumsService } from 'src/modules/enums/services/enums.service';
-import { ISSUE_CREATED } from 'src/modules/io/io.constants';
-import { TechsIoService } from 'src/modules/io/services/techs_io.service';
+import {
+  ISSUE_CREATED,
+  NEW_ISSUE_APPLICATION,
+} from 'src/modules/bussines/io.constants';
 import { UsersService } from 'src/modules/users/services/users.service';
-import { FindConditions, Repository } from 'typeorm';
+import { FindConditions, Repository, SelectQueryBuilder } from 'typeorm';
 import { IssuesEntity, ISSUE_STATE } from '../entities/issues.entity';
+import {
+  IssueApplication,
+  ISSUE_APPLICATION_STATE,
+} from '../entities/issues_applications.entity';
+
+const updateQb = (qb: SelectQueryBuilder<IssuesEntity>): void => {};
 
 @Injectable()
-export class IssuesService {
+export class IssuesService implements OnModuleInit {
   constructor(
     @InjectRepository(IssuesEntity)
     private issuesRepo: Repository<IssuesEntity>,
+    @InjectRepository(IssueApplication)
+    private issuesAppRepo: Repository<IssueApplication>,
     @Inject('BROKER') private broker: ClientProxy,
     private usersService: UsersService,
     private locationsService: LocationsService,
@@ -120,6 +133,7 @@ export class IssuesService {
           max_techs: max,
           location: () => `st_geomfromgeojson('${JSON.stringify(loc.geom)}')`,
           client_location: loc,
+          user,
         })
         .execute();
 
@@ -131,27 +145,130 @@ export class IssuesService {
     }
   }
 
+  async onModuleInit() {
+    const opennedIssues = await this.getOpenedIssues();
+
+    for (const i of opennedIssues) {
+      this.broker.emit(ISSUE_CREATED, i);
+    }
+  }
+
   async getOpennedIssue(id: number) {
-    return await this.getIssueFromDb(id, {
-      state: ISSUE_STATE.CREATED,
+    return await this.getIssueFromDb(id, (qb) => {
+      qb.andWhere('i.state=:state', { state: ISSUE_STATE.CREATED });
     });
+  }
+
+  async getOpenedIssues() {
+    return await this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoinAndSelect('i.type', 'type')
+      .innerJoinAndSelect('i.client_location', 'client_location')
+      .innerJoinAndSelect('client_location.province', 'province')
+      .innerJoinAndSelect(
+        'client_location.municipality',
+        'prmunicipalityovince',
+      )
+      .leftJoinAndSelect(
+        'i.applications',
+        'applications',
+        `applications.state='${ISSUE_APPLICATION_STATE.PENDENT}'`,
+      )
+      .leftJoin('applications.tech', 'app_tech')
+      .addSelect(['app_tech.username'])
+      .innerJoin('i.user', 'u')
+      .addSelect(['u.username', 'u.name', 'u.lastname', 'u.phone_number'])
+      .where('i.state=:state', { state: ISSUE_STATE.CREATED })
+      .getMany();
   }
 
   async getIssueFromDb(
     id: number,
-    extraConditions: FindConditions<IssuesEntity> = {},
+    updater?: typeof updateQb,
   ): Promise<IssuesEntity> {
-    return await this.issuesRepo.findOne({
-      relations: [
-        'type',
-        'client_location',
-        'client_location.province',
+    const qb = this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoinAndSelect('i.type', 'type')
+      .innerJoinAndSelect('i.client_location', 'client_location')
+      .innerJoinAndSelect('client_location.province', 'province')
+      .innerJoinAndSelect(
         'client_location.municipality',
-      ],
-      where: {
-        id,
-        ...extraConditions,
-      },
-    });
+        'prmunicipalityovince',
+      )
+      .innerJoin('i.user', 'u')
+      .addSelect(['u.username', 'u.name', 'u.lastname'])
+      .where('i.id=:id', { id });
+
+    if (updater) updater(qb);
+
+    return await qb.getOne();
+
+    // return await this.issuesRepo.findOne({
+
+    //   relations: [
+    //     'type',
+    //     'user',
+    //     'client_location',
+    //     'client_location.province',
+    //     'client_location.municipality',
+    //   ],
+    //   where: {
+    //     id,
+    //     ...extraConditions,
+    //   },
+    // });
+  }
+
+  async createIssueApplication(
+    username: string,
+    issue: number,
+    {
+      max_price,
+      min_price,
+      max_date,
+      message,
+      min_date,
+    }: {
+      min_date?: Date;
+      max_date?: Date;
+      min_price: number;
+      max_price: number;
+      message?: string;
+    },
+  ) {
+    const i = await this.issuesRepo.findOne(issue);
+    if (!i) throw new NotFoundException(`Incidencia no existe`);
+
+    const already = await this.issuesAppRepo
+      .createQueryBuilder('a')
+      .select(['a.id'])
+      .innerJoin('a.tech', 'u')
+      .where('u.username=:username', { username })
+      .getOne();
+
+    if (already)
+      throw new ForbiddenException(
+        'El técnico ya tiene una solicitud presentada',
+      );
+
+    const tech: any = await this.usersService.getUserPrivateData(username);
+
+    try {
+      const app = await this.issuesAppRepo.save({
+        tech: tech,
+        date: new Date(),
+        issue: i,
+        max_date,
+        max_price,
+        message,
+        min_date,
+        min_price,
+        state: ISSUE_APPLICATION_STATE.PENDENT,
+      });
+
+      this.broker.emit(NEW_ISSUE_APPLICATION, app);
+    } catch (e) {
+      const a = 8;
+    }
   }
 }
