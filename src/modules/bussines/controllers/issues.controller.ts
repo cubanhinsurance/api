@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
+  Put,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -65,7 +67,7 @@ export class IssuesController {
   })
   @Post('application/:issue')
   async addIssueApplication(
-    @Param('issue') issue: number,
+    @Param('issue', new JoiPipe(number())) issue: number,
     @User('username') username: string,
     @Body(new JoiPipe(ISSUE_APPLICATION)) app,
   ) {
@@ -76,7 +78,6 @@ export class IssuesController {
     description: 'Obtiene las incidencias de un usuario',
   })
   @Get('user/:username')
-  @Public()
   async getUserIssues(
     @PageSize() pz: number,
     @Page() p: number,
@@ -86,7 +87,7 @@ export class IssuesController {
   }
 
   @ApiOperation({
-    description: 'Obtiene las incidencias de un usuario',
+    description: 'Obtiene las incidencias del usuario autenticado',
   })
   @Get('user')
   async getLoggedUserIssues(
@@ -95,5 +96,52 @@ export class IssuesController {
     @User('username') username: string,
   ) {
     return await this.issuesService.getUserIssues(username, p, pz);
+  }
+
+  @ApiOperation({
+    description: 'Obtiene lo detalles de una incidencia de un usuario',
+  })
+  @Get('issue/:username/:issue')
+  @Public()
+  async getUsserIssueDetails(
+    @Param('issue', new JoiPipe(number())) issue: number,
+    @Param('username') username,
+  ) {
+    return await this.issuesService.getIssueDetails(username, issue);
+  }
+
+  @ApiOperation({
+    description:
+      'Obtiene lo detalles de una incidencia del usuario autenticado',
+  })
+  @Get('issue/:issue')
+  async getLoggedUsserIssueDetails(
+    @Param('issue', new JoiPipe(number())) issue: number,
+    @User('username') username,
+  ) {
+    return await this.issuesService.getIssueDetails(username, issue);
+  }
+
+  @ApiOperation({
+    description: 'Cancela la incidencia de un usuario autenticado',
+  })
+  @Delete('issue/:issue')
+  async cancelIssue(
+    @Param('issue', new JoiPipe(number())) issue: number,
+    @User('username') username: string,
+  ) {
+    await this.issuesService.cancelIssue(username, issue);
+  }
+
+  @ApiOperation({
+    description: 'Acepta la aplicacion de un tecnico en una incidencia',
+  })
+  @Post('issue/:issue/:username')
+  async acceptTech(
+    @Param('issue', new JoiPipe(number())) issue: number,
+    @Param('username') tech: string,
+    @User('username') username: string,
+  ) {
+    await this.issuesService.acceptTech(username, tech, issue);
   }
 }

@@ -12,6 +12,7 @@ import { OsrmModule } from '../osrm/src/osrm.module';
 import { UsersModule } from '../users/users.module';
 import { IssuesController } from './controllers/issues.controller';
 import { LicensesController } from './controllers/licenses.controller';
+import { IgnoredIssuesEntity } from './entities/ignored_issues.entity';
 import { IssuesEntity, IssuesTraces } from './entities/issues.entity';
 import { IssueApplication } from './entities/issues_applications.entity';
 import { LicensesEntity } from './entities/licenses.entity';
@@ -44,6 +45,7 @@ import { LicensesTypesService } from './services/licenses_types.service';
       PayGatewaysEntity,
       IssuesEntity,
       IssueApplication,
+      IgnoredIssuesEntity
     ]),
   ],
   controllers: [LicensesController, IssuesController],

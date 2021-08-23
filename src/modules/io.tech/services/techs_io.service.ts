@@ -117,6 +117,10 @@ export class TechsIoService
     this.techsHandler.issueCreated(data);
   }
 
+  async issueCancelled(data){
+    this.techsHandler.issueCancelled(data);
+  }
+
   async newApplication(app) {
     this.techsHandler.newApplication(app);
   }

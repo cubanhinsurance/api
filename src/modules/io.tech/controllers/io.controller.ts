@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import {
+  ISSUE_CANCELLED,
   ISSUE_CREATED,
   NEW_ISSUE_APPLICATION,
 } from 'src/modules/bussines/io.constants';
@@ -13,6 +14,11 @@ export class TechsIoController {
   @MessagePattern(ISSUE_CREATED)
   async issue_created(@Payload() data) {
     this.techsIoService.issueCreated(data);
+  }
+
+  @MessagePattern(ISSUE_CANCELLED)
+  async issue_cancelled(@Payload() data) {
+    this.techsIoService.issueCancelled(data);
   }
 
   // @MessagePattern(NEW_ISSUE_APPLICATION)

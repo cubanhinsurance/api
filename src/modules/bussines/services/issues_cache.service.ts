@@ -9,13 +9,16 @@ import { HabilitiesEntity } from 'src/modules/enums/entities/habilities.entity';
 import { GisService } from 'src/modules/gis/services/gis.service';
 import { distance, point } from '@turf/turf';
 import { OsrmService, Point, PROFILE } from 'src/modules/osrm/src/osrm.service';
-import { InjectEntityManager } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { IssueApplication } from 'src/modules/bussines/entities/issues_applications.entity';
 import {
   ISSUE_CREATED,
   ISSUE_UNAVAILABLE,
   NEW_ISSUE_APPLICATION,
 } from 'src/modules/bussines/io.constants';
+import { IssuesService } from './issues.service';
+import { IgnoredIssuesEntity } from '../entities/ignored_issues.entity';
+import { Repository } from 'typeorm';
 
 export interface WsClient {
   ws: Socket;
@@ -92,6 +95,8 @@ export class IssuesCacheService {
     private usersService: UsersService,
     private gisService: GisService,
     private osrmService: OsrmService,
+    @InjectRepository(IgnoredIssuesEntity)
+    private ignoredIssuesRepo: Repository<IgnoredIssuesEntity>,
     @InjectEntityManager() private manager,
   ) {
     this.openIssues = new Map<number, OPEN_ISSUES>();
@@ -134,7 +139,7 @@ export class IssuesCacheService {
       for (const [issueId, { issue, techs, applications }] of this.openIssues) {
         if (!!techs.get(user.user.username)) continue;
         if (!!applications.get(user.user.username)) continue;
-        if (!this.isPrepared(user, issue.type)) continue;
+        if (!this.isPrepared(user, issue)) continue;
         const distanceInfo = await this.distanceInfo(id, user, status, issue);
         if (!distanceInfo) {
           Logger.error(
@@ -163,14 +168,33 @@ export class IssuesCacheService {
     if (!!cached) return cached;
   }
 
-  isPrepared(tech: TechniccianEntity, { rules }: IssuesTypesEntity): boolean {
+  async isPrepared(
+    tech: TechniccianEntity,
+    issue: IssuesEntity,
+  ): Promise<boolean> {
+    const {
+      type: { rules },
+    } = issue;
     if (!rules || rules?.length == 0 || rules?.[0]?.length == 0) return true;
 
     const [ors] = rules;
 
-    return !!tech.habilities.find(
+    let prepared = !!tech.habilities.find(
       (h: HabilitiesEntity) => !!ors.find((id) => id == h.id),
     );
+
+    if (!prepared) return false;
+
+    const ignored = await this.ignoredIssuesRepo.findOne({
+      where: {
+        user: tech.user,
+        issue: { id: issue.id },
+      },
+    });
+
+    if (!!ignored) return false;
+
+    return true;
   }
 
   async isCloseEnough(
@@ -222,7 +246,7 @@ export class IssuesCacheService {
     issue: IssuesEntity,
     status: TECH_STATUS_UPDATE,
   ): Promise<AVAILABLE_FOR_ISSUE_INFO | false> {
-    if (!this.isPrepared(tech, issue.type)) return false;
+    if (!(await this.isPrepared(tech, issue))) return false;
     const travelInfo = await this.isCloseEnough(tech, issue, status);
     if (!travelInfo) return false;
     return {
@@ -231,12 +255,12 @@ export class IssuesCacheService {
     };
   }
 
-  getPreparedTechs(issue: IssuesEntity) {
+  async getPreparedTechs(issue: IssuesEntity) {
     const res = [];
     for (const [id, data] of this.availableTechs) {
       if (!this.clients.has(id)) continue;
       const { user, ws, reviews } = this.clients.get(id);
-      if (this.isPrepared(user, issue.type))
+      if (await this.isPrepared(user, issue))
         res.push({
           id,
           data,
@@ -380,7 +404,7 @@ export class IssuesCacheService {
       }
     }
 
-    const preparedTechs = this.getPreparedTechs(issue);
+    const preparedTechs = await this.getPreparedTechs(issue);
     const closests = await this.getClosests2Issue(issue, preparedTechs);
 
     for (const tech of closests) {
@@ -390,5 +414,24 @@ export class IssuesCacheService {
 
   async newApplication(app: IssueApplication) {
     const a = 7;
+  }
+
+  async issueCancelled(id) {
+    const i = this.openIssues.get(id);
+
+    if (!i) return;
+
+    i.techs.forEach(({ id }) => {
+      const conn = this.clients.get(id);
+
+      if (!conn) return;
+
+      conn.ws.emit(ISSUE_UNAVAILABLE, {
+        issue: i.issue,
+        reason: 'Incidencia cancelada por usuario',
+      });
+    });
+
+    this.openIssues.delete(id);
   }
 }

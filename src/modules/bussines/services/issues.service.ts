@@ -15,7 +15,9 @@ import { LocationsService } from 'src/modules/client/services/locations.service'
 import { IssuesTypesEntity } from 'src/modules/enums/entities/issues_types.entity';
 import { EnumsService } from 'src/modules/enums/services/enums.service';
 import {
+  ISSUE_CANCELLED,
   ISSUE_CREATED,
+  ISSUE_IGNORED,
   NEW_ISSUE_APPLICATION,
 } from 'src/modules/bussines/io.constants';
 import { UsersService } from 'src/modules/users/services/users.service';
@@ -26,6 +28,11 @@ import {
   ISSUE_APPLICATION_STATE,
 } from '../entities/issues_applications.entity';
 import { paginate_qr } from 'src/lib/pagination.results';
+import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
+import {
+  IgnoredIssuesEntity,
+  IGNORED_ISSUE_REASON,
+} from '../entities/ignored_issues.entity';
 
 const updateQb = (qb: SelectQueryBuilder<IssuesEntity>): void => {};
 
@@ -34,6 +41,8 @@ export class IssuesService implements OnModuleInit {
   constructor(
     @InjectRepository(IssuesEntity)
     private issuesRepo: Repository<IssuesEntity>,
+    @InjectRepository(IgnoredIssuesEntity)
+    private ignoredIssuesRepo: Repository<IgnoredIssuesEntity>,
     @InjectRepository(IssueApplication)
     private issuesAppRepo: Repository<IssueApplication>,
     @Inject('BROKER') private broker: ClientProxy,
@@ -294,6 +303,25 @@ export class IssuesService implements OnModuleInit {
     }
   }
 
+  async ignoreIssue(username: string, issue: number) {
+    const user = await this.usersService.getUserPrivateData(username);
+    const i = await this.issuesRepo.findOne(issue);
+
+    if (!i) throw new NotFoundException('Incidencia no existe');
+    if (!user) throw new NotFoundException('Usuario no existe');
+
+    await this.ignoredIssuesRepo.save({
+      issue: i,
+      user,
+    });
+
+    this.broker.emit(ISSUE_IGNORED, {
+      username,
+      issue,
+      reason: IGNORED_ISSUE_REASON.IGNORED,
+    });
+  }
+
   async getUserIssues(username: string, page: number, page_size: number = 10) {
     const qr = this.issuesRepo
       .createQueryBuilder('i')
@@ -305,5 +333,43 @@ export class IssuesService implements OnModuleInit {
       .where('u.username=:username', { username });
 
     return await paginate_qr(page, page_size, qr);
+  }
+
+  async getIssueDetails(username: string, issue: number) {
+    const i = await this.issuesRepo
+      .createQueryBuilder('i')
+      .leftJoinAndSelect('i.client_location', 'cl')
+      .innerJoin('i.user', 'u')
+      .where('i.id=:issue and u.username=:username', { issue, username })
+      .leftJoin('i.tech', 'tu')
+      .leftJoin('tu.techniccian_info', 'tt')
+      .addSelect(['tu.username', 'tu.name', 'tu.lastname', 'tu.phone_number'])
+      .getOne();
+
+    return i;
+    const a = 8;
+  }
+
+  async cancelIssue(username: string, issue: number) {
+    const i = await this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoin('i.user', 'u')
+      .where('u.username=:username and i.id=:issue', { username, issue })
+      .getOne();
+
+    if (!i)
+      throw new NotFoundException('No existe la incidencia para ese usuario');
+
+    i.state = ISSUE_STATE.CANCELED;
+    i.end_date = new Date();
+
+    await this.issuesRepo.save(i);
+
+    this.broker.emit(ISSUE_CANCELLED, issue);
+  }
+
+  async acceptTech(author: string, tech: string, issue: number) {
+    //todo
+    const a = 7;
   }
 }
