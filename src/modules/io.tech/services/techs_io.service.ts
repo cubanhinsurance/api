@@ -32,6 +32,13 @@ export interface ClientIndex {
   user: TechniccianEntity;
 }
 
+
+export interface WsTech {
+  ws: Socket;
+  reviews: any;
+  user: TechniccianEntity;
+}
+
 @Injectable()
 @WebSocketGateway({
   namespace: '/techs',

@@ -21,6 +21,11 @@ import { IssuesService } from '../services/issues.service';
 import { imageFilter } from 'src/lib/multer/filter';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { HttpValidTechLicense } from 'src/modules/auth/guards/activeTech.guard';
+import {
+  Page,
+  PageSize,
+} from 'src/lib/decorators/pagination_queries.decorator';
+import { Public } from 'src/modules/auth/decorators/public.decorator';
 
 @ApiTags('Issues')
 @Controller('issues')
@@ -53,12 +58,6 @@ export class IssuesController {
   }
 
   @ApiOperation({
-    description: 'Devuelve listado de incidencias incidencias abiertas',
-  })
-  @Get('open')
-  async getOpenIssues(@User('username') username) {}
-
-  @ApiOperation({
     description: 'Aplicar para una incidencia',
   })
   @ApiBody({
@@ -71,5 +70,30 @@ export class IssuesController {
     @Body(new JoiPipe(ISSUE_APPLICATION)) app,
   ) {
     await this.issuesService.createIssueApplication(username, issue, app);
+  }
+
+  @ApiOperation({
+    description: 'Obtiene las incidencias de un usuario',
+  })
+  @Get('user/:username')
+  @Public()
+  async getUserIssues(
+    @PageSize() pz: number,
+    @Page() p: number,
+    @Param('username') username: string,
+  ) {
+    return await this.issuesService.getUserIssues(username, p, pz);
+  }
+
+  @ApiOperation({
+    description: 'Obtiene las incidencias de un usuario',
+  })
+  @Get('user')
+  async getLoggedUserIssues(
+    @PageSize() pz: number,
+    @Page() p: number,
+    @User('username') username: string,
+  ) {
+    return await this.issuesService.getUserIssues(username, p, pz);
   }
 }

@@ -25,6 +25,7 @@ import {
   IssueApplication,
   ISSUE_APPLICATION_STATE,
 } from '../entities/issues_applications.entity';
+import { paginate_qr } from 'src/lib/pagination.results';
 
 const updateQb = (qb: SelectQueryBuilder<IssuesEntity>): void => {};
 
@@ -219,6 +220,19 @@ export class IssuesService implements OnModuleInit {
     // });
   }
 
+  async getUserIssuesApplications(username: string) {
+    return await this.issuesAppRepo
+      .createQueryBuilder('ia')
+      .innerJoinAndSelect('ia.issue', 'i')
+      .innerJoin('i.user', 'u')
+      .innerJoin('ia.tech', 'tu')
+      .addSelect(['tu.username'])
+      .addSelect(['u.username'])
+      .where('u.username=:username', { username })
+      .getMany();
+    const a = 7;
+  }
+
   async createIssueApplication(
     username: string,
     issue: number,
@@ -236,7 +250,12 @@ export class IssuesService implements OnModuleInit {
       message?: string;
     },
   ) {
-    const i = await this.issuesRepo.findOne(issue);
+    const i = await this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoin('i.user', 'u')
+      .addSelect(['u.username'])
+      .where('i.id=:issue', { issue })
+      .getOne();
     if (!i) throw new NotFoundException(`Incidencia no existe`);
 
     const already = await this.issuesAppRepo
@@ -266,9 +285,25 @@ export class IssuesService implements OnModuleInit {
         state: ISSUE_APPLICATION_STATE.PENDENT,
       });
 
-      this.broker.emit(NEW_ISSUE_APPLICATION, app);
+      this.broker.emit(NEW_ISSUE_APPLICATION, {
+        issue: i,
+        application: app,
+      });
     } catch (e) {
       const a = 8;
     }
+  }
+
+  async getUserIssues(username: string, page: number, page_size: number = 10) {
+    const qr = this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoin('i.user', 'u')
+      .leftJoinAndSelect('i.client_location', 'cl')
+      .leftJoin('i.tech', 'tu')
+      .leftJoin('tu.techniccian_info', 'tt')
+      .addSelect(['tu.username', 'tu.name', 'tu.lastname', 'tu.phone_number'])
+      .where('u.username=:username', { username });
+
+    return await paginate_qr(page, page_size, qr);
   }
 }

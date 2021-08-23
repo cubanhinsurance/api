@@ -85,6 +85,8 @@ export class IssuesCacheService {
   clients: Map<string, WsTech>;
   availableTechs: Map<string, TECH_STATUS_UPDATE>;
   openIssues: Map<number, OPEN_ISSUES>;
+  openIssuesClients: Map<string, Set<number>>;
+
   constructor(
     @Inject('BROKER') private broker: ClientProxy,
     private usersService: UsersService,
@@ -93,6 +95,7 @@ export class IssuesCacheService {
     @InjectEntityManager() private manager,
   ) {
     this.openIssues = new Map<number, OPEN_ISSUES>();
+    this.openIssuesClients = new Map<string, Set<number>>();
     this.clients = new Map<string, WsTech>();
     this.availableTechs = new Map<string, TECH_STATUS_UPDATE>();
   }
@@ -360,9 +363,20 @@ export class IssuesCacheService {
       applications: new Map<string, DISTANCE_INFO>(),
     });
 
+    const author = issue.user.username;
+    let set = this.openIssuesClients.get(author);
+    if (!set) {
+      this.openIssuesClients.set(author, new Set<number>());
+      set = this.openIssuesClients.get(author);
+    }
+    set.add(issue.id);
+
     if (issue.applications?.length > 0) {
       for (const app of issue.applications) {
-        this.broker.emit(NEW_ISSUE_APPLICATION, app);
+        this.broker.emit(NEW_ISSUE_APPLICATION, {
+          issue,
+          application: app,
+        });
       }
     }
 

@@ -16,8 +16,8 @@ export class ClientsIoController {
   }
 
   @MessagePattern(NEW_ISSUE_APPLICATION)
-  async new_issue_application(@Payload() data) {
+  async new_issue_application(@Payload() { issue, application }) {
     const a = 6;
-    this.clientsIoService.newIssueApplication(data);
+    this.clientsIoService.newIssueApplication(issue, application);
   }
 }

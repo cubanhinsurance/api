@@ -87,10 +87,10 @@ export class IssuesEntity {
   @Index()
   expiration_date: Date;
 
-  @ManyToOne(() => TechniccianEntity, { nullable: true })
+  @ManyToOne(() => UsersEntity, { nullable: true })
   @JoinColumn({ name: 'tech' })
   @Index()
-  tech: TechniccianEntity;
+  tech: UsersEntity;
 
   @CreateDateColumn()
   created_at: Date;
@@ -121,8 +121,8 @@ export class IssuesEntity {
   @Column({ nullable: true })
   max_distance: number;
 
-  @OneToMany(()=>IssueApplication,a=>a.issue)
-  applications: IssueApplication[]
+  @OneToMany(() => IssueApplication, (a) => a.issue)
+  applications: IssueApplication[];
 }
 
 @Entity({

@@ -55,6 +55,9 @@ export class AgentsIoService
         throw new WsException('unauthorized');
       }
 
+      Logger.log(
+        `Agente conectado: ${valid.username} - ${client.handshake.address}`,
+      );
       this.clients.set(client.id, {
         user: valid as any,
         ws: client,
