@@ -326,6 +326,7 @@ export class IssuesService implements OnModuleInit {
     const qr = this.issuesRepo
       .createQueryBuilder('i')
       .innerJoin('i.user', 'u')
+      .innerJoinAndSelect('i.type', 'issuetype')
       .leftJoinAndSelect('i.client_location', 'cl')
       .leftJoin('i.tech', 'tu')
       .leftJoin('tu.techniccian_info', 'tt')
@@ -340,6 +341,7 @@ export class IssuesService implements OnModuleInit {
       .createQueryBuilder('i')
       .leftJoinAndSelect('i.client_location', 'cl')
       .innerJoin('i.user', 'u')
+      .innerJoinAndSelect('i.type', 'issuetype')
       .where('i.id=:issue and u.username=:username', { issue, username })
       .leftJoin('i.tech', 'tu')
       .leftJoin('tu.techniccian_info', 'tt')
