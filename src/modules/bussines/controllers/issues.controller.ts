@@ -49,7 +49,7 @@ export class IssuesController {
   async createIssue(
     @User('username') username,
     @Param('location', new JoiPipe(number().required())) location: number,
-    @Body(new JoiPipe(CREATE_ISSUE_SCHEMA)) data,
+    @Body(new JoiPipe(CREATE_ISSUE_SCHEMA,null,['data'])) data,
     @UploadedFiles() photos: any[],
   ) {
     if (photos && photos?.length > 0) {
