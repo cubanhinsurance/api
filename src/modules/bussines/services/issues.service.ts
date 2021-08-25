@@ -242,6 +242,28 @@ export class IssuesService implements OnModuleInit {
     const a = 7;
   }
 
+  async getTechApplyngIssues(
+    tech: string,
+    page: number,
+    page_size: number = 10,
+    state?: ISSUE_APPLICATION_STATE,
+  ) {
+    const qr = this.issuesAppRepo
+      .createQueryBuilder('ia')
+      .innerJoinAndSelect('ia.issue', 'i')
+      .innerJoin('i.user', 'u')
+      .innerJoin('ia.tech', 'tu')
+      .addSelect(['tu.username'])
+      .addSelect(['u.username'])
+      .where('tu.username=:tech', { tech });
+
+    if (state) {
+      qr.andWhere('ia.state=:', { state });
+    }
+
+    return paginate_qr(page, page_size, qr);
+  }
+
   async createIssueApplication(
     username: string,
     issue: number,

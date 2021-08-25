@@ -1,4 +1,5 @@
 import { boolean, date, number, object, string, ref } from 'joi';
+import { ISSUE_APPLICATION_STATE } from '../entities/issues_applications.entity';
 
 export const CREATE_ISSUE_SCHEMA = object({
   type: number().required(),
@@ -19,3 +20,7 @@ export const ISSUE_APPLICATION = object({
   min_date: date().optional(),
   max_date: date().min(ref('min_date')).optional(),
 });
+
+export const ISSUES_APPLICATION_STATES = string().valid(
+  ...Object.values(ISSUE_APPLICATION_STATE),
+);

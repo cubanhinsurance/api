@@ -6,19 +6,21 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { number } from 'joi';
+import { number, string } from 'joi';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import { User } from 'src/modules/auth/decorators/user.decorator';
 import j2s from 'joi-to-swagger';
 import {
   CREATE_ISSUE_SCHEMA,
+  ISSUES_APPLICATION_STATES,
   ISSUE_APPLICATION,
 } from '../schemas/issues.schema';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { IssuesService } from '../services/issues.service';
 import { imageFilter } from 'src/lib/multer/filter';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -143,5 +145,29 @@ export class IssuesController {
     @User('username') username: string,
   ) {
     await this.issuesService.acceptTech(username, tech, issue);
+  }
+
+  @ApiOperation({
+    description:
+      'Devuelve las solicitudes de aceptacion de incidencias del tecnico autenticado',
+  })
+  @Get('applications')
+  @ApiQuery({
+    name: 'state',
+    required: false,
+    schema: j2s(ISSUES_APPLICATION_STATES).swagger,
+  })
+  async getLoggedTechApplications(
+    @User() username: string,
+    @PageSize() pz,
+    @Page() p,
+    @Query('state', new JoiPipe(ISSUES_APPLICATION_STATES.optional())) state,
+  ) {
+    return await this.issuesService.getTechApplyngIssues(
+      username,
+      p,
+      pz,
+      state,
+    );
   }
 }
