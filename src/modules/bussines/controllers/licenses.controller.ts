@@ -188,7 +188,7 @@ export class LicensesController {
   }
 
   @ApiOperation({
-    description: 'Obtener todas las licencias para los usuarios',
+    summary: 'Obtener todas las licencias para los usuarios',
   })
   @ApiTags('Bussines', 'UserLicenses')
   @ApiQuery({

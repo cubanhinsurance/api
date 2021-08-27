@@ -8,6 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
   Index,
+  DeleteDateColumn,
 } from 'typeorm';
 import { IssuesEntity } from './issues.entity';
 
@@ -56,4 +57,7 @@ export class IssueApplication {
 
   @Column({ nullable: true })
   max_date: Date;
+
+  @DeleteDateColumn({ select: false })
+  deleted_at: Date;
 }

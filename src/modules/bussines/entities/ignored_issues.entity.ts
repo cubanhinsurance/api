@@ -15,7 +15,10 @@ export enum IGNORED_ISSUE_REASON {
   REFUSED = 'refused',
 }
 
-@Entity()
+@Entity({
+  schema: 'mod_bussines',
+  name: 'ignored_applications',
+})
 export class IgnoredIssuesEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -35,4 +38,7 @@ export class IgnoredIssuesEntity {
 
   @Column({ default: IGNORED_ISSUE_REASON.IGNORED })
   reason: IGNORED_ISSUE_REASON;
+
+  @Column({ nullable: true })
+  description: string;
 }

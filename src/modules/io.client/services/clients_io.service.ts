@@ -11,7 +11,10 @@ import {
 import { Socket, Server } from 'socket.io';
 import { IssuesEntity } from 'src/modules/bussines/entities/issues.entity';
 import { IssueApplication } from 'src/modules/bussines/entities/issues_applications.entity';
-import { NEW_ISSUE_APPLICATION } from 'src/modules/bussines/io.constants';
+import {
+  ISSUE_APPLICATION_CANCELLED,
+  NEW_ISSUE_APPLICATION,
+} from 'src/modules/bussines/io.constants';
 import { IssuesService } from 'src/modules/bussines/services/issues.service';
 import { IssuesCacheService } from 'src/modules/bussines/services/issues_cache.service';
 import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
@@ -133,6 +136,14 @@ export class ClientsIoService
         (app.tech.techniccian_info as any).review = reviews;
       }
       clientConn.ws.emit(NEW_ISSUE_APPLICATION, { ...app, issue });
+    }
+  }
+
+  async issueApplicationCancelled(app: IssueApplication) {
+    const clientConn = this.clients.get(app?.issue?.user?.username);
+
+    if (clientConn) {
+      clientConn.ws.emit(ISSUE_APPLICATION_CANCELLED, app);
     }
   }
 }

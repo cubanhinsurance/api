@@ -20,7 +20,7 @@ export class GisController {
   constructor(private gisService: GisService) {}
 
   @ApiOperation({
-    description: 'Devuelve la provincia y municipio de un punto',
+    summary: 'Devuelve la provincia y municipio de un punto',
   })
   @ApiOkResponse({
     schema: j2s(
@@ -53,7 +53,7 @@ export class GisController {
 
   @Get('zoomto')
   @ApiOperation({
-    description:
+    summary:
       'Obtiene el bbox a partir de id de dpa para la navegacion en el mapa',
   })
   @ApiOkResponse({

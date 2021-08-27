@@ -15,14 +15,21 @@ import { LocationsService } from 'src/modules/client/services/locations.service'
 import { IssuesTypesEntity } from 'src/modules/enums/entities/issues_types.entity';
 import { EnumsService } from 'src/modules/enums/services/enums.service';
 import {
+  ISSUE_APPLICATION_CANCELLED,
   ISSUE_CANCELLED,
   ISSUE_CREATED,
   ISSUE_IGNORED,
   NEW_ISSUE_APPLICATION,
+  TECH_ACCEPTED,
+  TECH_REJECTED,
 } from 'src/modules/bussines/io.constants';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { FindConditions, Repository, SelectQueryBuilder } from 'typeorm';
-import { IssuesEntity, ISSUE_STATE } from '../entities/issues.entity';
+import {
+  IssuesEntity,
+  IssuesTraces,
+  ISSUE_STATE,
+} from '../entities/issues.entity';
 import {
   IssueApplication,
   ISSUE_APPLICATION_STATE,
@@ -33,6 +40,7 @@ import {
   IgnoredIssuesEntity,
   IGNORED_ISSUE_REASON,
 } from '../entities/ignored_issues.entity';
+import { ISSUES_APPLICATION_STATES } from '../schemas/issues.schema';
 
 const updateQb = (qb: SelectQueryBuilder<IssuesEntity>): void => {};
 
@@ -147,12 +155,25 @@ export class IssuesService implements OnModuleInit {
         })
         .execute();
 
+      this.addNewIssueTrace({ id } as IssuesEntity, ISSUE_STATE.CREATED);
+
       const i = await this.getOpennedIssue(id);
 
       this.broker.emit(ISSUE_CREATED, i);
     } catch (e) {
       const a = 8;
     }
+  }
+
+  async addNewIssueTrace(issue: IssuesEntity, state: ISSUE_STATE, date?: Date) {
+    const history = await this.issuesRepo
+      .createQueryBuilder('u')
+      .relation(IssuesEntity, 'traces')
+      .of(issue)
+      .add({
+        date: date ?? new Date(),
+        state,
+      } as IssuesTraces);
   }
 
   async onModuleInit() {
@@ -251,6 +272,7 @@ export class IssuesService implements OnModuleInit {
     const qr = this.issuesAppRepo
       .createQueryBuilder('ia')
       .innerJoinAndSelect('ia.issue', 'i')
+      .innerJoinAndSelect('i.type', 'issue_type')
       .innerJoin('i.user', 'u')
       .innerJoin('ia.tech', 'tu')
       .addSelect(['tu.username'])
@@ -258,10 +280,10 @@ export class IssuesService implements OnModuleInit {
       .where('tu.username=:tech', { tech });
 
     if (state) {
-      qr.andWhere('ia.state=:', { state });
+      qr.andWhere('ia.state=:state', { state });
     }
 
-    return paginate_qr(page, page_size, qr);
+    return await paginate_qr(page, page_size, qr);
   }
 
   async createIssueApplication(
@@ -293,7 +315,8 @@ export class IssuesService implements OnModuleInit {
       .createQueryBuilder('a')
       .select(['a.id'])
       .innerJoin('a.tech', 'u')
-      .where('u.username=:username', { username })
+      .innerJoin('a.issue', 'i')
+      .where('u.username=:username and i.id=:issue', { username, issue })
       .getOne();
 
     if (already)
@@ -393,7 +416,106 @@ export class IssuesService implements OnModuleInit {
   }
 
   async acceptTech(author: string, tech: string, issue: number) {
-    //todo
-    const a = 7;
+    const app = await this.issuesAppRepo
+      .createQueryBuilder('ia')
+      .innerJoinAndSelect('ia.issue', 'i')
+      .innerJoin('i.user', 'u')
+      .innerJoin('ia.tech', 'tu')
+      .addSelect(['tu.username'])
+      .addSelect(['u.username'])
+      .where('u.username=:author and tu.username=:tech and i.id=:issue', {
+        tech,
+        author,
+        issue,
+      })
+      .getOne();
+
+    if (!app)
+      throw new NotFoundException(
+        'No se encontro una solicitud de aplicacion a ninguna incidencia de ese autor',
+      );
+
+    await this.issuesAppRepo.save({
+      id: app.id,
+      state: ISSUE_APPLICATION_STATE.ACCEPTED,
+    });
+
+    const issueUpdated = await this.issuesRepo.save({
+      id: app.issue.id,
+      state: ISSUE_STATE.ACCEPTED,
+    });
+
+    this.addNewIssueTrace(app.issue, ISSUE_STATE.ACCEPTED);
+
+    this.broker.emit(
+      TECH_ACCEPTED,
+      await this.getIssueDetails(app.issue.user.username, app.issue.id),
+    );
+  }
+
+  async rejectTech(
+    author: string,
+    tech: string,
+    issue: number,
+    reason?: string,
+  ) {
+    const app = await this.issuesAppRepo
+      .createQueryBuilder('ia')
+      .innerJoinAndSelect('ia.issue', 'i')
+      .innerJoin('i.user', 'u')
+      .innerJoin('ia.tech', 'tu')
+      .addSelect(['tu.username'])
+      .addSelect(['u.username'])
+      .where('u.username=:author and tu.username=:tech and i.id=:issue', {
+        tech,
+        author,
+        issue,
+      })
+      .getOne();
+
+    if (!app)
+      throw new NotFoundException(
+        'No se encontro una solicitud de aplicacion a ninguna incidencia de ese autor',
+      );
+
+    const rejected = await this.ignoredIssuesRepo.save({
+      description: reason,
+      reason: IGNORED_ISSUE_REASON.REFUSED,
+      issue: app.issue,
+      user: app.tech,
+    });
+
+    this.broker.emit(TECH_REJECTED, app);
+  }
+
+  async cancelIssueApplication(
+    tech: string,
+    issue: number,
+    application: number,
+  ) {
+    const app = await this.issuesAppRepo
+      .createQueryBuilder('ia')
+      .innerJoinAndSelect('ia.issue', 'i')
+      .innerJoin('i.user', 'u')
+      .innerJoin('ia.tech', 'tu')
+      .addSelect(['tu.username'])
+      .addSelect(['u.username'])
+      .where('tu.username=:tech and i.id=:issue and ia.id=:application', {
+        tech,
+        application,
+        issue,
+      })
+      .getOne();
+
+    if (!app)
+      throw new NotFoundException(
+        `No se encontro una aplicacion para una incidencia de ese usuario`,
+      );
+
+    const deleted = await this.issuesAppRepo.softDelete({
+      id: app.id,
+    });
+
+    this.broker.emit(ISSUE_APPLICATION_CANCELLED, app);
   }
 }

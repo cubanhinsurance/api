@@ -25,7 +25,7 @@ export class LocationsController {
   @Post('user')
   @ApiTags('UserLocations')
   @ApiOperation({
-    description: 'Crea una ubicacion(casa/pto de interes) de un cliente',
+    summary: 'Crea una ubicacion(casa/pto de interes) de un cliente',
   })
   @ApiBody({
     schema: j2s(CREATE_USER_LOCATION_SCHEMA).swagger,
@@ -40,7 +40,7 @@ export class LocationsController {
   @Put('user/:locationId')
   @ApiTags('UserLocations')
   @ApiOperation({
-    description: 'Actualiza una ubicacion(casa/pto de interes) de un cliente',
+    summary: 'Actualiza una ubicacion(casa/pto de interes) de un cliente',
   })
   @ApiBody({
     schema: j2s(UPDATE_USER_LOCATION_SCHEMA).swagger,
@@ -56,7 +56,7 @@ export class LocationsController {
   @Delete('user/:locationId')
   @ApiTags('UserLocations')
   @ApiOperation({
-    description: 'Elimina una ubicacion(casa/pto de interes) de un cliente',
+    summary: 'Elimina una ubicacion(casa/pto de interes) de un cliente',
   })
   async deleteUserLocations(
     @User('username') username: string,
@@ -68,7 +68,7 @@ export class LocationsController {
   @Get('user')
   @ApiTags('UserLocations')
   @ApiOperation({
-    description: 'Devuelve las ubicaciones de un usuario',
+    summary: 'Devuelve las ubicaciones de un usuario',
   })
   @ApiOkResponse({
     schema: j2s(USERS_LOCATIONS_SCHEMA).swagger,

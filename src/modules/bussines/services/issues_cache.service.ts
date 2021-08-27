@@ -15,6 +15,7 @@ import {
   ISSUE_CREATED,
   ISSUE_UNAVAILABLE,
   NEW_ISSUE_APPLICATION,
+  TECH_REJECTED,
 } from 'src/modules/bussines/io.constants';
 import { IssuesService } from './issues.service';
 import { IgnoredIssuesEntity } from '../entities/ignored_issues.entity';
@@ -97,6 +98,8 @@ export class IssuesCacheService {
     private osrmService: OsrmService,
     @InjectRepository(IgnoredIssuesEntity)
     private ignoredIssuesRepo: Repository<IgnoredIssuesEntity>,
+    @InjectRepository(IssueApplication)
+    private issuesAppRepo: Repository<IssueApplication>,
     @InjectEntityManager() private manager,
   ) {
     this.openIssues = new Map<number, OPEN_ISSUES>();
@@ -139,7 +142,7 @@ export class IssuesCacheService {
       for (const [issueId, { issue, techs, applications }] of this.openIssues) {
         if (!!techs.get(user.user.username)) continue;
         if (!!applications.get(user.user.username)) continue;
-        if (!this.isPrepared(user, issue)) continue;
+        if (!(await this.isPrepared(user, issue))) continue;
         const distanceInfo = await this.distanceInfo(id, user, status, issue);
         if (!distanceInfo) {
           Logger.error(
@@ -185,14 +188,29 @@ export class IssuesCacheService {
 
     if (!prepared) return false;
 
-    const ignored = await this.ignoredIssuesRepo.findOne({
-      where: {
-        user: tech.user,
-        issue: { id: issue.id },
-      },
-    });
+    const ignored = await this.ignoredIssuesRepo
+      .createQueryBuilder('ig')
+      .innerJoin('ig.user', 'u')
+      .innerJoin('ig.issue', 'i')
+      .where('u.username=:username and i.id=:issue', {
+        username: tech.user.username,
+        issue: issue.id,
+      })
+      .getOne();
 
     if (!!ignored) return false;
+
+    const alreadyApplied = await this.issuesAppRepo
+      .createQueryBuilder('ia')
+      .innerJoin('ia.issue', 'i')
+      .innerJoin('ia.tech', 'tech')
+      .where('tech.username=:username and i.id=:issue', {
+        username: tech.user.username,
+        issue: issue.id,
+      })
+      .getOne();
+
+    if (!!alreadyApplied) return false;
 
     return true;
   }
@@ -433,5 +451,20 @@ export class IssuesCacheService {
     });
 
     this.openIssues.delete(id);
+  }
+
+  async techRejected(app: IssueApplication) {
+    for (const [
+      id,
+      {
+        user: {
+          user: { username },
+        },
+        ws,
+      },
+    ] of this.clients) {
+      if (username != app.tech.username) continue;
+      ws.emit(TECH_REJECTED, app);
+    }
   }
 }

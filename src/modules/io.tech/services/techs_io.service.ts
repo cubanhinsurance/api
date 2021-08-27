@@ -32,7 +32,6 @@ export interface ClientIndex {
   user: TechniccianEntity;
 }
 
-
 export interface WsTech {
   ws: Socket;
   reviews: any;
@@ -69,7 +68,7 @@ export class TechsIoService
         throw new WsException('unauthorized');
       }
 
-      this.techsHandler.techConnected(valid.username, client);
+      await this.techsHandler.techConnected(valid.username, client);
 
       Logger.log(
         `Tecnico conectado: ${valid.username} - ${client.handshake.address}`,
@@ -117,11 +116,15 @@ export class TechsIoService
     this.techsHandler.issueCreated(data);
   }
 
-  async issueCancelled(data){
+  async issueCancelled(data) {
     this.techsHandler.issueCancelled(data);
   }
 
   async newApplication(app) {
     this.techsHandler.newApplication(app);
+  }
+
+  async techRejected(app) {
+    this.techsHandler.techRejected(app);
   }
 }

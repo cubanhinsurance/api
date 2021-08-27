@@ -30,6 +30,7 @@ import {
   PageSize,
 } from 'src/lib/decorators/pagination_queries.decorator';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
+import { USER_NAME_SCHEMA } from 'src/modules/auth/schemas/signin.schema';
 
 @ApiTags('Issues')
 @Controller('issues')
@@ -38,7 +39,7 @@ export class IssuesController {
 
   @Post('user/:location')
   @ApiOperation({
-    description: 'Crear una incidencia',
+    summary: 'Crear una incidencia',
   })
   @UseInterceptors(
     FilesInterceptor('photos', null, {
@@ -62,7 +63,7 @@ export class IssuesController {
   }
 
   @ApiOperation({
-    description: 'Aplicar para una incidencia',
+    summary: 'Aplicar para una incidencia',
   })
   @ApiBody({
     schema: j2s(ISSUE_APPLICATION).swagger,
@@ -77,7 +78,18 @@ export class IssuesController {
   }
 
   @ApiOperation({
-    description: 'Obtiene las incidencias de un usuario',
+    summary: 'Ignorar una incidencia',
+  })
+  @Delete('application/:issue')
+  async ignoreIssue(
+    @Param('issue', new JoiPipe(number())) issue: number,
+    @User('username') username: string,
+  ) {
+    await this.issuesService.ignoreIssue(username, issue);
+  }
+
+  @ApiOperation({
+    summary: 'Obtiene las incidencias de un usuario',
   })
   @Get('user/:username')
   async getUserIssues(
@@ -89,7 +101,7 @@ export class IssuesController {
   }
 
   @ApiOperation({
-    description: 'Obtiene las incidencias del usuario autenticado',
+    summary: 'Obtiene las incidencias del usuario autenticado',
   })
   @Get('user')
   async getLoggedUserIssues(
@@ -101,7 +113,7 @@ export class IssuesController {
   }
 
   @ApiOperation({
-    description: 'Obtiene lo detalles de una incidencia de un usuario',
+    summary: 'Obtiene lo detalles de una incidencia de un usuario',
   })
   @Get('issue/:username/:issue')
   @Public()
@@ -113,8 +125,7 @@ export class IssuesController {
   }
 
   @ApiOperation({
-    description:
-      'Obtiene lo detalles de una incidencia del usuario autenticado',
+    summary: 'Obtiene lo detalles de una incidencia del usuario autenticado',
   })
   @Get('issue/:issue')
   async getLoggedUsserIssueDetails(
@@ -125,7 +136,7 @@ export class IssuesController {
   }
 
   @ApiOperation({
-    description: 'Cancela la incidencia de un usuario autenticado',
+    summary: 'Cancela la incidencia de un usuario autenticado',
   })
   @Delete('issue/:issue')
   async cancelIssue(
@@ -136,7 +147,7 @@ export class IssuesController {
   }
 
   @ApiOperation({
-    description: 'Acepta la aplicacion de un tecnico en una incidencia',
+    summary: 'Acepta la aplicacion de un tecnico en una incidencia',
   })
   @Post('issue/:issue/:username')
   async acceptTech(
@@ -148,7 +159,7 @@ export class IssuesController {
   }
 
   @ApiOperation({
-    description:
+    summary:
       'Devuelve las solicitudes de aceptacion de incidencias del tecnico autenticado',
   })
   @Get('applications')
@@ -158,7 +169,7 @@ export class IssuesController {
     schema: j2s(ISSUES_APPLICATION_STATES).swagger,
   })
   async getLoggedTechApplications(
-    @User() username: string,
+    @User('username') username: string,
     @PageSize() pz,
     @Page() p,
     @Query('state', new JoiPipe(ISSUES_APPLICATION_STATES.optional())) state,
@@ -169,5 +180,37 @@ export class IssuesController {
       pz,
       state,
     );
+  }
+
+  @ApiOperation({
+    summary: 'Rechaza la solicitud de un tecnico',
+  })
+  @ApiQuery({
+    name: 'reason',
+    required: false,
+    description: 'Razon por la que  se rechaza',
+    type: 'string',
+    schema: j2s(string().max(100).optional()).swagger,
+  })
+  @Delete('issue/:issue/:username')
+  async rejectTech(
+    @Param('issue', new JoiPipe(number())) issue: number,
+    @Param('username') tech: string,
+    @User('username') username: string,
+    @Query('reason', new JoiPipe(string().max(100).optional())) reason: string,
+  ) {
+    await this.issuesService.rejectTech(username, tech, issue, reason);
+  }
+
+  @ApiOperation({
+    summary: 'Cancela una solicitud de aplicacion de una incidencia',
+  })
+  @Delete('application/:issue/:application')
+  async cancelIssueApplication(
+    @User('username') username,
+    @Param('issue', new JoiPipe(number().required())) issue,
+    @Param('application', new JoiPipe(number().required())) app,
+  ) {
+    await this.issuesService.cancelIssueApplication(username, issue, app);
   }
 }
