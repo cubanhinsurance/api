@@ -9,6 +9,7 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
+import { NEW_TECHAPPLICATION } from 'src/modules/bussines/io.constants';
 import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
 
 export interface WsClient {
@@ -68,10 +69,12 @@ export class AgentsIoService
   }
 
   async emitNewTechApp(techApp) {
-    this.server.send({
-      type: 'techApplicantsCount',
-      data: await this.techApplicants.getApplicantsCount(),
-    } as IoMessage);
+    for (const [id, { ws }] of this.clients) {
+      ws.emit(
+        NEW_TECHAPPLICATION,
+        await this.techApplicants.getApplicantsCount(),
+      );
+    }
   }
 
   handleDisconnect(client: Socket) {

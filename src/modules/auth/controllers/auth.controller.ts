@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Head,
   Param,
   Post,
   Put,
@@ -40,6 +41,9 @@ export class AuthController {
   time() {
     return new Date();
   }
+
+  @Head('verify_token')
+  valid_token() {}
 
   @ApiTags('Auth')
   @Post('signin')

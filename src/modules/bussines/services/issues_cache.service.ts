@@ -128,7 +128,9 @@ export class IssuesCacheService {
   techUnavailable(client: Socket) {
     this.availableTechs.delete(client.id);
 
-    const { user, ws } = this.clients.get(client.id);
+    const clientObj = this.clients.get(client.id);
+    if (!clientObj) return;
+    const { user, ws } = clientObj;
     this.unRegisterTechFromOppendIssues(user.user.username);
   }
 
@@ -437,20 +439,22 @@ export class IssuesCacheService {
   async issueCancelled(id) {
     const i = this.openIssues.get(id);
 
-    if (!i) return;
+    if (i) {
+      i.techs.forEach(({ id }) => {
+        const conn = this.clients.get(id);
 
-    i.techs.forEach(({ id }) => {
-      const conn = this.clients.get(id);
+        if (!conn) return;
 
-      if (!conn) return;
-
-      conn.ws.emit(ISSUE_UNAVAILABLE, {
-        issue: i.issue,
-        reason: 'Incidencia cancelada por usuario',
+        conn.ws.emit(ISSUE_UNAVAILABLE, {
+          issue: i.issue,
+          reason: 'Incidencia cancelada por usuario',
+        });
       });
-    });
 
-    this.openIssues.delete(id);
+      this.openIssues.delete(id);
+    } else {
+      const a = 7;
+    }
   }
 
   async techRejected(app: IssueApplication) {

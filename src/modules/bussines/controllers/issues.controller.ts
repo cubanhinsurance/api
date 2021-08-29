@@ -78,6 +78,17 @@ export class IssuesController {
   }
 
   @ApiOperation({
+    summary: 'Obtener detalles de una solicitud de aplicaion a una incidencia',
+  })
+  @Get('application/:application')
+  async getApplicationDetails(
+    @Param('application', new JoiPipe(number())) application: number,
+    @User('username') username: string,
+  ) {
+    return await this.issuesService.getTechAplyngDetails(username, application);
+  }
+
+  @ApiOperation({
     summary: 'Ignorar una incidencia',
   })
   @Delete('application/:issue')
@@ -121,18 +132,18 @@ export class IssuesController {
     @Param('issue', new JoiPipe(number())) issue: number,
     @Param('username') username,
   ) {
-    return await this.issuesService.getIssueDetails(username, issue);
+    return await this.issuesService.getIssueDetails(issue, username);
   }
 
   @ApiOperation({
-    summary: 'Obtiene lo detalles de una incidencia del usuario autenticado',
+    summary: 'Obtiene lo detalles de una incidencia',
   })
   @Get('issue/:issue')
   async getLoggedUsserIssueDetails(
     @Param('issue', new JoiPipe(number())) issue: number,
     @User('username') username,
   ) {
-    return await this.issuesService.getIssueDetails(username, issue);
+    return await this.issuesService.getIssueDetails(issue);
   }
 
   @ApiOperation({

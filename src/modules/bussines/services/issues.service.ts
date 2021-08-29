@@ -273,7 +273,14 @@ export class IssuesService implements OnModuleInit {
       .createQueryBuilder('ia')
       .innerJoinAndSelect('ia.issue', 'i')
       .innerJoinAndSelect('i.type', 'issue_type')
+      .innerJoinAndSelect('i.client_location', 'client_location')
+      .innerJoinAndSelect('client_location.province', 'province')
+      .innerJoinAndSelect(
+        'client_location.municipality',
+        'prmunicipalityovince',
+      )
       .innerJoin('i.user', 'u')
+      .addSelect(['u.username', 'u.name', 'u.lastname', 'u.phone_number'])
       .innerJoin('ia.tech', 'tu')
       .addSelect(['tu.username'])
       .addSelect(['u.username'])
@@ -284,6 +291,31 @@ export class IssuesService implements OnModuleInit {
     }
 
     return await paginate_qr(page, page_size, qr);
+  }
+
+  async getTechAplyngDetails(tech: string, app: number) {
+    const application = await this.issuesAppRepo
+      .createQueryBuilder('ia')
+      .innerJoinAndSelect('ia.issue', 'i')
+      .innerJoinAndSelect('i.type', 'issue_type')
+      .innerJoinAndSelect('i.client_location', 'client_location')
+      .innerJoinAndSelect('client_location.province', 'province')
+      .innerJoinAndSelect(
+        'client_location.municipality',
+        'prmunicipalityovince',
+      )
+      .innerJoin('i.user', 'u')
+      .addSelect(['u.username', 'u.name', 'u.lastname', 'u.phone_number'])
+      .innerJoin('ia.tech', 'tu')
+      .addSelect(['tu.username'])
+      .addSelect(['u.username'])
+      .where('tu.username=:tech and ia.id=:app', { tech, app })
+      .getOne();
+
+    return {
+      ...application,
+      issue: await this.getIssueDetails(application.issue.id),
+    };
   }
 
   async createIssueApplication(
@@ -381,20 +413,24 @@ export class IssuesService implements OnModuleInit {
     return await paginate_qr(page, page_size, qr);
   }
 
-  async getIssueDetails(username: string, issue: number) {
-    const i = await this.issuesRepo
+  async getIssueDetails(issue: number, username?: string) {
+    const qr = await this.issuesRepo
       .createQueryBuilder('i')
       .leftJoinAndSelect('i.client_location', 'cl')
       .innerJoin('i.user', 'u')
       .innerJoinAndSelect('i.type', 'issuetype')
-      .where('i.id=:issue and u.username=:username', { issue, username })
+      .where('i.id=:issue', { issue })
       .leftJoin('i.tech', 'tu')
       .leftJoin('tu.techniccian_info', 'tt')
-      .addSelect(['tu.username', 'tu.name', 'tu.lastname', 'tu.phone_number'])
-      .getOne();
+      .addSelect(['tu.username', 'tu.name', 'tu.lastname', 'tu.phone_number']);
+
+    if (username) {
+      qr.andWhere('u.username=:username', { username });
+    }
+
+    const i = await qr.getOne();
 
     return i;
-    const a = 8;
   }
 
   async cancelIssue(username: string, issue: number) {
@@ -447,10 +483,7 @@ export class IssuesService implements OnModuleInit {
 
     this.addNewIssueTrace(app.issue, ISSUE_STATE.ACCEPTED);
 
-    this.broker.emit(
-      TECH_ACCEPTED,
-      await this.getIssueDetails(app.issue.user.username, app.issue.id),
-    );
+    this.broker.emit(TECH_ACCEPTED, await this.getIssueDetails(app.issue.id));
   }
 
   async rejectTech(

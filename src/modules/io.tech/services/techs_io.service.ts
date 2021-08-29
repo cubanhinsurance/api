@@ -64,8 +64,8 @@ export class TechsIoService
           `Tecnico sin permisos: ${client.handshake.address}`,
           'Socket.IO',
         );
-        client.disconnect(true);
         throw new WsException('unauthorized');
+        client.disconnect(true);
       }
 
       await this.techsHandler.techConnected(valid.username, client);
@@ -74,7 +74,11 @@ export class TechsIoService
         `Tecnico conectado: ${valid.username} - ${client.handshake.address}`,
       );
     } catch (e) {
-      const b = 7;
+      if (e?.message == 'jwt expired' || e?.name == 'TokenExpiredError') {
+        client.emit('unauthorized');
+        client.disconnect();
+      }
+      const a = 7;
     }
   }
 

@@ -14,6 +14,7 @@ import { IssueApplication } from 'src/modules/bussines/entities/issues_applicati
 import {
   ISSUE_APPLICATION_CANCELLED,
   NEW_ISSUE_APPLICATION,
+  NEW_TECHAPPLICATION_CONFIRMATION,
 } from 'src/modules/bussines/io.constants';
 import { IssuesService } from 'src/modules/bussines/services/issues.service';
 import { IssuesCacheService } from 'src/modules/bussines/services/issues_cache.service';
@@ -92,10 +93,7 @@ export class ClientsIoService
       } = this.clients[id];
 
       if (data.username == u) {
-        (ws as Socket).send({
-          type: 'techApplicantConfirmation',
-          data,
-        } as IoMessage);
+        (ws as Socket).emit(NEW_TECHAPPLICATION_CONFIRMATION, data);
         break;
       }
     }
