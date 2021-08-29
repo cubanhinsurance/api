@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Inject,
   Injectable,
@@ -106,7 +107,7 @@ export class IssuesService implements OnModuleInit {
             q = string();
             break;
           case 'options':
-            q = array().items(...options);
+            q = array().items(string().valid(...options));
             break;
           case 'boolean':
             q = boolean();
@@ -442,6 +443,10 @@ export class IssuesService implements OnModuleInit {
 
     if (!i)
       throw new NotFoundException('No existe la incidencia para ese usuario');
+
+    if (i.state == ISSUE_STATE.CANCELED) {
+      throw new ConflictException('Esa incidencia ya se encuentra cancelada');
+    }
 
     i.state = ISSUE_STATE.CANCELED;
     i.end_date = new Date();
