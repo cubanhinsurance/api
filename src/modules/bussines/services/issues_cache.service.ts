@@ -384,6 +384,14 @@ export class IssuesCacheService {
     const client = this.clients.get(tech.id);
     if (!client) return;
 
+    delete i.type.avatar;
+    Logger.log({
+      distance: tech.distance,
+      duration: tech.duration,
+      linearDistance: tech.linearDistance,
+      route: tech.route,
+      issue: i,
+    });
     client.ws.emit(ISSUE_CREATED, {
       distance: tech.distance,
       duration: tech.duration,
