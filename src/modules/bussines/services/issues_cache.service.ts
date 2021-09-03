@@ -10,8 +10,12 @@ import { GisService } from 'src/modules/gis/services/gis.service';
 import { distance, point } from '@turf/turf';
 import { OsrmService, Point, PROFILE } from 'src/modules/osrm/src/osrm.service';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { IssueApplication } from 'src/modules/bussines/entities/issues_applications.entity';
 import {
+  IssueApplication,
+  ISSUE_APPLICATION_STATE,
+} from 'src/modules/bussines/entities/issues_applications.entity';
+import {
+  ISSUE_CANCELLED,
   ISSUE_CREATED,
   ISSUE_UNAVAILABLE,
   NEW_ISSUE_APPLICATION,
@@ -20,6 +24,7 @@ import {
 import { IssuesService } from './issues.service';
 import { IgnoredIssuesEntity } from '../entities/ignored_issues.entity';
 import { Repository } from 'typeorm';
+import { application } from 'express';
 
 export interface WsClient {
   ws: Socket;
@@ -100,6 +105,8 @@ export class IssuesCacheService {
     private ignoredIssuesRepo: Repository<IgnoredIssuesEntity>,
     @InjectRepository(IssueApplication)
     private issuesAppRepo: Repository<IssueApplication>,
+    @InjectRepository(IssuesEntity)
+    private issuesRepo: Repository<IssuesEntity>,
     @InjectEntityManager() private manager,
   ) {
     this.openIssues = new Map<number, OPEN_ISSUES>();
@@ -322,6 +329,49 @@ export class IssuesCacheService {
     return distance(location, geom, { units: 'meters' });
   }
 
+  findTech(tech: string) {
+    for (const [
+      id,
+      {
+        user: {
+          user: { username },
+        },
+      },
+    ] of this.clients) {
+      if (username != tech) continue;
+      return id;
+    }
+    return false;
+  }
+
+  async getIssueTechDistanceInfo(issue: IssuesEntity, tech: string) {
+    const client = this.findTech(tech);
+
+    if (!client) return false;
+
+    const available = this.availableTechs.get(client);
+
+    if (!available) return false;
+
+    const connection = this.clients.get(client);
+
+    const dt = await this.distanceInfo(
+      client,
+      connection.user,
+      available,
+      issue,
+    );
+
+    return dt
+      ? {
+          route: dt.route,
+          distance: dt.distance,
+          linearDistance: dt.linearDistance,
+          duration: dt.duration,
+        }
+      : false;
+  }
+
   async distanceInfo(
     id: string,
     tech: TechniccianEntity,
@@ -384,14 +434,6 @@ export class IssuesCacheService {
     const client = this.clients.get(tech.id);
     if (!client) return;
 
-    delete i.type.avatar;
-    Logger.log({
-      distance: tech.distance,
-      duration: tech.duration,
-      linearDistance: tech.linearDistance,
-      route: tech.route,
-      issue: i,
-    });
     client.ws.emit(ISSUE_CREATED, {
       distance: tech.distance,
       duration: tech.duration,
@@ -460,9 +502,60 @@ export class IssuesCacheService {
       });
 
       this.openIssues.delete(id);
-    } else {
-      const a = 7;
     }
+
+    const { tech, applications, ...issue } = await this.issuesRepo
+      .createQueryBuilder('i')
+      .leftJoin('i.tech', 'tech')
+      .leftJoin('i.applications', 'apps', `apps.state='pendent'`, {
+        pendent: ISSUE_APPLICATION_STATE.PENDENT,
+      })
+      .leftJoin('apps.tech', 'apptech')
+      .addSelect(['tech.username', 'apps.id', 'apptech.username'])
+      .innerJoinAndSelect('i.type', 'type')
+      .innerJoinAndSelect('i.client_location', 'client_location')
+      .innerJoinAndSelect('client_location.province', 'province')
+      .innerJoinAndSelect(
+        'client_location.municipality',
+        'prmunicipalityovince',
+      )
+      .innerJoin('i.user', 'u')
+      .addSelect(['u.username', 'u.name', 'u.lastname', 'u.phone_number'])
+      .where('i.id=:id', { id })
+      .getOne();
+
+    if (tech) {
+      const techConn = this.clients.get(tech.username);
+      if (techConn) {
+        techConn.ws.emit(ISSUE_CANCELLED, {
+          issue,
+          reason: 'Incidencia cancelada por usuario',
+        });
+      }
+    } else {
+      for (const {
+        tech: { username },
+      } of applications) {
+        for (const [
+          id,
+          {
+            ws,
+            user: {
+              user: { username: us },
+            },
+          },
+        ] of this.clients) {
+          if (us == username) {
+            ws.emit(ISSUE_CANCELLED, {
+              issue,
+              reason: 'Incidencia cancelada por usuario',
+            });
+            break;
+          }
+        }
+      }
+    }
+    const a = 7;
   }
 
   async techRejected(app: IssueApplication) {
@@ -478,5 +571,15 @@ export class IssuesCacheService {
       if (username != app.tech.username) continue;
       ws.emit(TECH_REJECTED, app);
     }
+  }
+
+  async techAccepted({
+    tech,
+    issue,
+  }: {
+    issue: IssuesEntity;
+    tech: TechniccianEntity;
+  }) {
+    const a = 7;
   }
 }

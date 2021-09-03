@@ -42,6 +42,7 @@ import {
   IGNORED_ISSUE_REASON,
 } from '../entities/ignored_issues.entity';
 import { ISSUES_APPLICATION_STATES } from '../schemas/issues.schema';
+import { IssuesCacheService } from './issues_cache.service';
 
 const updateQb = (qb: SelectQueryBuilder<IssuesEntity>): void => {};
 
@@ -58,6 +59,7 @@ export class IssuesService implements OnModuleInit {
     private usersService: UsersService,
     private locationsService: LocationsService,
     private enumsService: EnumsService,
+    private techsCache: IssuesCacheService,
   ) {}
 
   async addIssue(
@@ -264,6 +266,67 @@ export class IssuesService implements OnModuleInit {
     const a = 7;
   }
 
+  async getIssueApplications(
+    issue: number,
+    author?: string,
+    techDetails: boolean = true,
+  ) {
+    const qr = this.issuesAppRepo
+      .createQueryBuilder('ia')
+      .innerJoinAndSelect('ia.issue', 'i')
+      .innerJoinAndSelect('i.client_location', 'client_location')
+      .innerJoinAndSelect('client_location.province', 'province')
+      .innerJoinAndSelect(
+        'client_location.municipality',
+        'prmunicipalityovince',
+      )
+      .innerJoin('i.user', 'u')
+      .innerJoin('ia.tech', 'tu')
+      .addSelect(['tu.username'])
+      .addSelect(['u.username'])
+      .where('i.id=:issue and ia.state=:pendent', {
+        issue,
+        pendent: ISSUE_APPLICATION_STATE.PENDENT,
+      });
+
+    if (author) {
+      qr.andWhere('u.username=:author', { author });
+    }
+
+    const apps = await qr.getMany();
+
+    if (techDetails) {
+      const techsInfo = await Promise.all(
+        apps.map((app) => this.getTechInfo(app.tech.username, app.issue)),
+      );
+
+      return apps.map(({ tech, ...app }, index) => {
+        const { distance, info, review } = techsInfo[index];
+
+        return { ...app, tech: { ...info, review }, distance };
+      });
+    }
+
+    return apps;
+  }
+
+  async getTechInfo(tech: string, issue?: IssuesEntity) {
+    const [info, review] = await Promise.all([
+      this.usersService.getUserPrivateData(tech),
+      this.usersService.getTechniccianReview(tech),
+    ]);
+
+    const distance = issue
+      ? await this.techsCache.getIssueTechDistanceInfo(issue, tech)
+      : false;
+
+    return {
+      info,
+      review,
+      distance,
+    };
+  }
+
   async getTechApplyngIssues(
     tech: string,
     page: number,
@@ -431,6 +494,14 @@ export class IssuesService implements OnModuleInit {
 
     const i = await qr.getOne();
 
+    if (!i) throw new NotFoundException();
+
+    switch (i.state) {
+      case ISSUE_STATE.CREATED:
+        (i as any).applications = await this.getIssueApplications(issue);
+        break;
+    }
+
     return i;
   }
 
@@ -488,7 +559,10 @@ export class IssuesService implements OnModuleInit {
 
     this.addNewIssueTrace(app.issue, ISSUE_STATE.ACCEPTED);
 
-    this.broker.emit(TECH_ACCEPTED, await this.getIssueDetails(app.issue.id));
+    this.broker.emit(TECH_ACCEPTED, {
+      issue: app.issue,
+      tech: app.tech,
+    });
   }
 
   async rejectTech(

@@ -108,10 +108,7 @@ export class ClientsIoService
     const techsInfo = {};
     for (const { issue, ...app } of apps) {
       if (!(app.tech.username in techsInfo)) {
-        const info = await this.usersService.getUserPrivateData(
-          app.tech.username,
-        );
-        const review = await this.usersService.getTechniccianReview(
+        const { info, review } = await this.issuesService.getTechInfo(
           app.tech.username,
         );
         (info.techniccian_info as any).review = review;

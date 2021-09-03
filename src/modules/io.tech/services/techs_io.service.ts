@@ -131,4 +131,8 @@ export class TechsIoService
   async techRejected(app) {
     this.techsHandler.techRejected(app);
   }
+
+  async techAccepted(app) {
+    this.techsHandler.techAccepted(app);
+  }
 }
