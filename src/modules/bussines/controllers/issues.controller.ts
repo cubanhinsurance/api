@@ -166,7 +166,7 @@ export class IssuesController {
     @Param('username') tech: string,
     @User('username') username: string,
   ) {
-    await this.issuesService.acceptTech(username, tech, issue);
+    return await this.issuesService.acceptTech(username, tech, issue);
   }
 
   @ApiOperation({

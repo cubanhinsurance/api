@@ -500,6 +500,10 @@ export class IssuesService implements OnModuleInit {
       case ISSUE_STATE.CREATED:
         (i as any).applications = await this.getIssueApplications(issue);
         break;
+      case ISSUE_STATE.ACCEPTED:
+        const { info, review } = await this.getTechInfo(i.tech.username);
+        (i as any).tech = { ...info, review };
+        break;
     }
 
     return i;
@@ -563,6 +567,8 @@ export class IssuesService implements OnModuleInit {
       issue: app.issue,
       tech: app.tech,
     });
+
+    return await this.getIssueDetails(issue, author);
   }
 
   async rejectTech(
