@@ -62,6 +62,19 @@ export class IssuesService implements OnModuleInit {
     private techsCache: IssuesCacheService,
   ) {}
 
+  get issuesQr(): SelectQueryBuilder<IssuesEntity> {
+    return this.issuesRepo
+      .createQueryBuilder('i')
+      .leftJoinAndSelect('i.client_location', 'cl')
+      .leftJoinAndSelect('client_location.province', 'province')
+      .leftJoinAndSelect('client_location.municipality', 'prmunicipalityovince')
+      .innerJoin('i.user', 'u')
+      .innerJoinAndSelect('i.type', 'issuetype')
+      .leftJoin('i.tech', 'tu')
+      .leftJoin('tu.techniccian_info', 'tt')
+      .addSelect(['tu.username', 'tu.name', 'tu.lastname', 'tu.phone_number']);
+  }
+
   async addIssue(
     username: string,
     location: number,
@@ -507,6 +520,15 @@ export class IssuesService implements OnModuleInit {
     }
 
     return i;
+  }
+
+  async getTechPendentIssues(tech: string) {
+    return await this.issuesQr
+      .where('i.state=:accepted and tu.username=:tech', {
+        accepted: ISSUE_STATE.ACCEPTED,
+        tech,
+      })
+      .getMany();
   }
 
   async cancelIssue(username: string, issue: number) {
