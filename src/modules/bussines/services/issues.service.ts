@@ -476,7 +476,12 @@ export class IssuesService implements OnModuleInit {
     });
   }
 
-  async getUserIssues(username: string, page: number, page_size: number = 10) {
+  async getUserIssues(
+    username: string,
+    page: number,
+    page_size: number = 10,
+    state?: ISSUE_STATE[],
+  ) {
     const qr = this.issuesRepo
       .createQueryBuilder('i')
       .innerJoin('i.user', 'u')
@@ -484,8 +489,21 @@ export class IssuesService implements OnModuleInit {
       .leftJoinAndSelect('i.client_location', 'cl')
       .leftJoin('i.tech', 'tu')
       .leftJoin('tu.techniccian_info', 'tt')
-      .addSelect(['tu.username', 'tu.name', 'tu.lastname', 'tu.phone_number'])
+      .leftJoin('i.applications', 'applications', 'i.state=:created', {
+        created: ISSUE_STATE.CREATED,
+      })
+      .addSelect([
+        'tu.username',
+        'tu.name',
+        'tu.lastname',
+        'tu.phone_number',
+        'applications.id',
+      ])
       .where('u.username=:username', { username });
+
+    if (state) {
+      qr.andWhere('i.state in (:...state)', { state });
+    }
 
     return await paginate_qr(page, page_size, qr);
   }

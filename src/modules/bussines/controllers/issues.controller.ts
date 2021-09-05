@@ -11,7 +11,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { number, string } from 'joi';
+import { array, number, string } from 'joi';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import { User } from 'src/modules/auth/decorators/user.decorator';
 import j2s from 'joi-to-swagger';
@@ -31,6 +31,7 @@ import {
 } from 'src/lib/decorators/pagination_queries.decorator';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { USER_NAME_SCHEMA } from 'src/modules/auth/schemas/signin.schema';
+import { ISSUE_STATE } from '../entities/issues.entity';
 
 @ApiTags('Issues')
 @Controller('issues')
@@ -114,13 +115,30 @@ export class IssuesController {
   @ApiOperation({
     summary: 'Obtiene las incidencias del usuario autenticado',
   })
+  @ApiQuery({
+    name: 'state',
+    required: false,
+    schema: j2s(array().items(string().valid(...Object.values(ISSUE_STATE))))
+      .swagger,
+  })
   @Get('user')
   async getLoggedUserIssues(
     @PageSize() pz: number,
     @Page() p: number,
     @User('username') username: string,
+    @Query(
+      'state',
+      new JoiPipe(
+        array().items(
+          string()
+            .valid(...Object.values(ISSUE_STATE))
+            .optional(),
+        ),
+      ),
+    )
+    state,
   ) {
-    return await this.issuesService.getUserIssues(username, p, pz);
+    return await this.issuesService.getUserIssues(username, p, pz, state);
   }
 
   @ApiOperation({
