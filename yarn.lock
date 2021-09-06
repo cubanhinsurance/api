@@ -6156,10 +6156,10 @@ nestjs-rconfig-module@^1.0.0:
     js-yaml "^4.0.0"
     lodash "^4.17.21"
 
-nestjs-typeorm-crud@1.0.19:
-  version "1.0.19"
-  resolved "https://registry.yarnpkg.com/nestjs-typeorm-crud/-/nestjs-typeorm-crud-1.0.19.tgz#a0b47c6534706f785b8eeed8147f36a15d65a476"
-  integrity sha512-xSQxomWYZ8IiMxiFSMc8eQ6PQb55uufEBnpFjikN1eYAyjY6nDkzI8/IIasUuSj4MzFNbZRsmqHT/ArMGd8pMA==
+nestjs-typeorm-crud@1.0.20:
+  version "1.0.20"
+  resolved "https://registry.yarnpkg.com/nestjs-typeorm-crud/-/nestjs-typeorm-crud-1.0.20.tgz#fef2cd0d4ec8c7a8c6840517f64dec1b0208b5ca"
+  integrity sha512-2e5Ab5HRVijov3vsgOXtrF0Dux8mXSmCTmayRYK8ly1GFD8gmOzXVVlOH5aPgkiJAZEzkDq/mZPrfu2xdBPgfQ==
   dependencies:
     "@nestjs/common" "^8.0.6"
     "@nestjs/core" "^8.0.6"
