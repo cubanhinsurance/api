@@ -1,7 +1,7 @@
 import { GisModule } from './modules/gis/gis.module';
 import { System_configModule } from './modules/system_config/system_config.module';
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@atlasjs/config';
+import { ConfigModule, ConfigService } from 'nestjs-rconfig-module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FunctionalitiesModule } from './modules/functionalities/functionalities.module';
 import { AuthModule } from './modules/auth/auth.module';

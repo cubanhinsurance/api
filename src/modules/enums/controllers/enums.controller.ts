@@ -57,7 +57,7 @@ import {
   CreateOne,
   DeleteOne,
   UpdateOne,
-} from '@atlasjs/typeorm-crud';
+} from 'nestjs-typeorm-crud';
 
 @Controller('enums')
 export class EnumsController {

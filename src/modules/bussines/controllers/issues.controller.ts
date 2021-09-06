@@ -242,12 +242,4 @@ export class IssuesController {
   ) {
     await this.issuesService.cancelIssueApplication(username, issue, app);
   }
-
-  @ApiOperation({
-    summary: 'Devuelce las incidencias aceptadas del tecnico autenticado',
-  })
-  @Get('tech/pendents')
-  async getTechPendentIssues(@User('username') tech: string) {
-    return await this.issuesService.getTechPendentIssues(tech);
-  }
 }

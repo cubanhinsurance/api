@@ -1,4 +1,4 @@
-import { ConfigService } from '@atlasjs/config';
+import { ConfigService } from 'nestjs-rconfig-module';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { REDIS_BROKER } from 'src/lib/microservice/broker';

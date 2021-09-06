@@ -1,4 +1,4 @@
-import { ConfigService } from '@atlasjs/config';
+import { ConfigService } from 'nestjs-rconfig-module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
 export const REDIS_BROKER = ClientsModule.registerAsync([

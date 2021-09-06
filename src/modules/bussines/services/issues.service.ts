@@ -270,6 +270,13 @@ export class IssuesService implements OnModuleInit {
     return await this.issuesAppRepo
       .createQueryBuilder('ia')
       .innerJoinAndSelect('ia.issue', 'i')
+      .innerJoinAndSelect('i.type', 'issue_type')
+      .innerJoinAndSelect('i.client_location', 'client_location')
+      .innerJoinAndSelect('client_location.province', 'province')
+      .innerJoinAndSelect(
+        'client_location.municipality',
+        'prmunicipalityovince',
+      )
       .innerJoin('i.user', 'u')
       .innerJoin('ia.tech', 'tu')
       .addSelect(['tu.username'])
@@ -388,6 +395,8 @@ export class IssuesService implements OnModuleInit {
       .addSelect(['u.username'])
       .where('tu.username=:tech and ia.id=:app', { tech, app })
       .getOne();
+
+    if (!application) throw new NotFoundException();
 
     return {
       ...application,
@@ -540,15 +549,6 @@ export class IssuesService implements OnModuleInit {
     return i;
   }
 
-  async getTechPendentIssues(tech: string) {
-    return await this.issuesQr
-      .where('i.state=:accepted and tu.username=:tech', {
-        accepted: ISSUE_STATE.ACCEPTED,
-        tech,
-      })
-      .getMany();
-  }
-
   async cancelIssue(username: string, issue: number) {
     const i = await this.issuesRepo
       .createQueryBuilder('i')
@@ -575,9 +575,15 @@ export class IssuesService implements OnModuleInit {
     const app = await this.issuesAppRepo
       .createQueryBuilder('ia')
       .innerJoinAndSelect('ia.issue', 'i')
+      .leftJoinAndSelect('i.client_location', 'client_location')
+      .innerJoinAndSelect('client_location.province', 'province')
+      .innerJoinAndSelect(
+        'client_location.municipality',
+        'prmunicipalityovince',
+      )
       .innerJoin('i.user', 'u')
       .innerJoin('ia.tech', 'tu')
-      .addSelect(['tu.username'])
+      .addSelect(['tu.username', 'tu.id'])
       .addSelect(['u.username'])
       .where('u.username=:author and tu.username=:tech and i.id=:issue', {
         tech,
@@ -591,6 +597,11 @@ export class IssuesService implements OnModuleInit {
         'No se encontro una solicitud de aplicacion a ninguna incidencia de ese autor',
       );
 
+    if (app.state != ISSUE_APPLICATION_STATE.PENDENT)
+      throw new ConflictException(
+        'Aplicacion no se encuentra en estado pendiente',
+      );
+
     await this.issuesAppRepo.save({
       id: app.id,
       state: ISSUE_APPLICATION_STATE.ACCEPTED,
@@ -598,14 +609,28 @@ export class IssuesService implements OnModuleInit {
 
     const issueUpdated = await this.issuesRepo.save({
       id: app.issue.id,
+      tech: app.tech,
       state: ISSUE_STATE.ACCEPTED,
     });
+
+    const others = await this.issuesAppRepo
+      .createQueryBuilder('ia')
+      .innerJoin('ia.issue', 'i')
+      .innerJoin('ia.tech', 'tech')
+      .select(['tech.username', 'ia.id'])
+      .where('tech.username<>:tech and i.id=:issue and ia.state=:pendent', {
+        tech,
+        issue,
+        pendent: ISSUE_APPLICATION_STATE.PENDENT,
+      })
+      .getMany();
 
     this.addNewIssueTrace(app.issue, ISSUE_STATE.ACCEPTED);
 
     this.broker.emit(TECH_ACCEPTED, {
       issue: app.issue,
       tech: app.tech,
+      refused: others.map(({ tech: { username } }) => username),
     });
 
     return await this.getIssueDetails(issue, author);
@@ -622,7 +647,7 @@ export class IssuesService implements OnModuleInit {
       .innerJoinAndSelect('ia.issue', 'i')
       .innerJoin('i.user', 'u')
       .innerJoin('ia.tech', 'tu')
-      .addSelect(['tu.username'])
+      .addSelect(['tu.username', 'tu.id'])
       .addSelect(['u.username'])
       .where('u.username=:author and tu.username=:tech and i.id=:issue', {
         tech,
@@ -636,14 +661,26 @@ export class IssuesService implements OnModuleInit {
         'No se encontro una solicitud de aplicacion a ninguna incidencia de ese autor',
       );
 
-    const rejected = await this.ignoredIssuesRepo.save({
-      description: reason,
-      reason: IGNORED_ISSUE_REASON.REFUSED,
-      issue: app.issue,
-      user: app.tech,
+    if (app.state == ISSUE_APPLICATION_STATE.REFUSED)
+      throw new ConflictException('Ya se encuentra rechazada');
+
+    const updated = await this.issuesAppRepo.save({
+      id: app.id,
+      state: ISSUE_APPLICATION_STATE.REFUSED,
     });
 
-    this.broker.emit(TECH_REJECTED, app);
+    try {
+      const rejected = await this.ignoredIssuesRepo.save({
+        description: reason,
+        reason: IGNORED_ISSUE_REASON.REFUSED,
+        issue: app.issue,
+        user: app.tech,
+      });
+
+      this.broker.emit(TECH_REJECTED, app);
+    } catch (a) {
+      const b = 7;
+    }
   }
 
   async cancelIssueApplication(

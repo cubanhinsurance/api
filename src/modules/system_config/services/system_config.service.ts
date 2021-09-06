@@ -1,4 +1,4 @@
-import { ConfigService } from '@atlasjs/config';
+import { ConfigService } from 'nestjs-rconfig-module';
 import {
   Injectable,
   OnApplicationBootstrap,

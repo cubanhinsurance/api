@@ -3,7 +3,7 @@ https://docs.nestjs.com/providers#services
 */
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { TypeOrmEntityService, TypeOrmService } from '@atlasjs/typeorm-crud';
+import { TypeOrmEntityService, TypeOrmService } from 'nestjs-typeorm-crud';
 import { CoinsEntity } from '../entities/coins.entity';
 
 @TypeOrmEntityService<CoinsService, CoinsEntity>({

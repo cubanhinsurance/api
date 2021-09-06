@@ -116,9 +116,13 @@ export class LocationsService {
   }
 
   async getUserLocations(username: string) {
-    return await this.cliensLocationsRepo.find({
-      relations: ['province', 'municipality'],
-    });
+    return await this.cliensLocationsRepo
+      .createQueryBuilder('c')
+      .innerJoinAndSelect('c.province', 'province')
+      .innerJoinAndSelect('c.municipality', 'province')
+      .innerJoin('c.user', 'user')
+      .where('user.username=:username', { username })
+      .getMany();
   }
 
   async getLocation(username: string, location: number) {

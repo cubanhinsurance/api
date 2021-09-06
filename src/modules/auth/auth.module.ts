@@ -9,7 +9,7 @@ import {
 } from './strategies/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { config } from 'rxjs';
-import { ConfigService } from '@atlasjs/config';
+import { ConfigService } from 'nestjs-rconfig-module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RolesModule } from '../roles/roles.module';
 import { FunctionalitiesModule } from '../functionalities/functionalities.module';
@@ -26,7 +26,7 @@ import { BussinesModule } from '../bussines/bussines.module';
       useFactory({ config }: ConfigService) {
         return {
           secret: config.auth.secret,
-          signOptions: { expiresIn: config.auth.expiresIn, },
+          signOptions: { expiresIn: config.auth.expiresIn },
         };
       },
       inject: [ConfigService],

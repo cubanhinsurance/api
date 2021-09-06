@@ -1,4 +1,4 @@
-import { columns } from '@atlasjs/typeorm-crud';
+import { columns } from 'nestjs-typeorm-crud';
 import { TechniccianEntity } from 'src/modules/users/entities/techniccian.entity';
 import { UsersEntity } from 'src/modules/users/entities/user.entity';
 import {

@@ -1,5 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { IssuesEntity } from 'src/modules/bussines/entities/issues.entity';
+import {
+  IssuesEntity,
+  ISSUE_STATE,
+} from 'src/modules/bussines/entities/issues.entity';
 import { TechniccianEntity } from 'src/modules/users/entities/techniccian.entity';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { Socket } from 'socket.io';
@@ -19,11 +22,12 @@ import {
   ISSUE_CREATED,
   ISSUE_UNAVAILABLE,
   NEW_ISSUE_APPLICATION,
+  TECH_ACCEPTED,
   TECH_REJECTED,
 } from 'src/modules/bussines/io.constants';
 import { IssuesService } from './issues.service';
 import { IgnoredIssuesEntity } from '../entities/ignored_issues.entity';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { application } from 'express';
 
 export interface WsClient {
@@ -76,6 +80,7 @@ export interface WsTech {
   ws: Socket;
   reviews: any;
   user: TechniccianEntity;
+  pendents: Map<number, PENDENT_ISSUE>;
 }
 
 export interface DISTANCE_INFO {
@@ -87,6 +92,13 @@ export interface DISTANCE_INFO {
   reviews?: any;
   linearDistance: number;
   route?: any;
+}
+
+export interface PENDENT_ISSUE {
+  issue: IssuesEntity;
+  distance: DISTANCE_INFO;
+  tech: TechniccianEntity;
+  status: TECH_STATUS_UPDATE;
 }
 
 @Injectable()
@@ -115,6 +127,19 @@ export class IssuesCacheService {
     this.availableTechs = new Map<string, TECH_STATUS_UPDATE>();
   }
 
+  get issuesQr(): SelectQueryBuilder<IssuesEntity> {
+    return this.issuesRepo
+      .createQueryBuilder('i')
+      .leftJoinAndSelect('i.client_location', 'client_location')
+      .leftJoinAndSelect('client_location.province', 'province')
+      .leftJoinAndSelect('client_location.municipality', 'prmunicipalityovince')
+      .innerJoin('i.user', 'u')
+      .innerJoinAndSelect('i.type', 'issuetype')
+      .leftJoin('i.tech', 'tu')
+      .leftJoin('tu.techniccian_info', 'tt')
+      .addSelect(['tu.username', 'tu.name', 'tu.lastname', 'tu.phone_number']);
+  }
+
   async techConnected(username: string, client: Socket) {
     const user = await this.usersService.getTechnichianInfo(username);
     const reviews = await this.usersService.getTechniccianReview(username);
@@ -123,7 +148,17 @@ export class IssuesCacheService {
       user,
       reviews,
       ws: client,
+      pendents: new Map<number, PENDENT_ISSUE>(),
     });
+  }
+
+  async getTechPendentIssues(tech: string) {
+    // return await this.issuesQr
+    //   .where('i.state=:accepted and tu.username=:tech', {
+    //     accepted: ISSUE_STATE.ACCEPTED,
+    //     tech,
+    //   })
+    //   .getMany();
   }
 
   techDisconnected(client: Socket) {
@@ -148,21 +183,41 @@ export class IssuesCacheService {
     const { user, ws, reviews } = this.clients.get(id);
 
     if (first) {
-      for (const [issueId, { issue, techs, applications }] of this.openIssues) {
-        if (!!techs.get(user.user.username)) continue;
-        if (!!applications.get(user.user.username)) continue;
-        if (!(await this.isPrepared(user, issue))) continue;
-        const distanceInfo = await this.distanceInfo(id, user, status, issue);
-        if (!distanceInfo) {
-          Logger.error(
-            'Ocurrio un error obteniendo la informacion de distancia de un tecnico recien conectado',
-            'IssuesCache',
-          );
-          continue;
-        }
-        this.registerTech2OpennedIssue(issueId, distanceInfo);
-      }
+      this.search4OpenIssues(id, user, status);
+      this.search4PendentIssues(user.user.username);
     }
+  }
+
+  async search4OpenIssues(
+    id: string,
+    user: TechniccianEntity,
+    status: TECH_STATUS_UPDATE,
+  ) {
+    for (const [issueId, { issue, techs, applications }] of this.openIssues) {
+      if (!!techs.get(user.user.username)) continue;
+      if (!!applications.get(user.user.username)) continue;
+      if (!(await this.isPrepared(user, issue))) continue;
+      const distanceInfo = await this.distanceInfo(id, user, status, issue);
+      if (!distanceInfo) {
+        Logger.error(
+          'Ocurrio un error obteniendo la informacion de distancia de un tecnico recien conectado',
+          'IssuesCache',
+        );
+        continue;
+      }
+      this.registerTech2OpennedIssue(issueId, distanceInfo);
+    }
+  }
+
+  async search4PendentIssues(tech: string) {
+    const pendents = await this.issuesQr
+      .where('tu.username=:tech and i.state=:accepted', {
+        tech,
+        accepted: ISSUE_STATE.ACCEPTED,
+      })
+      .getMany();
+
+    const f = 7;
   }
 
   getTechUser(id: string) {
@@ -184,19 +239,6 @@ export class IssuesCacheService {
     tech: TechniccianEntity,
     issue: IssuesEntity,
   ): Promise<boolean> {
-    const {
-      type: { rules },
-    } = issue;
-    if (!rules || rules?.length == 0 || rules?.[0]?.length == 0) return true;
-
-    const [ors] = rules;
-
-    let prepared = !!tech.habilities.find(
-      (h: HabilitiesEntity) => !!ors.find((id) => id == h.id),
-    );
-
-    if (!prepared) return false;
-
     const ignored = await this.ignoredIssuesRepo
       .createQueryBuilder('ig')
       .innerJoin('ig.user', 'u')
@@ -220,6 +262,19 @@ export class IssuesCacheService {
       .getOne();
 
     if (!!alreadyApplied) return false;
+
+    const {
+      type: { rules },
+    } = issue;
+    if (!rules || rules?.length == 0 || rules?.[0]?.length == 0) return true;
+
+    const [ors] = rules;
+
+    let prepared = !!tech.habilities.find(
+      (h: HabilitiesEntity) => !!ors.find((id) => id == h.id),
+    );
+
+    if (!prepared) return false;
 
     return true;
   }
@@ -573,13 +628,64 @@ export class IssuesCacheService {
     }
   }
 
+  findTechClient(tech: string) {
+    const client = this.findTech(tech);
+
+    if (!client) return false;
+
+    const con = this.clients.get(client);
+    const available = this.availableTechs.get(client);
+
+    return con
+      ? {
+          id: client,
+          client: con,
+          available,
+        }
+      : false;
+  }
+
   async techAccepted({
     tech,
     issue,
+    refused = [],
   }: {
     issue: IssuesEntity;
     tech: TechniccianEntity;
+    refused: string[];
   }) {
-    const a = 7;
+    for (const rtech of refused) {
+      const client = this.findTech(rtech);
+
+      if (!client) return false;
+
+      const con = this.clients.get(client);
+
+      if (!con) return;
+
+      con.ws.emit(ISSUE_UNAVAILABLE, {
+        issue,
+        reason: 'Incidencia asignada a otro tecnico',
+      });
+    }
+
+    const techClient = this.findTechClient(tech.user.username);
+
+    if (!techClient) return;
+
+    const { available, client, id } = techClient;
+
+    const distance = await this.distanceInfo(id, client.user, available, issue);
+
+    const info: PENDENT_ISSUE = {
+      distance,
+      status: available,
+      issue,
+      tech: client.user,
+    };
+
+    client.ws.emit(TECH_ACCEPTED, info);
+
+    client.pendents.set(issue.id, info);
   }
 }

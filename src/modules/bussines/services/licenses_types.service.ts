@@ -1,4 +1,4 @@
-import { TypeOrmEntityService, TypeOrmService } from '@atlasjs/typeorm-crud';
+import { TypeOrmEntityService, TypeOrmService } from 'nestjs-typeorm-crud';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LicensesTypesEntity } from 'src/modules/enums/entities/licenses_types.entity';
 

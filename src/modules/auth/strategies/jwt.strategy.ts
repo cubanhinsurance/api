@@ -1,7 +1,7 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@atlasjs/config';
+import { ConfigService } from 'nestjs-rconfig-module';
 import { AuthService } from '../services/auth.service';
 
 const cookieExtractor = (req): string =>

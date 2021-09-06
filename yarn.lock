@@ -55,23 +55,6 @@
     ora "5.3.0"
     rxjs "6.6.3"
 
-"@atlasjs/config@^1.0.0":
-  version "1.0.0"
-  resolved "https://npm.geocuba.cu/@atlasjs%2fconfig/-/config-1.0.0.tgz#60b12a251fe3a9ddfc920f8f36a03a4e68930192"
-  integrity sha512-qpFFik6V01uCCz0tbZq2kfxwyMc5Z2W1csTzXFSxk0xa6nckdqw8rTHa90G9ahf2vCG56ahgYYh75Pa7d0GE3g==
-  dependencies:
-    dotenv "^8.2.0"
-    joi "^17.4.0"
-    js-yaml "^4.0.0"
-    lodash "^4.17.21"
-
-"@atlasjs/typeorm-crud@1.0.17":
-  version "1.0.17"
-  resolved "https://npm.geocuba.cu/@atlasjs%2ftypeorm-crud/-/typeorm-crud-1.0.17.tgz#50bbe280a21bff5093dd314463dfc0277514555a"
-  integrity sha512-lM7PVjwgJxb0dzpz2RCUwTEd5NHyAagPcjq8qA1lrKNU5LIip6cAqKA4rBgPr76lRHD8VJ4wNSNOCYRS6TbGPg==
-  dependencies:
-    pluralize "^8.0.0"
-
 "@babel/code-frame@7.12.11":
   version "7.12.11"
   resolved "https://npm.geocuba.cu/@babel%2fcode-frame/-/code-frame-7.12.11.tgz#f4ad435aa263db935b8f10f2c552d23fb716a63f"
@@ -624,6 +607,16 @@
     tslib "2.2.0"
     uuid "8.3.2"
 
+"@nestjs/common@^8.0.6":
+  version "8.0.6"
+  resolved "https://registry.yarnpkg.com/@nestjs/common/-/common-8.0.6.tgz#52157de0bde7a439b2248ffd6d5e221fd593bc93"
+  integrity sha512-mSD000iYJDN2wjL2hbygCVNVvzvi3VW5EDc25gK1Bj3wUU2HR8m1qOAUBqcCaGIuvBb2cD/pnVkKklnsY0rKhw==
+  dependencies:
+    axios "0.21.1"
+    iterare "1.2.1"
+    tslib "2.3.0"
+    uuid "8.3.2"
+
 "@nestjs/core@^7.6.13":
   version "7.6.18"
   resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-7.6.18.tgz#36448f0ae7f7d08f032e1e7e53b4a4c82ae844d7"
@@ -635,6 +628,19 @@
     object-hash "2.1.1"
     path-to-regexp "3.2.0"
     tslib "2.2.0"
+    uuid "8.3.2"
+
+"@nestjs/core@^8.0.6":
+  version "8.0.6"
+  resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-8.0.6.tgz#ff403a0713f9f7874e3a91ef5416fe6e96872635"
+  integrity sha512-PIGL4TMjVkAsiv5hJinaTx3WdoftYh7pJDwIUQPvRZPLhboGbOJlVapN0Cw5SL7XgNWojQiAsbgLmnGJVDO3Sw==
+  dependencies:
+    "@nuxtjs/opencollective" "0.3.2"
+    fast-safe-stringify "2.0.8"
+    iterare "1.2.1"
+    object-hash "2.2.0"
+    path-to-regexp "3.2.0"
+    tslib "2.3.0"
     uuid "8.3.2"
 
 "@nestjs/jwt@^7.2.0":
@@ -649,6 +655,11 @@
   version "0.4.0"
   resolved "https://npm.geocuba.cu/@nestjs%2fmapped-types/-/mapped-types-0.4.0.tgz#352b9a661d6d36863cf48b2057616cef1b2c802d"
   integrity sha512-TVtd/aTb7EqPhVczdeuvzF9dY0fyE3ivvCstc2eO+AkNqrfzSG1kXYYiUUznKjd0qDa8g2TmPSmHUQ21AXsV1Q==
+
+"@nestjs/mapped-types@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@nestjs/mapped-types/-/mapped-types-1.0.0.tgz#52a0441795f6da8144a35970d3ebc19281f31cfd"
+  integrity sha512-26AW5jHadLXtvHs+M+Agd9KZ92dDlBrmD0rORlBlvn2KvsWs4JRaKl2mUsrW7YsdZeAu3Hc4ukqyYyDdyCmMWQ==
 
 "@nestjs/microservices@^7.6.17":
   version "7.6.18"
@@ -703,6 +714,15 @@
     lodash "4.17.21"
     path-to-regexp "3.2.0"
 
+"@nestjs/swagger@^5.0.9":
+  version "5.0.9"
+  resolved "https://registry.yarnpkg.com/@nestjs/swagger/-/swagger-5.0.9.tgz#4c621fcab04c4835645cb41ef563378dc6bacfd2"
+  integrity sha512-KivZeDgn/VeDn81Rnd/0Cbv7M4kuHRb+Rlri+YsUrw3h9or4bxxRiUg7Yjjt368KxfJgR7C3lc6kltvoI7ucQg==
+  dependencies:
+    "@nestjs/mapped-types" "1.0.0"
+    lodash "4.17.21"
+    path-to-regexp "3.2.0"
+
 "@nestjs/testing@^7.5.1":
   version "7.6.15"
   resolved "https://npm.geocuba.cu/@nestjs%2ftesting/-/testing-7.6.15.tgz#eed34846a8b2b5ddb0ff6bd74cdcb4344c364c40"
@@ -724,6 +744,13 @@
   integrity sha512-utE1FkYM/gyCXUqw3zKYYS0YZ3DfkAnzsCx4T48cNnSDTCeWS+u3yt0FMDFjwSiQSaLrzpiSff/FaxJQvRlYow==
   dependencies:
     uuid "8.3.1"
+
+"@nestjs/typeorm@^8.0.2":
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/@nestjs/typeorm/-/typeorm-8.0.2.tgz#8e9b8422be402e02d6addfe7c779639fbff267af"
+  integrity sha512-UHn4IsRkzm22eNDir/uI+x8gmgo66EO7SxWfVOiPpeLSdrTfZHKYz6q/P9KRgYbwXs8TrywVdIbJhp+4C0tzjQ==
+  dependencies:
+    uuid "8.3.2"
 
 "@nestjs/websockets@^8.0.4":
   version "8.0.4"
@@ -3212,9 +3239,9 @@ cli-cursor@^3.1.0:
   dependencies:
     restore-cursor "^3.1.0"
 
-cli-highlight@^2.1.10:
+cli-highlight@^2.1.10, cli-highlight@^2.1.11:
   version "2.1.11"
-  resolved "https://npm.geocuba.cu/cli-highlight/-/cli-highlight-2.1.11.tgz#49736fa452f0aaf4fae580e30acb26828d2dc1bf"
+  resolved "https://registry.yarnpkg.com/cli-highlight/-/cli-highlight-2.1.11.tgz#49736fa452f0aaf4fae580e30acb26828d2dc1bf"
   integrity sha512-9KDcoEVwyUXrjcJNvHD0NFc/hiwe/WPVYIleQh2O1N2Zro5gWJZ/K+3DGn8w8P/F6FxOgzyC5bxDyHIgCSPhGg==
   dependencies:
     chalk "^4.0.0"
@@ -4237,6 +4264,11 @@ fast-safe-stringify@2.0.7, fast-safe-stringify@^2.0.7:
   version "2.0.7"
   resolved "https://npm.geocuba.cu/fast-safe-stringify/-/fast-safe-stringify-2.0.7.tgz#124aa885899261f68aedb42a7c080de9da608743"
   integrity sha512-Utm6CdzT+6xsDk2m8S6uL8VHxNwI6Jub+e9NYTcAms28T84pTa25GJQV9j0CY0N1rM8hK4x6grpF2BQf+2qwVA==
+
+fast-safe-stringify@2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-2.0.8.tgz#dc2af48c46cf712b683e849b2bbd446b32de936f"
+  integrity sha512-lXatBjf3WPjmWD6DpIZxkeSsCOwqI0maYMpgDlx8g4U2qi4lbjA9oH/HD2a87G+KfsUmo5WbJFmqBZlPxtptag==
 
 fastq@^1.6.0:
   version "1.11.0"
@@ -5493,10 +5525,28 @@ joi-to-swagger@^5.2.0:
   dependencies:
     lodash "^4.17.20"
 
+joi-to-swagger@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/joi-to-swagger/-/joi-to-swagger-6.0.1.tgz#fb793f4fd63929828854892adae938a49778531b"
+  integrity sha512-CHiTrj1rbvlKAth7mLFE4nSX2p9zaTMin2JDf0NmvMuzDsB0WjlXqH5IDQGuU2ecfJG8Ldz2E0w51t/CjBfKGQ==
+  dependencies:
+    lodash "^4.17.21"
+
 joi@^17.4.0:
   version "17.4.0"
   resolved "https://npm.geocuba.cu/joi/-/joi-17.4.0.tgz#b5c2277c8519e016316e49ababd41a1908d9ef20"
   integrity sha512-F4WiW2xaV6wc1jxete70Rw4V/VuMd6IN+a5ilZsxG4uYtUXWu2kq9W5P2dz30e7Gmw8RCbY/u/uk+dMPma9tAg==
+  dependencies:
+    "@hapi/hoek" "^9.0.0"
+    "@hapi/topo" "^5.0.0"
+    "@sideway/address" "^4.1.0"
+    "@sideway/formula" "^3.0.0"
+    "@sideway/pinpoint" "^2.0.0"
+
+joi@^17.4.2:
+  version "17.4.2"
+  resolved "https://registry.yarnpkg.com/joi/-/joi-17.4.2.tgz#02f4eb5cf88e515e614830239379dcbbe28ce7f7"
+  integrity sha512-Lm56PP+n0+Z2A2rfRvsfWVDXGEWjXxatPopkQ8qQ5mxCEhwHG+Ettgg5o98FFaxilOxozoa14cFhrE/hOzh/Nw==
   dependencies:
     "@hapi/hoek" "^9.0.0"
     "@hapi/topo" "^5.0.0"
@@ -6095,6 +6145,32 @@ neo-async@^2.6.2:
   version "2.6.2"
   resolved "https://npm.geocuba.cu/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
+
+nestjs-rconfig-module@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/nestjs-rconfig-module/-/nestjs-rconfig-module-1.0.0.tgz#e32de0b809c905bfd22a4de858d47508b529d573"
+  integrity sha512-/jC6JanyJEHYxjecBdsULPbW4BF4+iLNGsCXGvCJh53Q6ZTlLMDuBccLe+0IZkENRz/yLUVzoZhOQuDfS50PDw==
+  dependencies:
+    dotenv "^8.2.0"
+    joi "^17.4.0"
+    js-yaml "^4.0.0"
+    lodash "^4.17.21"
+
+nestjs-typeorm-crud@1.0.19:
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/nestjs-typeorm-crud/-/nestjs-typeorm-crud-1.0.19.tgz#a0b47c6534706f785b8eeed8147f36a15d65a476"
+  integrity sha512-xSQxomWYZ8IiMxiFSMc8eQ6PQb55uufEBnpFjikN1eYAyjY6nDkzI8/IIasUuSj4MzFNbZRsmqHT/ArMGd8pMA==
+  dependencies:
+    "@nestjs/common" "^8.0.6"
+    "@nestjs/core" "^8.0.6"
+    "@nestjs/swagger" "^5.0.9"
+    "@nestjs/typeorm" "^8.0.2"
+    joi "^17.4.2"
+    joi-to-swagger "^6.0.1"
+    pluralize "^8.0.0"
+    reflect-metadata "^0.1.13"
+    rxjs "^7.3.0"
+    typeorm "^0.2.37"
 
 nice-try@^1.0.4:
   version "1.0.5"
@@ -7075,6 +7151,13 @@ rxjs@^6.6.0, rxjs@^6.6.3:
   dependencies:
     tslib "^1.9.0"
 
+rxjs@^7.3.0:
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.3.0.tgz#39fe4f3461dc1e50be1475b2b85a0a88c1e938c6"
+  integrity sha512-p2yuGIg9S1epc3vrjKf6iVb3RCaAYjYskkO+jHIaV0IjOPlJop4UnodOoFb2xeNwlguqLYvGw1b1McillYb5Gw==
+  dependencies:
+    tslib "~2.1.0"
+
 safe-buffer@5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://npm.geocuba.cu/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
@@ -7987,7 +8070,7 @@ tsconfig-paths@3.9.0, tsconfig-paths@^3.9.0:
     minimist "^1.2.0"
     strip-bom "^3.0.0"
 
-tslib@2.1.0, tslib@^2.1.0:
+tslib@2.1.0, tslib@^2.1.0, tslib@~2.1.0:
   version "2.1.0"
   resolved "https://npm.geocuba.cu/tslib/-/tslib-2.1.0.tgz#da60860f1c2ecaa5703ab7d39bc05b6bf988b97a"
   integrity sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==
@@ -8111,6 +8194,29 @@ typeorm@^0.2.32:
     xml2js "^0.4.23"
     yargonaut "^1.1.4"
     yargs "^16.2.0"
+    zen-observable-ts "^1.0.0"
+
+typeorm@^0.2.37:
+  version "0.2.37"
+  resolved "https://registry.yarnpkg.com/typeorm/-/typeorm-0.2.37.tgz#1a5e59216077640694d27c04c99ed3f968d15dc8"
+  integrity sha512-7rkW0yCgFC24I5T0f3S/twmLSuccPh1SQmxET/oDWn2sSDVzbyWdnItSdKy27CdJGTlKHYtUVeOcMYw5LRsXVw==
+  dependencies:
+    "@sqltools/formatter" "^1.2.2"
+    app-root-path "^3.0.0"
+    buffer "^6.0.3"
+    chalk "^4.1.0"
+    cli-highlight "^2.1.11"
+    debug "^4.3.1"
+    dotenv "^8.2.0"
+    glob "^7.1.6"
+    js-yaml "^4.0.0"
+    mkdirp "^1.0.4"
+    reflect-metadata "^0.1.13"
+    sha.js "^2.4.11"
+    tslib "^2.1.0"
+    xml2js "^0.4.23"
+    yargonaut "^1.1.4"
+    yargs "^17.0.1"
     zen-observable-ts "^1.0.0"
 
 typescript@4.2.3, typescript@^4.0.5:
@@ -8513,6 +8619,19 @@ yargs@^16.0.0, yargs@^16.2.0:
   version "16.2.0"
   resolved "https://npm.geocuba.cu/yargs/-/yargs-16.2.0.tgz#1c82bf0f6b6a66eafce7ef30e376f49a12477f66"
   integrity sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw==
+  dependencies:
+    cliui "^7.0.2"
+    escalade "^3.1.1"
+    get-caller-file "^2.0.5"
+    require-directory "^2.1.1"
+    string-width "^4.2.0"
+    y18n "^5.0.5"
+    yargs-parser "^20.2.2"
+
+yargs@^17.0.1:
+  version "17.1.1"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.1.1.tgz#c2a8091564bdb196f7c0a67c1d12e5b85b8067ba"
+  integrity sha512-c2k48R0PwKIqKhPMWjeiF6y2xY/gPMUlro0sgxqXpbOIohWiLNXWslsootttv7E1e73QPAMQSg5FeySbVcpsPQ==
   dependencies:
     cliui "^7.0.2"
     escalade "^3.1.1"

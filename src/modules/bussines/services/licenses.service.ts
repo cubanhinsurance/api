@@ -8,7 +8,7 @@ import {
   columns,
   rel,
   TypeOrmService,
-} from '@atlasjs/typeorm-crud';
+} from 'nestjs-typeorm-crud';
 import { findOrFail } from 'src/lib/typeorm/id_colection_handler';
 import { CoinsEntity } from 'src/modules/enums/entities/coins.entity';
 import { LicensesTypesEntity } from 'src/modules/enums/entities/licenses_types.entity';
@@ -22,7 +22,7 @@ import {
   randomBytes,
   createHmac,
 } from 'crypto';
-import { ConfigService } from '@atlasjs/config';
+import { ConfigService } from 'nestjs-rconfig-module';
 import { v4 } from 'uuid';
 import { PayGatewaysEntity } from 'src/modules/enums/entities/pay_gateways.entity';
 import { UserLicensesEntity } from '../entities/user_licenses.entity';

@@ -29,7 +29,7 @@ import {
   AddRelation,
   DeleteRelation,
   GetOne,
-} from '@atlasjs/typeorm-crud';
+} from 'nestjs-typeorm-crud';
 import { LicensesService } from '../services/licenses.service';
 import j2s from 'joi-to-swagger';
 import { array, boolean, number, object, string } from 'joi';
