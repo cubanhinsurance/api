@@ -242,4 +242,16 @@ export class IssuesController {
   ) {
     await this.issuesService.cancelIssueApplication(username, issue, app);
   }
+
+  @ApiOperation({
+    summary:
+      'Comienza la ejecucion de una incidencia por el tecnico autenticado',
+  })
+  @Post('tech/:issue')
+  async beginIssue(
+    @Param('issue', new JoiPipe(number().required())) issue,
+    @User('username') tech,
+  ) {
+    return await this.issuesService.beginIssue(tech, issue);
+  }
 }

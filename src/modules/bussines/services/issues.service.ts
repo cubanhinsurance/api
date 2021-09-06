@@ -182,14 +182,18 @@ export class IssuesService implements OnModuleInit {
   }
 
   async addNewIssueTrace(issue: IssuesEntity, state: ISSUE_STATE, date?: Date) {
-    const history = await this.issuesRepo
-      .createQueryBuilder('u')
-      .relation(IssuesEntity, 'traces')
-      .of(issue)
-      .add({
-        date: date ?? new Date(),
-        state,
-      } as IssuesTraces);
+    try {
+      const history = await this.issuesRepo
+        .createQueryBuilder('u')
+        .relation(IssuesEntity, 'traces')
+        .of(issue)
+        .add({
+          date: date ?? new Date(),
+          state,
+        } as IssuesTraces);
+    } catch (e) {
+      const a = 7;
+    }
   }
 
   async onModuleInit() {
@@ -630,6 +634,7 @@ export class IssuesService implements OnModuleInit {
     this.broker.emit(TECH_ACCEPTED, {
       issue: app.issue,
       tech: app.tech,
+      application: app,
       refused: others.map(({ tech: { username } }) => username),
     });
 
@@ -712,5 +717,9 @@ export class IssuesService implements OnModuleInit {
     });
 
     this.broker.emit(ISSUE_APPLICATION_CANCELLED, app);
+  }
+
+  async beginIssue(tech: string, issue: number) {
+    const a = 7;
   }
 }

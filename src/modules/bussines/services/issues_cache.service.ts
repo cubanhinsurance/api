@@ -76,11 +76,14 @@ export interface AVAILABLE_FOR_ISSUE_INFO {
 
 export interface TECH_DISTANCE_INFO {}
 
+export interface ProgressIsue {}
+
 export interface WsTech {
   ws: Socket;
   reviews: any;
   user: TechniccianEntity;
   pendents: Map<number, PENDENT_ISSUE>;
+  progress?: ProgressIsue;
 }
 
 export interface DISTANCE_INFO {
@@ -95,10 +98,12 @@ export interface DISTANCE_INFO {
 }
 
 export interface PENDENT_ISSUE {
+  date?: Date;
   issue: IssuesEntity;
   distance: DISTANCE_INFO;
   tech: TechniccianEntity;
   status: TECH_STATUS_UPDATE;
+  application: IssueApplication;
 }
 
 @Injectable()
@@ -137,7 +142,16 @@ export class IssuesCacheService {
       .innerJoinAndSelect('i.type', 'issuetype')
       .leftJoin('i.tech', 'tu')
       .leftJoin('tu.techniccian_info', 'tt')
-      .addSelect(['tu.username', 'tu.name', 'tu.lastname', 'tu.phone_number']);
+      .addSelect([
+        'tu.username',
+        'tu.name',
+        'tu.lastname',
+        'tu.phone_number',
+        'u.username',
+        'u.name',
+        'u.lastname',
+        'u.phone_number',
+      ]);
   }
 
   async techConnected(username: string, client: Socket) {
@@ -184,7 +198,7 @@ export class IssuesCacheService {
 
     if (first) {
       this.search4OpenIssues(id, user, status);
-      this.search4PendentIssues(user.user.username);
+      this.search4PendentIssues(user);
     }
   }
 
@@ -209,14 +223,27 @@ export class IssuesCacheService {
     }
   }
 
-  async search4PendentIssues(tech: string) {
+  async search4PendentIssues(tech: TechniccianEntity) {
     const pendents = await this.issuesQr
+      .innerJoinAndSelect('i.applications', 'apps', 'apps.tech=tu.id')
       .where('tu.username=:tech and i.state=:accepted', {
-        tech,
+        tech: tech.user.username,
         accepted: ISSUE_STATE.ACCEPTED,
       })
       .getMany();
 
+    for (const {
+      tech: t,
+      applications: [application],
+      ...issue
+    } of pendents) {
+      this.techAccepted({
+        application,
+        issue: issue as any,
+        refused: [],
+        tech,
+      });
+    }
     const f = 7;
   }
 
@@ -648,10 +675,12 @@ export class IssuesCacheService {
   async techAccepted({
     tech,
     issue,
+    application,
     refused = [],
   }: {
     issue: IssuesEntity;
     tech: TechniccianEntity;
+    application: IssueApplication;
     refused: string[];
   }) {
     for (const rtech of refused) {
@@ -678,10 +707,12 @@ export class IssuesCacheService {
     const distance = await this.distanceInfo(id, client.user, available, issue);
 
     const info: PENDENT_ISSUE = {
+      date: new Date(),
       distance,
       status: available,
       issue,
       tech: client.user,
+      application,
     };
 
     client.ws.emit(TECH_ACCEPTED, info);

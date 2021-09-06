@@ -32,6 +32,7 @@ export class WsValidTechLicense
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const client = context.switchToWs().getClient();
+    const data = context.switchToWs().getData();
 
     const connected = this.techsHandler.clients.get(client.id);
 
@@ -41,6 +42,7 @@ export class WsValidTechLicense
         `Tecnico sin permisos: ${client.handshake.address}`,
         'Socket.IO',
       );
+      Logger.log(data);
       return false;
     }
 
