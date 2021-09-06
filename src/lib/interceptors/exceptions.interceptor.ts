@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { QueryFailedError } from 'typeorm';
 import { Exception } from '../exceptions/exception';
 
 @Injectable()
@@ -15,6 +16,9 @@ export class ExceptionsInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       catchError((err) => {
+        if (err instanceof QueryFailedError) {
+          throw new InternalServerErrorException();
+        }
         if (err.isAxiosError === true)
           throw new HttpException(
             err?.response?.statusText ?? '',

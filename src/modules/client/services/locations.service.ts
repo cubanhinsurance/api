@@ -119,7 +119,7 @@ export class LocationsService {
     return await this.cliensLocationsRepo
       .createQueryBuilder('c')
       .innerJoinAndSelect('c.province', 'province')
-      .innerJoinAndSelect('c.municipality', 'province')
+      .innerJoinAndSelect('c.municipality', 'municipality')
       .innerJoin('c.user', 'user')
       .where('user.username=:username', { username })
       .getMany();
@@ -131,7 +131,7 @@ export class LocationsService {
       .innerJoin('l.user', 'u')
       .innerJoinAndSelect('l.province', 'province')
       .innerJoinAndSelect('l.municipality', 'municipality')
-      .where(`u.username=username`, { username })
+      .where(`u.username=username and l.id=:location`, { username, location })
       .getOne();
   }
 }
