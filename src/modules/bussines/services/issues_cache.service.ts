@@ -18,17 +18,20 @@ import {
   ISSUE_APPLICATION_STATE,
 } from 'src/modules/bussines/entities/issues_applications.entity';
 import {
+  CLIENT_ISSUE_IN_PROGRESS_UPDATE,
   ISSUE_CANCELLED,
   ISSUE_CREATED,
   ISSUE_UNAVAILABLE,
   NEW_ISSUE_APPLICATION,
   TECH_ACCEPTED,
+  TECH_ISSUE_IN_PROGRESS_UPDATE,
   TECH_REJECTED,
 } from 'src/modules/bussines/io.constants';
 import { IssuesService } from './issues.service';
 import { IgnoredIssuesEntity } from '../entities/ignored_issues.entity';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { application } from 'express';
+import * as moment from 'moment';
 
 export interface WsClient {
   ws: Socket;
@@ -83,7 +86,7 @@ export interface WsTech {
   reviews: any;
   user: TechniccianEntity;
   pendents: Map<number, PENDENT_ISSUE>;
-  progress?: ProgressIsue;
+  progress?: PENDENT_ISSUE;
 }
 
 export interface DISTANCE_INFO {
@@ -98,7 +101,8 @@ export interface DISTANCE_INFO {
 }
 
 export interface PENDENT_ISSUE {
-  date?: Date;
+  refresh_date?: Date;
+  arrive_date?: Date;
   issue: IssuesEntity;
   distance: DISTANCE_INFO;
   tech: TechniccianEntity;
@@ -683,6 +687,7 @@ export class IssuesCacheService {
           id: client,
           client: con,
           available,
+          ws: con.ws,
         }
       : false;
   }
@@ -723,20 +728,40 @@ export class IssuesCacheService {
       return;
     }
 
-    const distance = await this.distanceInfo(id, client.user, available, issue);
-
-    const info: PENDENT_ISSUE = {
-      date: new Date(),
-      distance,
-      status: available,
+    const info = await this.getPendentIssueInfo(
+      id,
+      client.user,
+      available,
       issue,
-      tech: client.user,
       application,
-    };
+    );
 
     client.ws.emit(TECH_ACCEPTED, info);
 
     client.pendents.set(issue.id, info);
+  }
+
+  async getPendentIssueInfo(
+    id: string,
+    tech: TechniccianEntity,
+    status: TECH_STATUS_UPDATE,
+    issue: IssuesEntity,
+    application: IssueApplication,
+  ): Promise<PENDENT_ISSUE> {
+    const distance = await this.distanceInfo(id, tech, status, issue);
+
+    let arrive_date = distance.route
+      ? moment().add(distance.duration, 'seconds').toDate()
+      : undefined;
+    return {
+      refresh_date: new Date(),
+      arrive_date,
+      distance,
+      status,
+      issue,
+      tech,
+      application,
+    };
   }
 
   async issueInProgress({
@@ -746,6 +771,60 @@ export class IssuesCacheService {
     tech: string;
     issue: IssuesEntity;
   }) {
-    const a = 6;
+    const techClient = this.findTechClient(tech);
+    if (!techClient) {
+      throw new Error(
+        `Tecnico: ${tech} con tarea en progreso: ${issue.id} sin cliente en el socket`,
+      );
+    }
+
+    const { available, id, client, ws } = techClient;
+
+    if (!available) {
+      throw new Error(
+        `Tecnico: ${tech} con tarea en progreso: ${issue.id} sin actualizacion del estado en el socket`,
+      );
+    }
+
+    let pendent: PENDENT_ISSUE = client.pendents.get(issue.id);
+
+    if (!pendent) {
+      const application = await this.issuesAppRepo
+        .createQueryBuilder('ia')
+        .innerJoinAndSelect('ia.issue', 'i')
+        .leftJoinAndSelect('i.client_location', 'client_location')
+        .innerJoinAndSelect('client_location.province', 'province')
+        .innerJoinAndSelect(
+          'client_location.municipality',
+          'prmunicipalityovince',
+        )
+        .innerJoin('i.user', 'u')
+        .innerJoin('ia.tech', 'tu')
+        .addSelect(['tu.username', 'tu.id'])
+        .addSelect(['u.username'])
+        .where('i.id=:issue and tu.username=:tech', {
+          issue: issue.id,
+          tech,
+        })
+        .getOne();
+
+      pendent = await this.getPendentIssueInfo(
+        id,
+        client.user,
+        available,
+        issue,
+        application,
+      );
+    }
+
+    if (pendent) {
+      client.pendents.delete(issue.id);
+    }
+
+    client.progress = pendent;
+
+    this.broker.emit(CLIENT_ISSUE_IN_PROGRESS_UPDATE, pendent);
+
+    ws.emit(TECH_ISSUE_IN_PROGRESS_UPDATE, pendent);
   }
 }

@@ -15,13 +15,17 @@ import {
   ISSUE_APPLICATION_STATE,
 } from 'src/modules/bussines/entities/issues_applications.entity';
 import {
+  CLIENT_ISSUE_IN_PROGRESS_UPDATE,
   ISSUE_APPLICATION_CANCELLED,
   NEW_ISSUE_APPLICATION,
   NEW_TECHAPPLICATION_CONFIRMATION,
 } from 'src/modules/bussines/io.constants';
 import { ISSUES_APPLICATION_STATES } from 'src/modules/bussines/schemas/issues.schema';
 import { IssuesService } from 'src/modules/bussines/services/issues.service';
-import { IssuesCacheService } from 'src/modules/bussines/services/issues_cache.service';
+import {
+  IssuesCacheService,
+  PENDENT_ISSUE,
+} from 'src/modules/bussines/services/issues_cache.service';
 import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
 import { UsersService } from 'src/modules/users/services/users.service';
 
@@ -146,6 +150,32 @@ export class ClientsIoService
 
     if (clientConn) {
       clientConn.ws.emit(ISSUE_APPLICATION_CANCELLED, app);
+    }
+  }
+
+  issueUpdate({
+    issue,
+    tech,
+    refresh_date,
+    arrive_date,
+    distance: { distance, linearDistance, duration },
+    application,
+  }: PENDENT_ISSUE) {
+    const clientConn = this.clients.get(issue?.user?.username);
+
+    if (clientConn) {
+      clientConn.ws.emit(CLIENT_ISSUE_IN_PROGRESS_UPDATE, {
+        issue,
+        tech,
+        application,
+        arrive: {
+          duration,
+          distance,
+          linearDistance,
+          refresh_date,
+          arrive_date,
+        },
+      });
     }
   }
 }

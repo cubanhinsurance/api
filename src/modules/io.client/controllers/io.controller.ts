@@ -1,6 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { PENDENT_ISSUE } from 'src/modules/bussines/services/issues_cache.service';
 import {
+  CLIENT_ISSUE_IN_PROGRESS_UPDATE,
   ISSUE_APPLICATION_CANCELLED,
   NEW_ISSUE_APPLICATION,
   TECH_APPLICANT_CONFIRMED,
@@ -24,5 +26,10 @@ export class ClientsIoController {
   @MessagePattern(ISSUE_APPLICATION_CANCELLED)
   async onissueCancelled(@Payload() application) {
     this.clientsIoService.issueApplicationCancelled(application);
+  }
+
+  @MessagePattern(CLIENT_ISSUE_IN_PROGRESS_UPDATE)
+  async issueUpdate(@Payload() update: PENDENT_ISSUE) {
+    this.clientsIoService.issueUpdate(update);
   }
 }
