@@ -17,6 +17,6 @@ export class AgentsIoController {
 
   @MessagePattern(TECH_APPLICANT_CANCELLED)
   async tech_applicant_cancelled(@Payload() data) {
-    this.agentsIoService.emitNewTechApp(data);
+    this.agentsIoService.emitTechAppCancelled(data);
   }
 }

@@ -182,8 +182,8 @@ export class TechApplicationsService implements OnModuleInit {
       await this.techApplicantRepo.softDelete(application);
 
       this.broker.emit(TECH_APPLICANT_CANCELLED, {
-        username,
-        date: new Date(),
+        ...application,
+        user: await this.usersService.getUserPrivateData(username),
       });
     } catch (e) {
       throw new InternalServerErrorException();
@@ -328,7 +328,10 @@ export class TechApplicationsService implements OnModuleInit {
       user: userData,
     });
 
-    this.broker.emit(TECH_APPLICANT, username);
+    this.broker.emit(TECH_APPLICANT, {
+      ...techApp,
+      user: await this.usersService.getUserPrivateData(username),
+    });
   }
 
   async getUserApplications(

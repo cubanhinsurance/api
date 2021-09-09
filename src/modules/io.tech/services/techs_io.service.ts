@@ -135,4 +135,8 @@ export class TechsIoService
   async techAccepted(app) {
     this.techsHandler.techAccepted(app);
   }
+
+  async issueInProgress(app) {
+    this.techsHandler.issueInProgress(app);
+  }
 }

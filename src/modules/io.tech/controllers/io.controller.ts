@@ -3,6 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import {
   ISSUE_CANCELLED,
   ISSUE_CREATED,
+  ISSUE_IN_PROGRESS,
   NEW_ISSUE_APPLICATION,
   TECH_ACCEPTED,
   TECH_REJECTED,
@@ -31,6 +32,11 @@ export class TechsIoController {
   @MessagePattern(TECH_ACCEPTED)
   async techAccepted(@Payload() data) {
     this.techsIoService.techAccepted(data);
+  }
+
+  @MessagePattern(ISSUE_IN_PROGRESS)
+  async issueInProgress(@Payload() data) {
+    this.techsIoService.issueInProgress(data);
   }
 
   // @MessagePattern(NEW_ISSUE_APPLICATION)

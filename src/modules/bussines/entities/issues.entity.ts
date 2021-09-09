@@ -36,6 +36,9 @@ export enum ISSUE_STATE {
 @Entity({
   schema: 'mod_bussines',
   name: 'issues',
+  orderBy: {
+    date: 'DESC',
+  },
 })
 export class IssuesEntity {
   @PrimaryGeneratedColumn()
@@ -107,7 +110,7 @@ export class IssuesEntity {
   @Column({ nullable: true })
   maxium_cost: number;
 
-  @ManyToMany(() => IssuesTraces)
+  @ManyToMany(() => IssuesTraces, (t) => t.issue, { cascade: true })
   @JoinTable()
   traces: IssuesTraces[];
 
@@ -149,4 +152,7 @@ export class IssuesTraces {
 
   @DeleteDateColumn({ select: false })
   deleted_at: Date;
+
+  @OneToMany(() => IssuesEntity, (i) => i.traces)
+  issue: IssuesEntity;
 }

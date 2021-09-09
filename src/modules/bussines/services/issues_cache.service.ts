@@ -199,6 +199,7 @@ export class IssuesCacheService {
     if (first) {
       this.search4OpenIssues(id, user, status);
       this.search4PendentIssues(user);
+      this.search4ProgressIssue(user);
     }
   }
 
@@ -245,6 +246,20 @@ export class IssuesCacheService {
       });
     }
     const f = 7;
+  }
+
+  async search4ProgressIssue(tech: TechniccianEntity) {
+    const issue = await this.issuesQr
+      .where('tu.username=:tech and i.state=:progress', {
+        tech: tech.user.username,
+        progress: ISSUE_STATE.PROGRESS,
+      })
+      .getOne();
+
+    if (!issue) return;
+
+    this.issueInProgress({ issue, tech: tech.user.username });
+    const b = 7;
   }
 
   getTechUser(id: string) {
@@ -704,6 +719,10 @@ export class IssuesCacheService {
 
     const { available, client, id } = techClient;
 
+    if (!available) {
+      return;
+    }
+
     const distance = await this.distanceInfo(id, client.user, available, issue);
 
     const info: PENDENT_ISSUE = {
@@ -718,5 +737,15 @@ export class IssuesCacheService {
     client.ws.emit(TECH_ACCEPTED, info);
 
     client.pendents.set(issue.id, info);
+  }
+
+  async issueInProgress({
+    issue,
+    tech,
+  }: {
+    tech: string;
+    issue: IssuesEntity;
+  }) {
+    const a = 6;
   }
 }

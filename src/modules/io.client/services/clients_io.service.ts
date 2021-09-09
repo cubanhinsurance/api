@@ -10,12 +10,16 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { IssuesEntity } from 'src/modules/bussines/entities/issues.entity';
-import { IssueApplication } from 'src/modules/bussines/entities/issues_applications.entity';
+import {
+  IssueApplication,
+  ISSUE_APPLICATION_STATE,
+} from 'src/modules/bussines/entities/issues_applications.entity';
 import {
   ISSUE_APPLICATION_CANCELLED,
   NEW_ISSUE_APPLICATION,
   NEW_TECHAPPLICATION_CONFIRMATION,
 } from 'src/modules/bussines/io.constants';
+import { ISSUES_APPLICATION_STATES } from 'src/modules/bussines/schemas/issues.schema';
 import { IssuesService } from 'src/modules/bussines/services/issues.service';
 import { IssuesCacheService } from 'src/modules/bussines/services/issues_cache.service';
 import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
@@ -104,7 +108,10 @@ export class ClientsIoService
   }
 
   async search4AuthorIssuesApplications(username: string) {
-    const apps = await this.issuesService.getUserIssuesApplications(username);
+    const apps = await this.issuesService.getUserIssuesApplications(
+      username,
+      ISSUE_APPLICATION_STATE.PENDENT,
+    );
     const techsInfo = {};
     for (const { issue, ...app } of apps) {
       if (!(app.tech.username in techsInfo)) {

@@ -20,6 +20,7 @@ import {
   ISSUE_CANCELLED,
   ISSUE_CREATED,
   ISSUE_IGNORED,
+  ISSUE_IN_PROGRESS,
   NEW_ISSUE_APPLICATION,
   TECH_ACCEPTED,
   TECH_REJECTED,
@@ -46,11 +47,20 @@ import { IssuesCacheService } from './issues_cache.service';
 
 const updateQb = (qb: SelectQueryBuilder<IssuesEntity>): void => {};
 
+export enum PROGRESS_ISSUES_ACTIONS {
+  BEGIN = 'begin',
+  START = 'start',
+  RESUME = 'resume',
+  PAUSE = 'pause',
+}
+
 @Injectable()
 export class IssuesService implements OnModuleInit {
   constructor(
     @InjectRepository(IssuesEntity)
     private issuesRepo: Repository<IssuesEntity>,
+    @InjectRepository(IssuesTraces)
+    private issuesTracesRepo: Repository<IssuesTraces>,
     @InjectRepository(IgnoredIssuesEntity)
     private ignoredIssuesRepo: Repository<IgnoredIssuesEntity>,
     @InjectRepository(IssueApplication)
@@ -65,7 +75,7 @@ export class IssuesService implements OnModuleInit {
   get issuesQr(): SelectQueryBuilder<IssuesEntity> {
     return this.issuesRepo
       .createQueryBuilder('i')
-      .leftJoinAndSelect('i.client_location', 'cl')
+      .leftJoinAndSelect('i.client_location', 'client_location')
       .leftJoinAndSelect('client_location.province', 'province')
       .leftJoinAndSelect('client_location.municipality', 'prmunicipalityovince')
       .innerJoin('i.user', 'u')
@@ -183,14 +193,15 @@ export class IssuesService implements OnModuleInit {
 
   async addNewIssueTrace(issue: IssuesEntity, state: ISSUE_STATE, date?: Date) {
     try {
+      const trace = await this.issuesTracesRepo.save({
+        date: date ?? new Date(),
+        state,
+      });
       const history = await this.issuesRepo
         .createQueryBuilder('u')
         .relation(IssuesEntity, 'traces')
         .of(issue)
-        .add({
-          date: date ?? new Date(),
-          state,
-        } as IssuesTraces);
+        .add(trace);
     } catch (e) {
       const a = 7;
     }
@@ -270,8 +281,11 @@ export class IssuesService implements OnModuleInit {
     // });
   }
 
-  async getUserIssuesApplications(username: string) {
-    return await this.issuesAppRepo
+  async getUserIssuesApplications(
+    username: string,
+    state?: ISSUE_APPLICATION_STATE,
+  ) {
+    const qr = this.issuesAppRepo
       .createQueryBuilder('ia')
       .innerJoinAndSelect('ia.issue', 'i')
       .innerJoinAndSelect('i.type', 'issue_type')
@@ -285,8 +299,13 @@ export class IssuesService implements OnModuleInit {
       .innerJoin('ia.tech', 'tu')
       .addSelect(['tu.username'])
       .addSelect(['u.username'])
-      .where('u.username=:username', { username })
-      .getMany();
+      .where('u.username=:username', { username });
+
+    if (state) {
+      qr.andWhere('ia.state=:state', { state });
+    }
+
+    return await qr.getMany();
     const a = 7;
   }
 
@@ -546,6 +565,13 @@ export class IssuesService implements OnModuleInit {
         break;
       case ISSUE_STATE.ACCEPTED:
         const { info, review } = await this.getTechInfo(i.tech.username);
+
+        const iqr = await this.issuesTracesRepo
+          .createQueryBuilder('it')
+          .innerJoin('it.issue', 'i')
+          .where('i.id=:issue', { issue: i.id })
+          .getMany();
+
         (i as any).tech = { ...info, review };
         break;
     }
@@ -629,11 +655,22 @@ export class IssuesService implements OnModuleInit {
       })
       .getMany();
 
+    if (others.length > 0) {
+      const changedOthers = await Promise.all(
+        others.map(({ id }) =>
+          this.issuesAppRepo.save({
+            id,
+            state: ISSUE_APPLICATION_STATE.REFUSED,
+          }),
+        ),
+      );
+    }
+
     this.addNewIssueTrace(app.issue, ISSUE_STATE.ACCEPTED);
 
     this.broker.emit(TECH_ACCEPTED, {
       issue: app.issue,
-      tech: app.tech,
+      tech: await this.usersService.getTechnichianInfo(tech),
       application: app,
       refused: others.map(({ tech: { username } }) => username),
     });
@@ -720,6 +757,33 @@ export class IssuesService implements OnModuleInit {
   }
 
   async beginIssue(tech: string, issue: number) {
-    const a = 7;
+    const i = await this.issuesQr
+      .where('i.id=:issue and tu.username=:tech and i.state=:accepted', {
+        issue,
+        tech,
+        accepted: ISSUE_STATE.ACCEPTED,
+      })
+      .getOne();
+
+    if (!i)
+      throw new NotFoundException(
+        'Verifique si la incidencia existe o si fue aceptada para ese tecnico',
+      );
+
+    const updated = await this.issuesRepo.save({
+      id: i.id,
+      state: ISSUE_STATE.PROGRESS,
+    });
+
+    this.addNewIssueTrace(i, ISSUE_STATE.PROGRESS);
+
+    this.broker.emit(ISSUE_IN_PROGRESS, {
+      tech,
+      issue: i,
+    });
+  }
+
+  async postponeIssue(tech: string, issue: number) {
+    //todo
   }
 }

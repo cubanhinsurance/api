@@ -20,8 +20,17 @@ import {
   ISSUES_APPLICATION_STATES,
   ISSUE_APPLICATION,
 } from '../schemas/issues.schema';
-import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { IssuesService } from '../services/issues.service';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  IssuesService,
+  PROGRESS_ISSUES_ACTIONS,
+} from '../services/issues.service';
 import { imageFilter } from 'src/lib/multer/filter';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { HttpValidTechLicense } from 'src/modules/auth/guards/activeTech.guard';
@@ -32,6 +41,7 @@ import {
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { USER_NAME_SCHEMA } from 'src/modules/auth/schemas/signin.schema';
 import { ISSUE_STATE } from '../entities/issues.entity';
+import { Action } from 'rxjs/internal/scheduler/Action';
 
 @ApiTags('Issues')
 @Controller('issues')
@@ -244,8 +254,7 @@ export class IssuesController {
   }
 
   @ApiOperation({
-    summary:
-      'Comienza la ejecucion de una incidencia por el tecnico autenticado',
+    summary: 'Comienza la ejecucion de una incidencia del tecnico autenticado',
   })
   @Post('tech/:issue')
   async beginIssue(
@@ -253,5 +262,16 @@ export class IssuesController {
     @User('username') tech,
   ) {
     return await this.issuesService.beginIssue(tech, issue);
+  }
+
+  @ApiOperation({
+    summary: 'Pospone la ejecucion de una incidencia del tecnico autenticado',
+  })
+  @Put('tech/:issue')
+  async postPoneIssue(
+    @Param('issue', new JoiPipe(number().required())) issue,
+    @User('username') tech,
+  ) {
+    return await this.issuesService.postponeIssue(tech, issue);
   }
 }
