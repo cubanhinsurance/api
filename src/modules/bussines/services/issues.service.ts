@@ -143,8 +143,8 @@ export class IssuesService implements OnModuleInit {
         }
 
         if (q) {
-          if (required) q.required();
-          else q.optional();
+          if (required) q = q.required();
+          else q = q.allow(null).optional();
         }
 
         questionsSchema[i] = q;
@@ -153,7 +153,7 @@ export class IssuesService implements OnModuleInit {
 
     const schema = object(questionsSchema);
 
-    const { value, error } = await schema.validate(data);
+    const { value, error } = await schema.validate(data, { convert: true });
     if (error)
       throw new BadRequestException(`Formulario incorrecto: ${error.message}`);
     data = value;
@@ -573,6 +573,33 @@ export class IssuesService implements OnModuleInit {
           .getMany();
 
         (i as any).tech = { ...info, review };
+        break;
+      case ISSUE_STATE.PROGRESS:
+        const wsTech = this.techsCache.findTechClient(i.tech.username);
+        if (!!wsTech && wsTech?.client?.progress) {
+          const {
+            issue,
+            tech,
+            refresh_date,
+            arrive_date,
+            distance: { distance, linearDistance, duration },
+            application,
+          } = wsTech?.client?.progress;
+
+          (i as any).arrive_info = {
+            issue,
+            tech,
+            application,
+            arrive: {
+              duration,
+              distance,
+              linearDistance,
+              refresh_date,
+              arrive_date,
+            },
+          };
+        }
+        const g = 7;
         break;
     }
 

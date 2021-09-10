@@ -68,8 +68,18 @@ export class TechsIoService
         client.disconnect(true);
       }
 
-      await this.techsHandler.techConnected(valid.username, client);
+      const connected = await this.techsHandler.techConnected(
+        valid.username,
+        client,
+      );
 
+      if (connected === false) {
+        client.emit('unauthorized_tech');
+        client.disconnect();
+      }
+
+      client.emit('CONNECTED', true);
+      const a = 7;
       Logger.log(
         `Tecnico conectado: ${valid.username} - ${client.handshake.address}`,
       );

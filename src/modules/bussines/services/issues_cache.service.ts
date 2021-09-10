@@ -162,6 +162,12 @@ export class IssuesCacheService {
     const user = await this.usersService.getTechnichianInfo(username);
     const reviews = await this.usersService.getTechniccianReview(username);
 
+    if (!user) {
+      Logger.warn(
+        `Intento de conexion al socket por un usuario que no es tecnico: ${username}`,
+      );
+      return false;
+    }
     this.clients.set(client.id, {
       user,
       reviews,
@@ -439,7 +445,7 @@ export class IssuesCacheService {
         },
       },
     ] of this.clients) {
-      if (username != tech) continue;
+      if (username != tech || !this.availableTechs.get(id)) continue;
       return id;
     }
     return false;
@@ -674,7 +680,11 @@ export class IssuesCacheService {
     }
   }
 
-  findTechClient(tech: string) {
+  findTechClient(
+    tech: string,
+  ):
+    | { id: string; client: WsTech; available?: TECH_STATUS_UPDATE; ws: Socket }
+    | false {
     const client = this.findTech(tech);
 
     if (!client) return false;
