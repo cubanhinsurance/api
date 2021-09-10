@@ -587,16 +587,11 @@ export class IssuesService implements OnModuleInit {
           } = wsTech?.client?.progress;
 
           (i as any).arrive_info = {
-            issue,
-            tech,
-            application,
-            arrive: {
-              duration,
-              distance,
-              linearDistance,
-              refresh_date,
-              arrive_date,
-            },
+            duration,
+            distance,
+            linearDistance,
+            refresh_date,
+            arrive_date,
           };
         }
         const g = 7;
