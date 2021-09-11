@@ -206,6 +206,15 @@ export class IssuesCacheService {
 
     const { user, ws, reviews } = this.clients.get(id);
 
+    const anotherAv = this.findTechClient(user.user.username);
+
+    if (!!anotherAv && anotherAv.id != id) {
+      Logger.warn(
+        `Usuario ${user.user.username} con mas de un socket en servicio`,
+      );
+      return;
+    }
+
     if (first) {
       this.search4OpenIssues(id, user, status);
       this.search4PendentIssues(user);
@@ -279,7 +288,9 @@ export class IssuesCacheService {
   updateTechStatus(id: string, status: TECH_STATUS_UPDATE) {
     let tech = this.availableTechs.get(id);
     if (!tech && !status.available) return;
+    const old = tech;
     this.availableTechs.set(id, status);
+    this.refreshProgressIssueInfo(id, old);
   }
 
   async getIssue(id: number) {
@@ -366,7 +377,7 @@ export class IssuesCacheService {
     hasLocation: boolean;
     location: Point;
   } {
-    const hasLocation = false && !!gx;
+    const hasLocation = !!gx;
     return {
       hasLocation,
       location: hasLocation
@@ -836,5 +847,44 @@ export class IssuesCacheService {
     this.broker.emit(CLIENT_ISSUE_IN_PROGRESS_UPDATE, pendent);
 
     ws.emit(TECH_ISSUE_IN_PROGRESS_UPDATE, pendent);
+  }
+
+  async shouldRoute(
+    { gps: { x: nx, y: ny } }: TECH_STATUS_UPDATE,
+    { gps: { x: ox, y: oy } }: TECH_STATUS_UPDATE,
+  ) {
+    if (!nx) return;
+    if (nx == ox && ny == oy) return false;
+
+    const d = distance(point([nx, ny]).geometry, point([ox, oy]).geometry, {
+      units: 'meters',
+    });
+    const a = 7;
+  }
+
+  async refreshProgressIssueInfo(id: string, old: TECH_STATUS_UPDATE) {
+    const client = this.clients.get(id);
+    const current = this.availableTechs.get(id);
+
+    if (!client || !current) {
+      Logger.warn(
+        `No se encontro informacion del socket/estado del id:${id} `,
+        'IssueProgressRefresh',
+      );
+      return;
+    }
+
+    if (!client.progress) return;
+
+    const should = this.shouldRoute(current, old);
+    const a = 7;
+  }
+
+  async refreshDistanceInfo(
+    username: string,
+    oldOne: TECH_STATUS_UPDATE,
+    newOne: TECH_STATUS_UPDATE,
+  ) {
+    const a = 7;
   }
 }

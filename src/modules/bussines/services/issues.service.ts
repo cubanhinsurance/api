@@ -480,6 +480,9 @@ export class IssuesService implements OnModuleInit {
         state: ISSUE_APPLICATION_STATE.PENDENT,
       });
 
+      const reviews = await this.usersService.getTechniccianReview(username);
+      app.tech.techniccian_info.review = reviews;
+
       this.broker.emit(NEW_ISSUE_APPLICATION, {
         issue: i,
         application: app,
