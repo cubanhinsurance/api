@@ -352,7 +352,8 @@ export class IssuesService implements OnModuleInit {
       return apps.map(({ tech, ...app }, index) => {
         const { distance, info, review } = techsInfo[index];
 
-        return { ...app, tech: { ...info, review }, distance };
+        (info.techniccian_info as any).review = review;
+        return { ...app, tech: { ...info }, distance };
       });
     }
 
