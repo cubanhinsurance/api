@@ -60,4 +60,7 @@ export class IssueApplication {
 
   @DeleteDateColumn({ select: false })
   deleted_at: Date;
+
+  @Column({ nullable: true })
+  confirm_date: Date;
 }

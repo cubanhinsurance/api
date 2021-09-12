@@ -268,12 +268,13 @@ export class IssuesController {
   @ApiOperation({
     summary: 'Pospone la ejecucion de una incidencia del tecnico autenticado',
   })
-  @Put('tech/:issue')
+  @Put('tech/:issue/:description')
   async postPoneIssue(
     @Param('issue', new JoiPipe(number().required())) issue,
+    @Param('description') description,
     @User('username') tech,
   ) {
-    return await this.issuesService.postponeIssue(tech, issue);
+    return await this.issuesService.postponeIssue(tech, issue, description);
   }
 
   @ApiOperation({

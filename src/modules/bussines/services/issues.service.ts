@@ -578,13 +578,6 @@ export class IssuesService implements OnModuleInit {
           break;
         case ISSUE_STATE.ACCEPTED:
           const { info, review } = await this.getTechInfo(i.tech.username);
-
-          const iqr = await this.issuesTracesRepo
-            .createQueryBuilder('it')
-            .innerJoin('it.issue', 'i')
-            .where('i.id=:issue', { issue: i.id })
-            .getMany();
-
           (i as any).tech = { ...info, review };
           break;
         case ISSUE_STATE.PROGRESS:
@@ -819,8 +812,14 @@ export class IssuesService implements OnModuleInit {
     });
   }
 
-  async postponeIssue(tech: string, issue: number) {
-    //todo
+  async postponeIssue(tech: string, issue: number, description: string) {
+    const issueO = await this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoin('i.tech', 'tech')
+      .where('tech.username=:tech', { tech })
+      .getOne();
+
+    if (!issueO) throw new NotFoundException();
   }
 
   getAuthorIssuesQr(author: string) {
