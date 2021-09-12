@@ -20,6 +20,7 @@ import {
 import {
   CLIENT_ISSUE_IN_PROGRESS_UPDATE,
   ISSUE_APPLICATION_CANCELLED,
+  ISSUE_PAUSED,
   ISSUE_STARTED,
   NEW_ISSUE_APPLICATION,
   NEW_TECHAPPLICATION_CONFIRMATION,
@@ -201,6 +202,14 @@ export class ClientsIoService
           arrive_date,
         },
       });
+    }
+  }
+
+  issuePaused(issue: IssuesEntity) {
+    const clientConn = this.clients.get(issue?.user?.username);
+
+    if (clientConn) {
+      clientConn.ws.emit(ISSUE_PAUSED, issue);
     }
   }
 }

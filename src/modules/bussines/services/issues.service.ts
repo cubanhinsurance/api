@@ -21,6 +21,7 @@ import {
   ISSUE_CREATED,
   ISSUE_IGNORED,
   ISSUE_IN_PROGRESS,
+  ISSUE_PAUSED,
   NEW_ISSUE_APPLICATION,
   TECH_ACCEPTED,
   TECH_REJECTED,
@@ -191,7 +192,12 @@ export class IssuesService implements OnModuleInit {
     }
   }
 
-  async addNewIssueTrace(issue: IssuesEntity, state: ISSUE_STATE, date?: Date) {
+  async addNewIssueTrace(
+    issue: IssuesEntity,
+    state: ISSUE_STATE,
+    date?: Date,
+    description?: string,
+  ) {
     try {
       const trace = await this.issuesTracesRepo.save({
         date: date ?? new Date(),
@@ -630,7 +636,12 @@ export class IssuesService implements OnModuleInit {
     this.broker.emit(ISSUE_CANCELLED, issue);
   }
 
-  async acceptTech(author: string, tech: string, issue: number) {
+  async acceptTech(
+    author: string,
+    tech: string,
+    issue: number,
+    description?: string,
+  ) {
     const app = await this.issuesAppRepo
       .createQueryBuilder('ia')
       .innerJoinAndSelect('ia.issue', 'i')
@@ -695,7 +706,12 @@ export class IssuesService implements OnModuleInit {
       );
     }
 
-    this.addNewIssueTrace(app.issue, ISSUE_STATE.ACCEPTED);
+    this.addNewIssueTrace(
+      app.issue,
+      ISSUE_STATE.ACCEPTED,
+      new Date(),
+      description,
+    );
 
     this.broker.emit(TECH_ACCEPTED, {
       issue: app.issue,
@@ -816,10 +832,20 @@ export class IssuesService implements OnModuleInit {
     const issueO = await this.issuesRepo
       .createQueryBuilder('i')
       .innerJoin('i.tech', 'tech')
+      .innerJoin('i.user', 'author')
+      .addSelect(['tech.username', 'author.username'])
       .where('tech.username=:tech', { tech })
       .getOne();
 
     if (!issueO) throw new NotFoundException();
+
+    const issueD = await this.acceptTech(
+      issueO.user.username,
+      tech,
+      issue,
+      description,
+    );
+    this.broker.emit(ISSUE_PAUSED, issueD);
   }
 
   getAuthorIssuesQr(author: string) {
