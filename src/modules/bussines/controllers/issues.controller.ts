@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Head,
   Param,
   Post,
   Put,
@@ -273,5 +274,16 @@ export class IssuesController {
     @User('username') tech,
   ) {
     return await this.issuesService.postponeIssue(tech, issue);
+  }
+
+  @ApiOperation({
+    summary: 'Actualiza la informacion de ruteode una incidencia',
+  })
+  @Head('tech/:issue')
+  async refreshIssueInfo(
+    @Param('issue', new JoiPipe(number().required())) issue,
+    @User('username') tech,
+  ) {
+    await this.issuesService.refreshRoute(issue, tech);
   }
 }

@@ -9,7 +9,10 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { IssuesEntity } from 'src/modules/bussines/entities/issues.entity';
+import {
+  IssuesEntity,
+  ISSUE_STATE,
+} from 'src/modules/bussines/entities/issues.entity';
 import {
   IssueApplication,
   ISSUE_APPLICATION_STATE,
@@ -17,6 +20,7 @@ import {
 import {
   CLIENT_ISSUE_IN_PROGRESS_UPDATE,
   ISSUE_APPLICATION_CANCELLED,
+  ISSUE_STARTED,
   NEW_ISSUE_APPLICATION,
   NEW_TECHAPPLICATION_CONFIRMATION,
 } from 'src/modules/bussines/io.constants';
@@ -88,6 +92,7 @@ export class ClientsIoService
       });
 
       this.search4AuthorIssuesApplications(valid.username);
+      this.search4ProgressIssue(valid.username, client);
     } catch (e) {
       const b = 6;
     }
@@ -109,6 +114,26 @@ export class ClientsIoService
 
   handleDisconnect(client: Socket) {
     this.clients.delete(client.id);
+  }
+
+  async search4ProgressIssue(author: string, ws: Socket) {
+    const progressIssues = await this.issuesService
+      .getAuthorIssuesQr(author)
+      .andWhere('i.state=:progress', { progress: ISSUE_STATE.PROGRESS })
+      .addSelect(['tech.username'])
+      .getMany();
+
+    for (const {
+      id,
+      tech: { username: tech },
+    } of progressIssues) {
+      const techClient = this.issuesCache.findTechClient(tech);
+      if (!techClient) continue;
+      if (techClient.client.progress?.issue?.id != id) continue;
+      this.issueUpdate(techClient.client.progress);
+      const b = 7;
+    }
+    const g = 7;
   }
 
   async search4AuthorIssuesApplications(username: string) {

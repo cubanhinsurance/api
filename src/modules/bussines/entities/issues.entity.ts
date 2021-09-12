@@ -155,4 +155,7 @@ export class IssuesTraces {
 
   @OneToMany(() => IssuesEntity, (i) => i.traces)
   issue: IssuesEntity;
+
+  @Column({ nullable: true })
+  description: string;
 }

@@ -32,6 +32,7 @@ import { IgnoredIssuesEntity } from '../entities/ignored_issues.entity';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { application } from 'express';
 import * as moment from 'moment';
+import { UsersEntity } from 'src/modules/users/entities/user.entity';
 
 export interface WsClient {
   ws: Socket;
@@ -774,6 +775,12 @@ export class IssuesCacheService {
     let arrive_date = distance.route
       ? moment().add(distance.duration, 'seconds').toDate()
       : undefined;
+
+    Logger.log(
+      `Ruta calculada para el tecnico: ${tech.user.username}
+      en la incidencia: ${issue.id}(${issue.description})`,
+      'RouteCalculator',
+    );
     return {
       refresh_date: new Date(),
       arrive_date,
@@ -849,20 +856,24 @@ export class IssuesCacheService {
     ws.emit(TECH_ISSUE_IN_PROGRESS_UPDATE, pendent);
   }
 
-  async shouldRoute(
-    { gps: { x: nx, y: ny } }: TECH_STATUS_UPDATE,
-    { gps: { x: ox, y: oy } }: TECH_STATUS_UPDATE,
+  shouldRoute(
+    { gps: { x: nx, y: ny }, profile: np }: TECH_STATUS_UPDATE,
+    { gps: { x: ox, y: oy }, profile: op }: TECH_STATUS_UPDATE,
   ) {
+    if (np != op) return true;
     if (!nx) return;
     if (nx == ox && ny == oy) return false;
 
     const d = distance(point([nx, ny]).geometry, point([ox, oy]).geometry, {
       units: 'meters',
     });
-    const a = 7;
+
+    const limit: number = +(process.env?.ROUTE_MAX_DISTANCE ?? 200);
+
+    return d > limit;
   }
 
-  async refreshProgressIssueInfo(id: string, old: TECH_STATUS_UPDATE) {
+  async refreshProgressIssueInfo(id: string, old?: TECH_STATUS_UPDATE) {
     const client = this.clients.get(id);
     const current = this.availableTechs.get(id);
 
@@ -876,15 +887,47 @@ export class IssuesCacheService {
 
     if (!client.progress) return;
 
-    const should = this.shouldRoute(current, old);
+    if (!!old) {
+      const should = this.shouldRoute(current, old);
+
+      if (!should) return;
+    }
+
+    const updated = await this.getPendentIssueInfo(
+      id,
+      client.user,
+      current,
+      client.progress.issue,
+      client.progress.application,
+    );
+
+    client.progress = updated;
+    this.broker.emit(CLIENT_ISSUE_IN_PROGRESS_UPDATE, updated);
+
+    client.ws.emit(TECH_ISSUE_IN_PROGRESS_UPDATE, updated);
+
     const a = 7;
   }
 
-  async refreshDistanceInfo(
-    username: string,
-    oldOne: TECH_STATUS_UPDATE,
-    newOne: TECH_STATUS_UPDATE,
-  ) {
-    const a = 7;
+  async refreshIssueInfo(issue: IssuesEntity, tech: string) {
+    const client = this.findTechClient(tech);
+    if (!client) return;
+    if (issue.state == ISSUE_STATE.PROGRESS) {
+      this.refreshProgressIssueInfo(client.id);
+    } else {
+      const pendent = client.client.pendents.get(issue.id);
+      if (!pendent) return;
+      const updated = await this.getPendentIssueInfo(
+        client.id,
+        client.client.user,
+        client.available,
+        pendent.issue,
+        pendent.application,
+      );
+
+      client.ws.emit(TECH_ACCEPTED, updated);
+
+      client.client.pendents.set(issue.id, updated);
+    }
   }
 }

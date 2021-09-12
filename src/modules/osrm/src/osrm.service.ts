@@ -67,7 +67,7 @@ export class OsrmService {
     profile: PROFILE = PROFILE.CAR,
     {
       alternatives = false,
-      steps = false,
+      steps = true,
       annotations = false,
       continue_straight = CONTINUE_STRAIGHT.DEFAULT,
       overview = OVERVIEW.SIMPLIFIED,

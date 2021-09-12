@@ -1,0 +1,2666 @@
+{
+  "code": "Ok",
+  "routes": [
+    {
+      "geometry": {
+        "coordinates": [
+          [-82.358651, 23.135834],
+          [-82.358722, 23.13277],
+          [-82.365307, 23.124868],
+          [-82.365052, 23.1174],
+          [-82.366434, 23.113776],
+          [-82.3655, 23.107264],
+          [-82.362116, 23.098431],
+          [-82.366245, 23.086964],
+          [-82.364057, 23.081392],
+          [-82.358489, 23.074192],
+          [-82.362457, 23.067904],
+          [-82.366105, 23.056402],
+          [-82.362096, 23.046756],
+          [-82.369868, 23.034296],
+          [-82.372218, 23.018996],
+          [-82.37398, 23.018784],
+          [-82.373709, 23.016489],
+          [-82.376804, 23.012541],
+          [-82.378421, 23.013677],
+          [-82.380041, 23.012656],
+          [-82.389261, 23.013966],
+          [-82.390334, 23.013154]
+        ],
+        "type": "LineString"
+      },
+      "legs": [
+        {
+          "steps": [
+            {
+              "intersections": [
+                {
+                  "out": 0,
+                  "entry": [true],
+                  "bearings": [169],
+                  "location": [-82.358651, 23.135834]
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.358651, 23.135834],
+                  [-82.358557, 23.135408]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 34.9,
+              "maneuver": {
+                "bearing_after": 169,
+                "type": "depart",
+                "modifier": "left",
+                "bearing_before": 0,
+                "location": [-82.358651, 23.135834]
+              },
+              "weight": 34.9,
+              "distance": 48.3,
+              "name": ""
+            },
+            {
+              "intersections": [
+                {
+                  "out": 2,
+                  "location": [-82.358557, 23.135408],
+                  "bearings": [75, 165, 255, 345],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.358557, 23.135408],
+                  [-82.358643, 23.135396]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 6.4,
+              "maneuver": {
+                "bearing_after": 260,
+                "type": "turn",
+                "modifier": "right",
+                "bearing_before": 167,
+                "location": [-82.358557, 23.135408]
+              },
+              "weight": 6.4,
+              "distance": 8.9,
+              "name": "Brasil (Teniente Rey)"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 1,
+                  "location": [-82.358643, 23.135396],
+                  "bearings": [75, 165, 255, 345],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 0,
+                  "location": [-82.358619, 23.135253],
+                  "bearings": [165, 315, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.358643, 23.135396],
+                  [-82.358619, 23.135253],
+                  [-82.358418, 23.134083],
+                  [-82.358395, 23.133948]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 117.4,
+              "maneuver": {
+                "bearing_after": 170,
+                "type": "turn",
+                "modifier": "left",
+                "bearing_before": 260,
+                "location": [-82.358643, 23.135396]
+              },
+              "weight": 117.4,
+              "distance": 163,
+              "name": "Paseo de Martí (Paseo del Prado)"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 2,
+                  "location": [-82.358395, 23.133948],
+                  "bearings": [90, 165, 270, 345],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.358395, 23.133948],
+                  [-82.358555, 23.133936]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 11.8,
+              "maneuver": {
+                "bearing_after": 264,
+                "type": "turn",
+                "modifier": "right",
+                "bearing_before": 170,
+                "location": [-82.358395, 23.133948]
+              },
+              "weight": 11.8,
+              "distance": 16.4,
+              "name": ""
+            },
+            {
+              "intersections": [
+                {
+                  "out": 2,
+                  "location": [-82.358555, 23.133936],
+                  "bearings": [0, 90, 165, 300],
+                  "entry": [true, false, true, true],
+                  "in": 1
+                },
+                {
+                  "out": 1,
+                  "location": [-82.358543, 23.133864],
+                  "bearings": [90, 180, 270, 345],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 2,
+                  "location": [-82.35856, 23.133594],
+                  "bearings": [0, 75, 180, 330],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.358555, 23.133936],
+                  [-82.358543, 23.133864],
+                  [-82.35855, 23.133753],
+                  [-82.35856, 23.133594],
+                  [-82.358574, 23.133271],
+                  [-82.358595, 23.133154]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 64.9,
+              "maneuver": {
+                "bearing_after": 170,
+                "type": "turn",
+                "modifier": "left",
+                "bearing_before": 264,
+                "location": [-82.358555, 23.133936]
+              },
+              "weight": 64.9,
+              "distance": 87.3,
+              "name": "Paseo de Martí (Paseo del Prado)"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 3,
+                  "location": [-82.358595, 23.133154],
+                  "bearings": [0, 135, 180, 195],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.358595, 23.133154],
+                  [-82.358641, 23.132989],
+                  [-82.358667, 23.132913],
+                  [-82.3587, 23.132826],
+                  [-82.358722, 23.13277]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 32.2,
+              "maneuver": {
+                "bearing_after": 196,
+                "type": "continue",
+                "modifier": "straight",
+                "bearing_before": 182,
+                "location": [-82.358595, 23.133154]
+              },
+              "weight": 32.2,
+              "distance": 44.7,
+              "name": "Paseo de Martí (Paseo del Prado)"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 2,
+                  "location": [-82.358722, 23.13277],
+                  "bearings": [15, 90, 225, 270],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.359037, 23.1325],
+                  "bearings": [60, 90, 240, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.359318, 23.132329],
+                  "bearings": [60, 240, 345],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.359674, 23.132155],
+                  "bearings": [60, 180, 240],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 3,
+                  "location": [-82.359929, 23.132025],
+                  "bearings": [0, 60, 210, 225, 270],
+                  "entry": [true, false, true, true, true],
+                  "in": 1
+                },
+                {
+                  "out": 2,
+                  "location": [-82.360524, 23.131495],
+                  "bearings": [45, 60, 240],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.360604, 23.131444],
+                  "bearings": [0, 60, 240],
+                  "entry": [true, false, true],
+                  "in": 1
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.358722, 23.13277],
+                  [-82.358763, 23.132719],
+                  [-82.358795, 23.132682],
+                  [-82.358856, 23.132634],
+                  [-82.358937, 23.132573],
+                  [-82.359037, 23.1325],
+                  [-82.359193, 23.132405],
+                  [-82.359318, 23.132329],
+                  [-82.359501, 23.132239],
+                  [-82.359674, 23.132155],
+                  [-82.359829, 23.132083],
+                  [-82.359929, 23.132025],
+                  [-82.359968, 23.132],
+                  [-82.360006, 23.131966],
+                  [-82.360098, 23.131871],
+                  [-82.360327, 23.131668],
+                  [-82.360524, 23.131495],
+                  [-82.360604, 23.131444],
+                  [-82.360677, 23.131403],
+                  [-82.360852, 23.131306]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 197.5,
+              "maneuver": {
+                "bearing_after": 229,
+                "type": "new name",
+                "modifier": "slight right",
+                "bearing_before": 196,
+                "location": [-82.358722, 23.13277]
+              },
+              "weight": 197.5,
+              "distance": 274.3,
+              "name": "Máximo Gómez (Monte)"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 1,
+                  "location": [-82.360852, 23.131306],
+                  "bearings": [60, 150, 240],
+                  "entry": [false, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.360852, 23.131306],
+                  [-82.360467, 23.130641]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 60.3,
+              "maneuver": {
+                "bearing_after": 151,
+                "type": "turn",
+                "modifier": "left",
+                "bearing_before": 237,
+                "location": [-82.360852, 23.131306]
+              },
+              "weight": 60.3,
+              "distance": 83.8,
+              "name": "Revillagigedo"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 2,
+                  "location": [-82.360467, 23.130641],
+                  "bearings": [60, 150, 225, 330],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 2,
+                  "location": [-82.360939, 23.130189],
+                  "bearings": [45, 150, 225, 330],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.361558, 23.129489],
+                  "bearings": [45, 135, 225, 315],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.362065, 23.128937],
+                  "bearings": [45, 120, 225, 300],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.362711, 23.128198],
+                  "bearings": [45, 135, 225, 315],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.363113, 23.127756],
+                  "bearings": [45, 135, 225, 315],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.363521, 23.12731],
+                  "bearings": [45, 120, 210, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364258, 23.126245],
+                  "bearings": [30, 135, 210, 300],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364796, 23.125535],
+                  "bearings": [30, 135, 210, 315],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.365321, 23.124592],
+                  "bearings": [0, 135, 180],
+                  "entry": [false, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.360467, 23.130641],
+                  [-82.360939, 23.130189],
+                  [-82.361558, 23.129489],
+                  [-82.362065, 23.128937],
+                  [-82.362711, 23.128198],
+                  [-82.363113, 23.127756],
+                  [-82.363521, 23.12731],
+                  [-82.363945, 23.126695],
+                  [-82.364258, 23.126245],
+                  [-82.364796, 23.125535],
+                  [-82.365307, 23.124868],
+                  [-82.36532, 23.124776],
+                  [-82.365319, 23.1247],
+                  [-82.365321, 23.124592],
+                  [-82.365322, 23.124554],
+                  [-82.365324, 23.124427]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 622.2,
+              "maneuver": {
+                "bearing_after": 223,
+                "type": "turn",
+                "modifier": "right",
+                "bearing_before": 151,
+                "location": [-82.360467, 23.130641]
+              },
+              "weight": 622.2,
+              "distance": 861.4,
+              "name": "Corrales"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 3,
+                  "location": [-82.365324, 23.124427],
+                  "bearings": [0, 75, 135, 180, 315],
+                  "entry": [false, true, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.365335, 23.123917],
+                  "bearings": [0, 90, 180, 270],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.365314, 23.122821],
+                  "bearings": [0, 45, 180, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365253, 23.121468],
+                  "bearings": [0, 180, 225],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365167, 23.120095],
+                  "bearings": [0, 180, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365121, 23.119383],
+                  "bearings": [0, 180, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.365055, 23.118378],
+                  "bearings": [0, 90, 180, 300],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.36504, 23.117798],
+                  "bearings": [0, 90, 180, 270],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.365324, 23.124427],
+                  [-82.365339, 23.12408],
+                  [-82.365335, 23.123917],
+                  [-82.36534, 23.123401],
+                  [-82.365314, 23.122821],
+                  [-82.365284, 23.122149],
+                  [-82.365253, 23.121468],
+                  [-82.365167, 23.120095],
+                  [-82.365121, 23.119383],
+                  [-82.365055, 23.118378],
+                  [-82.36504, 23.117798],
+                  [-82.365043, 23.117513],
+                  [-82.365052, 23.1174],
+                  [-82.36507, 23.117319],
+                  [-82.365104, 23.117217],
+                  [-82.365167, 23.117035]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 597.8,
+              "maneuver": {
+                "bearing_after": 181,
+                "type": "new name",
+                "modifier": "straight",
+                "bearing_before": 180,
+                "location": [-82.365324, 23.124427]
+              },
+              "weight": 597.8,
+              "distance": 824.8,
+              "name": "Avenida de México (Cristina)"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 1,
+                  "location": [-82.365167, 23.117035],
+                  "bearings": [15, 180, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.365167, 23.117035],
+                  [-82.365164, 23.116924]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 10.9,
+              "maneuver": {
+                "bearing_after": 177,
+                "type": "turn",
+                "modifier": "slight left",
+                "bearing_before": 196,
+                "location": [-82.365167, 23.117035]
+              },
+              "weight": 10.9,
+              "distance": 12.3,
+              "name": "Ramón Pintó (Calzada de Concha)"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 3,
+                  "location": [-82.365164, 23.116924],
+                  "bearings": [0, 15, 165, 195],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365456, 23.116202],
+                  "bearings": [15, 195, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.365644, 23.115747],
+                  "bearings": [15, 120, 195, 300],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365863, 23.115204],
+                  "bearings": [15, 210, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.366434, 23.113776],
+                  "bearings": [15, 60, 180, 240],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.365164, 23.116924],
+                  [-82.365421, 23.116288],
+                  [-82.365456, 23.116202],
+                  [-82.365644, 23.115747],
+                  [-82.365863, 23.115204],
+                  [-82.366057, 23.114799],
+                  [-82.366129, 23.114617],
+                  [-82.366248, 23.114329],
+                  [-82.366336, 23.114115],
+                  [-82.366386, 23.113994],
+                  [-82.366419, 23.113871],
+                  [-82.366434, 23.113776],
+                  [-82.366435, 23.113678]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 277,
+              "maneuver": {
+                "bearing_after": 199,
+                "type": "turn",
+                "modifier": "slight right",
+                "bearing_before": 177,
+                "location": [-82.365164, 23.116924]
+              },
+              "weight": 277,
+              "distance": 384.8,
+              "name": "Avenida de México (Cristina)"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 2,
+                  "location": [-82.366435, 23.113678],
+                  "bearings": [0, 60, 165, 240],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 0,
+                  "location": [-82.366369, 23.113387],
+                  "bearings": [150, 330, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.36591, 23.112496],
+                  "bearings": [165, 255, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365598, 23.111408],
+                  "bearings": [75, 180, 270, 345],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 2,
+                  "location": [-82.365584, 23.11125],
+                  "bearings": [0, 45, 165, 210],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365539, 23.110968],
+                  "bearings": [90, 180, 270, 345],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 2,
+                  "location": [-82.365658, 23.110267],
+                  "bearings": [15, 105, 195, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365852, 23.109522],
+                  "bearings": [0, 165, 255],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365767, 23.109069],
+                  "bearings": [120, 165, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.365624, 23.108198],
+                  "bearings": [180, 255, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365524, 23.10736],
+                  "bearings": [0, 165, 255],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 0,
+                  "location": [-82.365344, 23.106783],
+                  "bearings": [165, 255, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365319, 23.10671],
+                  "bearings": [75, 165, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.364992, 23.105814],
+                  "bearings": [75, 165, 255, 345],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 1,
+                  "location": [-82.364669, 23.104963],
+                  "bearings": [75, 165, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.364438, 23.104372],
+                  "bearings": [75, 165, 255, 345],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 1,
+                  "location": [-82.364223, 23.103504],
+                  "bearings": [75, 165, 255, 345],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 1,
+                  "location": [-82.363698, 23.102286],
+                  "bearings": [60, 135, 315],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.363396, 23.101962],
+                  "bearings": [150, 240, 315],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.362875, 23.100793],
+                  "bearings": [165, 255, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.362822, 23.10055],
+                  "bearings": [90, 165, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.36251, 23.099616],
+                  "bearings": [75, 150, 330],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.362175, 23.098999],
+                  "bearings": [90, 165, 255, 330],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 2,
+                  "location": [-82.362193, 23.097913],
+                  "bearings": [15, 105, 210],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.362418, 23.097464],
+                  "bearings": [30, 120, 210, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.362893, 23.096724],
+                  "bearings": [30, 210, 300],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.362963, 23.096629],
+                  "bearings": [30, 120, 210],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.363527, 23.095821],
+                  "bearings": [30, 210, 300],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.363572, 23.095753],
+                  "bearings": [30, 120, 210],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364145, 23.094536],
+                  "bearings": [15, 105, 195, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364326, 23.093643],
+                  "bearings": [15, 105, 195, 210],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364355, 23.093452],
+                  "bearings": [15, 60, 180, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364405, 23.092611],
+                  "bearings": [0, 120, 180, 270],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 3,
+                  "location": [-82.364434, 23.091482],
+                  "bearings": [15, 105, 120, 195, 285],
+                  "entry": [false, true, true, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.366435, 23.113678],
+                  [-82.366403, 23.113498],
+                  [-82.366393, 23.113456],
+                  [-82.366369, 23.113387],
+                  [-82.366345, 23.113343],
+                  [-82.366293, 23.113239],
+                  [-82.366209, 23.113093],
+                  [-82.366181, 23.113042],
+                  [-82.366037, 23.112779],
+                  [-82.36591, 23.112496],
+                  [-82.365798, 23.112232],
+                  [-82.36575, 23.112099],
+                  [-82.365686, 23.111875],
+                  [-82.365633, 23.111638],
+                  [-82.365598, 23.111408],
+                  [-82.365584, 23.11125],
+                  [-82.365539, 23.110968],
+                  [-82.365536, 23.110821],
+                  [-82.365536, 23.110765],
+                  [-82.365561, 23.110586],
+                  [-82.365658, 23.110267],
+                  [-82.365788, 23.109921],
+                  [-82.365844, 23.109735],
+                  [-82.365853, 23.109674],
+                  [-82.365853, 23.109627],
+                  [-82.365852, 23.109522],
+                  [-82.365842, 23.109454],
+                  [-82.36578, 23.109135],
+                  [-82.365767, 23.109069],
+                  [-82.365746, 23.108913],
+                  [-82.365686, 23.108568],
+                  [-82.365624, 23.108198],
+                  [-82.365524, 23.10736],
+                  [-82.3655, 23.107264],
+                  [-82.365471, 23.107167],
+                  [-82.365443, 23.107066],
+                  [-82.365409, 23.106966],
+                  [-82.365373, 23.106861],
+                  [-82.365344, 23.106783],
+                  [-82.365319, 23.10671],
+                  [-82.365283, 23.106594],
+                  [-82.365237, 23.106458],
+                  [-82.365184, 23.106301],
+                  [-82.364992, 23.105814],
+                  [-82.364697, 23.105031],
+                  [-82.364669, 23.104963],
+                  [-82.364438, 23.104372],
+                  [-82.364355, 23.104099],
+                  [-82.364277, 23.103795],
+                  [-82.364223, 23.103504],
+                  [-82.364171, 23.103248],
+                  [-82.364109, 23.102935],
+                  [-82.364072, 23.102813],
+                  [-82.364025, 23.102712],
+                  [-82.363953, 23.102584],
+                  [-82.363875, 23.102477],
+                  [-82.363807, 23.102396],
+                  [-82.363755, 23.102347],
+                  [-82.363698, 23.102286],
+                  [-82.363605, 23.102178],
+                  [-82.363396, 23.101962],
+                  [-82.363347, 23.101898],
+                  [-82.363255, 23.101797],
+                  [-82.363168, 23.101684],
+                  [-82.3631, 23.101587],
+                  [-82.363058, 23.101515],
+                  [-82.363021, 23.101436],
+                  [-82.362991, 23.101345],
+                  [-82.362951, 23.101203],
+                  [-82.362875, 23.100793],
+                  [-82.362865, 23.100746],
+                  [-82.362822, 23.10055],
+                  [-82.36279, 23.100327],
+                  [-82.36274, 23.100121],
+                  [-82.362685, 23.099969],
+                  [-82.36259, 23.099765],
+                  [-82.36251, 23.099616],
+                  [-82.362201, 23.099055],
+                  [-82.362175, 23.098999],
+                  [-82.362148, 23.098876],
+                  [-82.36213, 23.09873],
+                  [-82.362118, 23.098562],
+                  [-82.362116, 23.098431],
+                  [-82.362161, 23.098049],
+                  [-82.362193, 23.097913],
+                  [-82.362262, 23.097753],
+                  [-82.362286, 23.097703],
+                  [-82.36235, 23.097569],
+                  [-82.362418, 23.097464],
+                  [-82.362662, 23.097059],
+                  [-82.362685, 23.097021],
+                  [-82.362893, 23.096724],
+                  [-82.362963, 23.096629],
+                  [-82.363206, 23.09628],
+                  [-82.363527, 23.095821],
+                  [-82.363572, 23.095753],
+                  [-82.363644, 23.09564],
+                  [-82.363731, 23.09551],
+                  [-82.36381, 23.095352],
+                  [-82.363916, 23.095121],
+                  [-82.364145, 23.094536],
+                  [-82.364221, 23.094262],
+                  [-82.364251, 23.094156],
+                  [-82.364311, 23.093744],
+                  [-82.364326, 23.093643],
+                  [-82.364342, 23.09354],
+                  [-82.364355, 23.093452],
+                  [-82.364368, 23.093245],
+                  [-82.364405, 23.092611],
+                  [-82.364381, 23.091875],
+                  [-82.364393, 23.091676],
+                  [-82.364414, 23.091577],
+                  [-82.364434, 23.091482],
+                  [-82.36459, 23.090956],
+                  [-82.364688, 23.090603],
+                  [-82.364737, 23.090418]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 1987.1,
+              "maneuver": {
+                "bearing_after": 167,
+                "type": "new name",
+                "modifier": "slight left",
+                "bearing_before": 180,
+                "location": [-82.366435, 23.113678]
+              },
+              "weight": 1987.1,
+              "distance": 2743.1,
+              "name": "Calzada del 10 de Octubre"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 1,
+                  "location": [-82.364737, 23.090418],
+                  "bearings": [15, 195, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364753, 23.090378],
+                  "bearings": [15, 120, 210],
+                  "entry": [false, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.364737, 23.090418],
+                  [-82.364753, 23.090378],
+                  [-82.364815, 23.090244],
+                  [-82.364854, 23.090151],
+                  [-82.364892, 23.09007],
+                  [-82.364939, 23.08999],
+                  [-82.364985, 23.089906],
+                  [-82.365062, 23.089757],
+                  [-82.36511, 23.089678],
+                  [-82.365147, 23.089612],
+                  [-82.365186, 23.089554],
+                  [-82.365231, 23.089484]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 83.3,
+              "maneuver": {
+                "bearing_after": 199,
+                "type": "new name",
+                "modifier": "straight",
+                "bearing_before": 194,
+                "location": [-82.364737, 23.090418]
+              },
+              "weight": 83.3,
+              "distance": 115.7,
+              "name": "Calzada de 10 de Octubre"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 1,
+                  "location": [-82.365231, 23.089484],
+                  "bearings": [30, 210, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365807, 23.088516],
+                  "bearings": [30, 195, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.366102, 23.08783],
+                  "bearings": [15, 120, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.366182, 23.087556],
+                  "bearings": [15, 75, 195, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.366164, 23.086655],
+                  "bearings": [75, 165, 255, 345],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365817, 23.085673],
+                  "bearings": [75, 165, 255, 345],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365482, 23.084692],
+                  "bearings": [75, 165, 255, 345],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365112, 23.08371],
+                  "bearings": [75, 165, 255, 345],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 0,
+                  "location": [-82.364871, 23.083112],
+                  "bearings": [150, 255, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.364685, 23.082722],
+                  "bearings": [75, 150, 255, 330],
+                  "entry": [true, true, true, false],
+                  "in": 3
+                },
+                {
+                  "out": 0,
+                  "location": [-82.364382, 23.082106],
+                  "bearings": [150, 210, 330],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.364196, 23.081721],
+                  "bearings": [75, 165, 330],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.363771, 23.080933],
+                  "bearings": [75, 135, 330],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.363373, 23.080489],
+                  "bearings": [135, 225, 315],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.362978, 23.08008],
+                  "bearings": [75, 135, 315],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.362667, 23.079815],
+                  "bearings": [135, 225, 315],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.362542, 23.079723],
+                  "bearings": [135, 315, 345],
+                  "entry": [true, false, true],
+                  "in": 1
+                },
+                {
+                  "out": 0,
+                  "location": [-82.362187, 23.079446],
+                  "bearings": [135, 210, 315],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.362116, 23.079393],
+                  "bearings": [120, 210, 315],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.361986, 23.079302],
+                  "bearings": [75, 135, 300],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.361409, 23.078842],
+                  "bearings": [135, 210, 315],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.361144, 23.078599],
+                  "bearings": [120, 135, 315],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.360987, 23.078436],
+                  "bearings": [60, 135, 315],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.360948, 23.07839],
+                  "bearings": [45, 150, 315],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.360868, 23.078285],
+                  "bearings": [150, 330, 345],
+                  "entry": [true, false, true],
+                  "in": 1
+                },
+                {
+                  "out": 1,
+                  "location": [-82.360617, 23.077961],
+                  "bearings": [105, 150, 330],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.360489, 23.077786],
+                  "bearings": [150, 240, 330],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.359528, 23.076594],
+                  "bearings": [150, 240, 330],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.358855, 23.075778],
+                  "bearings": [150, 240, 330],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.358747, 23.075599],
+                  "bearings": [60, 165, 330],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.358712, 23.075506],
+                  "bearings": [135, 165, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.365231, 23.089484],
+                  [-82.365373, 23.089269],
+                  [-82.365694, 23.088713],
+                  [-82.365747, 23.088623],
+                  [-82.365807, 23.088516],
+                  [-82.365912, 23.088301],
+                  [-82.366102, 23.08783],
+                  [-82.366182, 23.087556],
+                  [-82.366244, 23.087312],
+                  [-82.36626, 23.087206],
+                  [-82.366264, 23.087083],
+                  [-82.366245, 23.086964],
+                  [-82.366164, 23.086655],
+                  [-82.365817, 23.085673],
+                  [-82.365482, 23.084692],
+                  [-82.365421, 23.084532],
+                  [-82.365112, 23.08371],
+                  [-82.36493, 23.083244],
+                  [-82.364914, 23.083203],
+                  [-82.364871, 23.083112],
+                  [-82.364816, 23.082997],
+                  [-82.364685, 23.082722],
+                  [-82.364382, 23.082106],
+                  [-82.364196, 23.081721],
+                  [-82.364057, 23.081392],
+                  [-82.363771, 23.080933],
+                  [-82.363373, 23.080489],
+                  [-82.362978, 23.08008],
+                  [-82.36284, 23.079953],
+                  [-82.362667, 23.079815],
+                  [-82.362542, 23.079723],
+                  [-82.362187, 23.079446],
+                  [-82.362116, 23.079393],
+                  [-82.361986, 23.079302],
+                  [-82.36181, 23.079162],
+                  [-82.361409, 23.078842],
+                  [-82.361385, 23.078821],
+                  [-82.361144, 23.078599],
+                  [-82.360987, 23.078436],
+                  [-82.360948, 23.07839],
+                  [-82.360868, 23.078285],
+                  [-82.360617, 23.077961],
+                  [-82.360489, 23.077786],
+                  [-82.360387, 23.07766],
+                  [-82.360127, 23.077337],
+                  [-82.36007, 23.077266],
+                  [-82.359528, 23.076594],
+                  [-82.358855, 23.075778],
+                  [-82.358804, 23.075704],
+                  [-82.358747, 23.075599],
+                  [-82.358712, 23.075506],
+                  [-82.358667, 23.075378],
+                  [-82.358638, 23.075247],
+                  [-82.358607, 23.07504],
+                  [-82.358558, 23.074699],
+                  [-82.358507, 23.074321],
+                  [-82.358489, 23.074192]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 1422.5,
+              "maneuver": {
+                "bearing_after": 208,
+                "type": "new name",
+                "modifier": "straight",
+                "bearing_before": 209,
+                "location": [-82.365231, 23.089484]
+              },
+              "weight": 1422.5,
+              "distance": 1970.3,
+              "name": "Calzada del Diez de Octubre"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 3,
+                  "location": [-82.358489, 23.074192],
+                  "bearings": [0, 45, 150, 195],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.358568, 23.073951],
+                  "bearings": [15, 30, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.358751, 23.073541],
+                  "bearings": [15, 210, 300],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.359436, 23.07239],
+                  "bearings": [30, 210, 300],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.359972, 23.071671],
+                  "bearings": [30, 120, 225, 300],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.360532, 23.071002],
+                  "bearings": [45, 210, 300],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.360664, 23.070823],
+                  "bearings": [30, 120, 210],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.361039, 23.070306],
+                  "bearings": [30, 210, 300],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.361292, 23.06996],
+                  "bearings": [30, 105, 210],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.361552, 23.069599],
+                  "bearings": [30, 210, 300],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.361878, 23.069112],
+                  "bearings": [30, 120, 210],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.362031, 23.068852],
+                  "bearings": [30, 195, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.362346, 23.06815],
+                  "bearings": [15, 105, 210],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.362457, 23.067904],
+                  "bearings": [30, 195, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.362745, 23.067188],
+                  "bearings": [15, 105, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.363039, 23.066223],
+                  "bearings": [15, 90, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.363103, 23.065925],
+                  "bearings": [15, 195, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.363226, 23.06536],
+                  "bearings": [15, 90, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.363317, 23.064929],
+                  "bearings": [15, 195, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.363426, 23.064523],
+                  "bearings": [15, 90, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.363573, 23.063912],
+                  "bearings": [15, 195, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.363628, 23.063669],
+                  "bearings": [15, 90, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.363807, 23.062927],
+                  "bearings": [15, 195, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.363835, 23.062828],
+                  "bearings": [15, 90, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.364006, 23.062195],
+                  "bearings": [15, 195, 270],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364098, 23.061851],
+                  "bearings": [15, 90, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.358489, 23.074192],
+                  [-82.358513, 23.074112],
+                  [-82.358533, 23.074049],
+                  [-82.358568, 23.073951],
+                  [-82.358668, 23.073716],
+                  [-82.358735, 23.073572],
+                  [-82.358751, 23.073541],
+                  [-82.358879, 23.073286],
+                  [-82.359026, 23.072965],
+                  [-82.359118, 23.072796],
+                  [-82.35922, 23.072664],
+                  [-82.359339, 23.072514],
+                  [-82.359436, 23.07239],
+                  [-82.359507, 23.072303],
+                  [-82.359708, 23.072055],
+                  [-82.359972, 23.071671],
+                  [-82.360532, 23.071002],
+                  [-82.360664, 23.070823],
+                  [-82.361039, 23.070306],
+                  [-82.361292, 23.06996],
+                  [-82.361342, 23.06989],
+                  [-82.361552, 23.069599],
+                  [-82.361717, 23.069369],
+                  [-82.361878, 23.069112],
+                  [-82.362031, 23.068852],
+                  [-82.362346, 23.06815],
+                  [-82.362457, 23.067904],
+                  [-82.362547, 23.067682],
+                  [-82.362745, 23.067188],
+                  [-82.362797, 23.067066],
+                  [-82.362851, 23.066918],
+                  [-82.362891, 23.066811],
+                  [-82.362931, 23.066679],
+                  [-82.362989, 23.066465],
+                  [-82.363039, 23.066223],
+                  [-82.363103, 23.065925],
+                  [-82.363226, 23.06536],
+                  [-82.363317, 23.064929],
+                  [-82.363426, 23.064523],
+                  [-82.363573, 23.063912],
+                  [-82.363628, 23.063669],
+                  [-82.363664, 23.063509],
+                  [-82.363709, 23.063324],
+                  [-82.36376, 23.063122],
+                  [-82.363807, 23.062927],
+                  [-82.363835, 23.062828],
+                  [-82.363913, 23.062537],
+                  [-82.363957, 23.06239],
+                  [-82.364006, 23.062195],
+                  [-82.364044, 23.062063],
+                  [-82.364079, 23.061927],
+                  [-82.364098, 23.061851],
+                  [-82.364137, 23.061725],
+                  [-82.364175, 23.061614],
+                  [-82.364234, 23.061473],
+                  [-82.364304, 23.061325]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 1132.8,
+              "maneuver": {
+                "bearing_after": 195,
+                "type": "fork",
+                "modifier": "slight right",
+                "bearing_before": 171,
+                "location": [-82.358489, 23.074192]
+              },
+              "weight": 1132.8,
+              "distance": 1570.5,
+              "name": "Calzada de Bejucal"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 1,
+                  "location": [-82.364304, 23.061325],
+                  "bearings": [15, 195, 225],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364362, 23.060947],
+                  "bearings": [15, 90, 195, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364514, 23.060121],
+                  "bearings": [15, 90, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364551, 23.059922],
+                  "bearings": [15, 105, 195, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364745, 23.058878],
+                  "bearings": [15, 105, 195, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.364916, 23.057891],
+                  "bearings": [15, 105, 195, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.364304, 23.061325],
+                  [-82.364362, 23.060947],
+                  [-82.364514, 23.060121],
+                  [-82.364551, 23.059922],
+                  [-82.364745, 23.058878],
+                  [-82.364916, 23.057891],
+                  [-82.36505, 23.05715]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 338.9,
+              "maneuver": {
+                "bearing_after": 187,
+                "type": "turn",
+                "modifier": "straight",
+                "bearing_before": 199,
+                "location": [-82.364304, 23.061325]
+              },
+              "weight": 338.9,
+              "distance": 470.6,
+              "name": "Pinar del Rio"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 3,
+                  "location": [-82.36505, 23.05715],
+                  "bearings": [15, 45, 135, 225],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365508, 23.05681],
+                  "bearings": [45, 240, 330],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.365912, 23.05653],
+                  "bearings": [60, 135, 240],
+                  "entry": [false, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.36505, 23.05715],
+                  [-82.365508, 23.05681],
+                  [-82.365912, 23.05653],
+                  [-82.366105, 23.056402]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 98.2,
+              "maneuver": {
+                "bearing_after": 230,
+                "type": "turn",
+                "modifier": "right",
+                "bearing_before": 188,
+                "location": [-82.36505, 23.05715]
+              },
+              "weight": 98.2,
+              "distance": 136.3,
+              "name": "Avenida Menocal"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 1,
+                  "location": [-82.366105, 23.056402],
+                  "bearings": [60, 165, 345],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.365758, 23.055548],
+                  "bearings": [75, 165, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.365082, 23.053488],
+                  "bearings": [165, 255, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.364925, 23.053011],
+                  "bearings": [60, 165, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.364412, 23.051775],
+                  "bearings": [165, 240, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.364386, 23.05171],
+                  "bearings": [165, 240, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.364191, 23.051265],
+                  "bearings": [75, 165, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.363519, 23.050125],
+                  "bearings": [75, 150, 330],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.362701, 23.048915],
+                  "bearings": [75, 150, 330],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 0,
+                  "location": [-82.362379, 23.04825],
+                  "bearings": [165, 255, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 1,
+                  "location": [-82.362235, 23.047831],
+                  "bearings": [75, 165, 345],
+                  "entry": [true, true, false],
+                  "in": 2
+                },
+                {
+                  "out": 2,
+                  "location": [-82.36208, 23.046882],
+                  "bearings": [0, 90, 180, 270],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.36251, 23.045935],
+                  "bearings": [30, 135, 210, 345],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.362936, 23.045469],
+                  "bearings": [45, 225, 315],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.363503, 23.045054],
+                  "bearings": [45, 135, 225],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.366227, 23.040128],
+                  "bearings": [30, 90, 225],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.366463, 23.039857],
+                  "bearings": [45, 225, 315],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.366637, 23.039661],
+                  "bearings": [45, 120, 210],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.367728, 23.038475],
+                  "bearings": [45, 120, 225],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.368238, 23.03775],
+                  "bearings": [30, 120, 210],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.36839, 23.037519],
+                  "bearings": [30, 210, 270],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.369052, 23.035484],
+                  "bearings": [30, 105, 210],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.369771, 23.034486],
+                  "bearings": [0, 30, 210, 315],
+                  "entry": [true, false, true, true],
+                  "in": 1
+                },
+                {
+                  "out": 2,
+                  "location": [-82.36996, 23.034064],
+                  "bearings": [15, 90, 195, 270],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.370197, 23.032905],
+                  "bearings": [15, 195, 270],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.37035, 23.032109],
+                  "bearings": [15, 195, 270],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.3705, 23.031187],
+                  "bearings": [15, 195, 285],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.370567, 23.030773],
+                  "bearings": [15, 195, 255],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.370813, 23.029429],
+                  "bearings": [15, 135, 180, 240],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.37084, 23.029239],
+                  "bearings": [0, 90, 195, 270],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.370901, 23.028868],
+                  "bearings": [15, 90, 180, 285],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.370923, 23.028708],
+                  "bearings": [0, 195, 300],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.370978, 23.028357],
+                  "bearings": [15, 30, 180],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.371351, 23.02648],
+                  "bearings": [15, 195, 270],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.371554, 23.025329],
+                  "bearings": [15, 195, 270],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.371858, 23.023378],
+                  "bearings": [0, 195, 270],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.371994, 23.022416],
+                  "bearings": [0, 180, 270],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.372107, 23.021394],
+                  "bearings": [0, 180, 270],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.372142, 23.020378],
+                  "bearings": [0, 180, 270],
+                  "entry": [false, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.366105, 23.056402],
+                  [-82.365758, 23.055548],
+                  [-82.365636, 23.05522],
+                  [-82.365619, 23.055176],
+                  [-82.36549, 23.054767],
+                  [-82.365398, 23.054478],
+                  [-82.365383, 23.054438],
+                  [-82.36537, 23.0544],
+                  [-82.365325, 23.054272],
+                  [-82.365259, 23.054078],
+                  [-82.365191, 23.053847],
+                  [-82.365082, 23.053488],
+                  [-82.364996, 23.053226],
+                  [-82.364972, 23.053145],
+                  [-82.364925, 23.053011],
+                  [-82.364856, 23.052831],
+                  [-82.364685, 23.052391],
+                  [-82.364475, 23.051926],
+                  [-82.364412, 23.051775],
+                  [-82.364386, 23.05171],
+                  [-82.364191, 23.051265],
+                  [-82.364018, 23.050877],
+                  [-82.363933, 23.050709],
+                  [-82.363858, 23.050591],
+                  [-82.363729, 23.050422],
+                  [-82.363519, 23.050125],
+                  [-82.362701, 23.048915],
+                  [-82.362621, 23.048777],
+                  [-82.362467, 23.048456],
+                  [-82.362379, 23.04825],
+                  [-82.362337, 23.048141],
+                  [-82.362249, 23.047871],
+                  [-82.362235, 23.047831],
+                  [-82.362185, 23.047625],
+                  [-82.36214, 23.047411],
+                  [-82.362104, 23.047232],
+                  [-82.362079, 23.047051],
+                  [-82.362076, 23.046953],
+                  [-82.36208, 23.046882],
+                  [-82.362084, 23.04684],
+                  [-82.362087, 23.046819],
+                  [-82.362096, 23.046756],
+                  [-82.362146, 23.046574],
+                  [-82.3622, 23.046429],
+                  [-82.362264, 23.046297],
+                  [-82.36251, 23.045935],
+                  [-82.362656, 23.04575],
+                  [-82.362713, 23.045677],
+                  [-82.362826, 23.04557],
+                  [-82.362936, 23.045469],
+                  [-82.363046, 23.045391],
+                  [-82.363503, 23.045054],
+                  [-82.363914, 23.04472],
+                  [-82.364036, 23.044616],
+                  [-82.364124, 23.044517],
+                  [-82.364197, 23.04442],
+                  [-82.364246, 23.044342],
+                  [-82.364298, 23.044226],
+                  [-82.364347, 23.044094],
+                  [-82.364386, 23.043966],
+                  [-82.36443, 23.043824],
+                  [-82.364492, 23.043542],
+                  [-82.364518, 23.043451],
+                  [-82.364647, 23.042944],
+                  [-82.364811, 23.042552],
+                  [-82.364919, 23.042319],
+                  [-82.364939, 23.042274],
+                  [-82.365128, 23.041901],
+                  [-82.365355, 23.041487],
+                  [-82.365513, 23.041184],
+                  [-82.36564, 23.040973],
+                  [-82.365761, 23.040783],
+                  [-82.365832, 23.040668],
+                  [-82.365913, 23.040544],
+                  [-82.366015, 23.040394],
+                  [-82.366227, 23.040128],
+                  [-82.366289, 23.040057],
+                  [-82.366378, 23.039956],
+                  [-82.366463, 23.039857],
+                  [-82.366637, 23.039661],
+                  [-82.36687, 23.039381],
+                  [-82.367078, 23.039157],
+                  [-82.367728, 23.038475],
+                  [-82.367892, 23.038282],
+                  [-82.368072, 23.038014],
+                  [-82.368238, 23.03775],
+                  [-82.368299, 23.037653],
+                  [-82.36839, 23.037519],
+                  [-82.368543, 23.037233],
+                  [-82.368617, 23.03706],
+                  [-82.368671, 23.036872],
+                  [-82.368738, 23.036471],
+                  [-82.368753, 23.036386],
+                  [-82.368788, 23.036209],
+                  [-82.36881, 23.036104],
+                  [-82.368884, 23.035763],
+                  [-82.36895, 23.03563],
+                  [-82.369052, 23.035484],
+                  [-82.369612, 23.034717],
+                  [-82.369673, 23.03464],
+                  [-82.369675, 23.034636],
+                  [-82.369771, 23.034486],
+                  [-82.369868, 23.034296],
+                  [-82.36996, 23.034064],
+                  [-82.370152, 23.033131],
+                  [-82.370197, 23.032905],
+                  [-82.370272, 23.032483],
+                  [-82.37035, 23.032109],
+                  [-82.3705, 23.031187],
+                  [-82.370567, 23.030773],
+                  [-82.37072, 23.030026],
+                  [-82.370782, 23.029567],
+                  [-82.370813, 23.029429],
+                  [-82.37084, 23.029239],
+                  [-82.370901, 23.028868],
+                  [-82.370923, 23.028708],
+                  [-82.370978, 23.028357],
+                  [-82.371014, 23.028072],
+                  [-82.371127, 23.02755],
+                  [-82.371231, 23.027023],
+                  [-82.371332, 23.026571],
+                  [-82.371351, 23.02648],
+                  [-82.371433, 23.026083],
+                  [-82.371554, 23.025329],
+                  [-82.371665, 23.024688],
+                  [-82.371754, 23.024152],
+                  [-82.371774, 23.024031],
+                  [-82.371837, 23.023553],
+                  [-82.371858, 23.023378],
+                  [-82.371954, 23.022715],
+                  [-82.371981, 23.022534],
+                  [-82.371994, 23.022416],
+                  [-82.372107, 23.021394],
+                  [-82.372137, 23.020528],
+                  [-82.372142, 23.020378],
+                  [-82.372147, 23.020255],
+                  [-82.37216, 23.020161],
+                  [-82.372168, 23.019983],
+                  [-82.372215, 23.019089],
+                  [-82.372218, 23.018996]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 3247.2,
+              "maneuver": {
+                "bearing_after": 158,
+                "type": "end of road",
+                "modifier": "left",
+                "bearing_before": 233,
+                "location": [-82.366105, 23.056402]
+              },
+              "weight": 3247.2,
+              "distance": 4510.2,
+              "name": "Calzada de Bejucal"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 3,
+                  "location": [-82.372218, 23.018996],
+                  "bearings": [0, 75, 165, 270],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.373114, 23.018892],
+                  "bearings": [90, 180, 255],
+                  "entry": [false, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.372218, 23.018996],
+                  [-82.373114, 23.018892],
+                  [-82.37318, 23.018884],
+                  [-82.37398, 23.018784]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 131,
+              "maneuver": {
+                "bearing_after": 261,
+                "type": "turn",
+                "modifier": "right",
+                "bearing_before": 181,
+                "location": [-82.372218, 23.018996]
+              },
+              "weight": 131,
+              "distance": 181.9,
+              "name": "279 (Fundación)"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 1,
+                  "location": [-82.37398, 23.018784],
+                  "bearings": [75, 180, 270, 345],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.373898, 23.018018],
+                  "bearings": [0, 90, 180, 270],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.373799, 23.017244],
+                  "bearings": [0, 90, 180, 270],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.37398, 23.018784],
+                  [-82.373898, 23.018018],
+                  [-82.373799, 23.017244],
+                  [-82.373709, 23.016489]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 184.8,
+              "maneuver": {
+                "bearing_after": 172,
+                "type": "turn",
+                "modifier": "left",
+                "bearing_before": 261,
+                "location": [-82.37398, 23.018784]
+              },
+              "weight": 184.8,
+              "distance": 256.8,
+              "name": "112 (Espada)"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 3,
+                  "location": [-82.373709, 23.016489],
+                  "bearings": [0, 90, 180, 255],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.373709, 23.016489],
+                  [-82.37458, 23.016382]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 64.8,
+              "maneuver": {
+                "bearing_after": 261,
+                "type": "turn",
+                "modifier": "right",
+                "bearing_before": 172,
+                "location": [-82.373709, 23.016489]
+              },
+              "weight": 64.8,
+              "distance": 90,
+              "name": "285 (Terminal)"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 2,
+                  "location": [-82.37458, 23.016382],
+                  "bearings": [0, 75, 180, 255],
+                  "entry": [true, false, true, true],
+                  "in": 1
+                },
+                {
+                  "out": 3,
+                  "location": [-82.374502, 23.015596],
+                  "bearings": [0, 90, 150, 210, 255],
+                  "entry": [false, true, true, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 3,
+                  "location": [-82.375306, 23.014926],
+                  "bearings": [0, 45, 165, 225],
+                  "entry": [true, false, true, true],
+                  "in": 1
+                },
+                {
+                  "out": 2,
+                  "location": [-82.37623, 23.014031],
+                  "bearings": [30, 120, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 2,
+                  "location": [-82.3765, 23.013374],
+                  "bearings": [15, 135, 195],
+                  "entry": [false, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.37458, 23.016382],
+                  [-82.374499, 23.015785],
+                  [-82.37449, 23.015689],
+                  [-82.374502, 23.015596],
+                  [-82.374538, 23.01554],
+                  [-82.374619, 23.015453],
+                  [-82.374718, 23.015353],
+                  [-82.375306, 23.014926],
+                  [-82.375593, 23.014707],
+                  [-82.375769, 23.014595],
+                  [-82.375999, 23.01445],
+                  [-82.376036, 23.014404],
+                  [-82.376067, 23.014352],
+                  [-82.376133, 23.014235],
+                  [-82.37623, 23.014031],
+                  [-82.3765, 23.013374],
+                  [-82.376542, 23.013274],
+                  [-82.376787, 23.012649],
+                  [-82.376804, 23.012541]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 372.2,
+              "maneuver": {
+                "bearing_after": 171,
+                "type": "turn",
+                "modifier": "left",
+                "bearing_before": 261,
+                "location": [-82.37458, 23.016382]
+              },
+              "weight": 372.2,
+              "distance": 516.9,
+              "name": "Calzada de Bejucal"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 3,
+                  "location": [-82.376804, 23.012541],
+                  "bearings": [15, 120, 195, 300],
+                  "entry": [false, true, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.376804, 23.012541],
+                  [-82.378421, 23.013677]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 149.9,
+              "maneuver": {
+                "bearing_after": 306,
+                "type": "turn",
+                "modifier": "right",
+                "bearing_before": 188,
+                "location": [-82.376804, 23.012541]
+              },
+              "weight": 149.9,
+              "distance": 208.3,
+              "name": "134"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 1,
+                  "location": [-82.378421, 23.013677],
+                  "bearings": [120, 225, 315],
+                  "entry": [false, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.378421, 23.013677],
+                  [-82.378707, 23.013334],
+                  [-82.379, 23.013218],
+                  [-82.379519, 23.013003],
+                  [-82.380041, 23.012656]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 147.6,
+              "maneuver": {
+                "bearing_after": 216,
+                "type": "turn",
+                "modifier": "left",
+                "bearing_before": 306,
+                "location": [-82.378421, 23.013677]
+              },
+              "weight": 147.6,
+              "distance": 204.9,
+              "name": ""
+            },
+            {
+              "intersections": [
+                {
+                  "out": 2,
+                  "location": [-82.380041, 23.012656],
+                  "bearings": [60, 135, 315],
+                  "entry": [false, true, true],
+                  "in": 0
+                },
+                {
+                  "out": 1,
+                  "location": [-82.386879, 23.013568],
+                  "bearings": [90, 270, 315],
+                  "entry": [false, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.380041, 23.012656],
+                  [-82.380923, 23.013353],
+                  [-82.381284, 23.013432],
+                  [-82.382485, 23.01344],
+                  [-82.386519, 23.013535],
+                  [-82.386879, 23.013568],
+                  [-82.388157, 23.01358],
+                  [-82.388193, 23.01358],
+                  [-82.388372, 23.013589],
+                  [-82.388515, 23.013625],
+                  [-82.388733, 23.013679],
+                  [-82.389249, 23.013961],
+                  [-82.389261, 23.013966]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 708.5,
+              "maneuver": {
+                "bearing_after": 309,
+                "type": "turn",
+                "modifier": "right",
+                "bearing_before": 233,
+                "location": [-82.380041, 23.012656]
+              },
+              "weight": 708.5,
+              "distance": 984.1,
+              "name": "138 (Callejón del Jíbaro)"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 2,
+                  "location": [-82.389261, 23.013966],
+                  "bearings": [30, 120, 210],
+                  "entry": [true, false, true],
+                  "in": 1
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.389261, 23.013966],
+                  [-82.389564, 23.013507]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 43,
+              "maneuver": {
+                "bearing_after": 210,
+                "type": "end of road",
+                "modifier": "left",
+                "bearing_before": 299,
+                "location": [-82.389261, 23.013966]
+              },
+              "weight": 43,
+              "distance": 59.7,
+              "name": "279"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 2,
+                  "location": [-82.389564, 23.013507],
+                  "bearings": [30, 120, 300],
+                  "entry": [false, true, true],
+                  "in": 0
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.389564, 23.013507],
+                  [-82.389965, 23.013742]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 35,
+              "maneuver": {
+                "bearing_after": 302,
+                "type": "turn",
+                "modifier": "right",
+                "bearing_before": 210,
+                "location": [-82.389564, 23.013507]
+              },
+              "weight": 35,
+              "distance": 48.7,
+              "name": "Calle 152"
+            },
+            {
+              "intersections": [
+                {
+                  "out": 2,
+                  "location": [-82.389965, 23.013742],
+                  "bearings": [30, 120, 210, 300],
+                  "entry": [true, false, true, true],
+                  "in": 1
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.389965, 23.013742],
+                  [-82.390334, 23.013154]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 54.4,
+              "maneuver": {
+                "bearing_after": 209,
+                "type": "turn",
+                "modifier": "left",
+                "bearing_before": 302,
+                "location": [-82.389965, 23.013742]
+              },
+              "weight": 54.4,
+              "distance": 75.5,
+              "name": "Calle 277"
+            },
+            {
+              "intersections": [
+                {
+                  "in": 0,
+                  "entry": [true],
+                  "bearings": [30],
+                  "location": [-82.390334, 23.013154]
+                }
+              ],
+              "driving_side": "right",
+              "geometry": {
+                "coordinates": [
+                  [-82.390334, 23.013154],
+                  [-82.390334, 23.013154]
+                ],
+                "type": "LineString"
+              },
+              "mode": "walking",
+              "duration": 0,
+              "maneuver": {
+                "bearing_after": 0,
+                "type": "arrive",
+                "modifier": "right",
+                "bearing_before": 210,
+                "location": [-82.390334, 23.013154]
+              },
+              "weight": 0,
+              "distance": 0,
+              "name": "Calle 277"
+            }
+          ],
+          "distance": 16953.5,
+          "duration": 12234.5,
+          "summary": "Calzada del 10 de Octubre, Calzada de Bejucal",
+          "weight": 12234.5
+        }
+      ],
+      "distance": 16953.5,
+      "duration": 12234.5,
+      "weight_name": "duration",
+      "weight": 12234.5
+    }
+  ],
+  "waypoints": [
+    {
+      "hint": "_0YBgJqeC4BYAgAAXQEAAAAAAAAAAAAAnS2mQpeXQEIAAAAAAAAAAFgCAABdAQAAAAAAAAAAAAABAAAAhU4X-1oGYQHkTxf7nAZhAQAAjwrnuo-j",
+      "distance": 36.688181,
+      "name": "",
+      "location": [-82.358651, 23.135834]
+    },
+    {
+      "hint": "GaUHgFWlB4ATAwAAIAIAAAAAAAAAAAAALyjaQlyblkIAAAAAAAAAABMDAAAgAgAAAAAAAAAAAAABAAAAwtIW-yInXwGU0hb7OydfAQAA3wHnuo-j",
+      "distance": 5.467908,
+      "name": "Calle 277",
+      "location": [-82.390334, 23.013154]
+    }
+  ]
+}

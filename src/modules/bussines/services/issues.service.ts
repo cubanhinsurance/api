@@ -540,10 +540,19 @@ export class IssuesService implements OnModuleInit {
       qr.andWhere('i.state in (:...state)', { state });
     }
 
-    return await paginate_qr(page, page_size, qr);
+    const res = await paginate_qr(page, page_size, qr);
+
+    // for (const issue of res.data) {
+    // }
+
+    return res;
   }
 
-  async getIssueDetails(issue: number, username?: string) {
+  async getIssueDetails(
+    issue: number,
+    username?: string,
+    handleState: boolean = true,
+  ) {
     const qr = await this.issuesRepo
       .createQueryBuilder('i')
       .leftJoinAndSelect('i.client_location', 'cl')
@@ -562,43 +571,45 @@ export class IssuesService implements OnModuleInit {
 
     if (!i) throw new NotFoundException();
 
-    switch (i.state) {
-      case ISSUE_STATE.CREATED:
-        (i as any).applications = await this.getIssueApplications(issue);
-        break;
-      case ISSUE_STATE.ACCEPTED:
-        const { info, review } = await this.getTechInfo(i.tech.username);
+    if (handleState) {
+      switch (i.state) {
+        case ISSUE_STATE.CREATED:
+          (i as any).applications = await this.getIssueApplications(issue);
+          break;
+        case ISSUE_STATE.ACCEPTED:
+          const { info, review } = await this.getTechInfo(i.tech.username);
 
-        const iqr = await this.issuesTracesRepo
-          .createQueryBuilder('it')
-          .innerJoin('it.issue', 'i')
-          .where('i.id=:issue', { issue: i.id })
-          .getMany();
+          const iqr = await this.issuesTracesRepo
+            .createQueryBuilder('it')
+            .innerJoin('it.issue', 'i')
+            .where('i.id=:issue', { issue: i.id })
+            .getMany();
 
-        (i as any).tech = { ...info, review };
-        break;
-      case ISSUE_STATE.PROGRESS:
-        const wsTech = this.techsCache.findTechClient(i.tech.username);
-        if (!!wsTech && wsTech?.client?.progress) {
-          const {
-            issue,
-            tech,
-            refresh_date,
-            arrive_date,
-            distance: { distance, linearDistance, duration },
-            application,
-          } = wsTech?.client?.progress;
+          (i as any).tech = { ...info, review };
+          break;
+        case ISSUE_STATE.PROGRESS:
+          const wsTech = this.techsCache.findTechClient(i.tech.username);
+          if (!!wsTech && wsTech?.client?.progress) {
+            const {
+              issue,
+              tech,
+              refresh_date,
+              arrive_date,
+              distance: { distance, linearDistance, duration },
+              application,
+            } = wsTech?.client?.progress;
 
-          (i as any).arrive_info = {
-            duration,
-            distance,
-            linearDistance,
-            refresh_date,
-            arrive_date,
-          };
-        }
-        const g = 7;
-        break;
+            (i as any).arrive_info = {
+              duration,
+              distance,
+              linearDistance,
+              refresh_date,
+              arrive_date,
+            };
+          }
+          const g = 7;
+          break;
+      }
     }
 
     return i;
@@ -810,5 +821,24 @@ export class IssuesService implements OnModuleInit {
 
   async postponeIssue(tech: string, issue: number) {
     //todo
+  }
+
+  getAuthorIssuesQr(author: string) {
+    return this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoin('i.user', 'author')
+      .innerJoin('i.tech', 'tech')
+      .where('author.username=:author', { author });
+  }
+
+  async refreshRoute(issue: number, tech: string) {
+    const issueDetails = await this.getIssueDetails(issue, null, false);
+
+    if (issueDetails.tech.username != tech)
+      throw new NotFoundException(
+        `No se encontro una incidencia del cliente/tecnico`,
+      );
+
+    this.techsCache.refreshIssueInfo(issueDetails, tech);
   }
 }
