@@ -1,20 +1,20 @@
-import { array, number, object, string } from 'joi';
+import * as joi from 'joi';
 
-export const PROVINCE_SCHEMA = object({
-  name: string().required(),
-  id: number().required(),
-  short_name: string().optional(),
-  code: string().required(),
+export const PROVINCE_SCHEMA = joi.object({
+  name: joi.string().required(),
+  id: joi.number().required(),
+  short_name: joi.string().optional(),
+  code: joi.string().required(),
 });
 
-export const PROVINCES_SCHEMA = array().items(PROVINCE_SCHEMA);
+export const PROVINCES_SCHEMA = joi.array().items(PROVINCE_SCHEMA);
 
-export const MUNICIPALITY_SCHEMA = object({
-  name: string().required(),
-  id: number().required(),
-  short_name: string().optional(),
-  code: string().required(),
+export const MUNICIPALITY_SCHEMA = joi.object({
+  name: joi.string().required(),
+  id: joi.number().required(),
+  short_name: joi.string().optional(),
+  code: joi.string().required(),
   province: PROVINCE_SCHEMA,
 });
 
-export const MUNICIPALITIES_SCHEMA = array().items(MUNICIPALITY_SCHEMA);
+export const MUNICIPALITIES_SCHEMA = joi.array().items(MUNICIPALITY_SCHEMA);

@@ -12,7 +12,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { array, number, string } from 'joi';
+import * as joi from 'joi';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import { User } from 'src/modules/auth/decorators/user.decorator';
 import j2s from 'joi-to-swagger';
@@ -63,7 +63,7 @@ export class IssuesController {
   })
   async createIssue(
     @User('username') username,
-    @Param('location', new JoiPipe(number().required())) location: number,
+    @Param('location', new JoiPipe(joi.number().required())) location: number,
     @Body(new JoiPipe(CREATE_ISSUE_SCHEMA, true, ['data'])) data,
     @UploadedFiles() photos: any[],
   ) {
@@ -82,7 +82,7 @@ export class IssuesController {
   })
   @Post('application/:issue')
   async addIssueApplication(
-    @Param('issue', new JoiPipe(number())) issue: number,
+    @Param('issue', new JoiPipe(joi.number())) issue: number,
     @User('username') username: string,
     @Body(new JoiPipe(ISSUE_APPLICATION)) app,
   ) {
@@ -94,7 +94,7 @@ export class IssuesController {
   })
   @Get('application/:application')
   async getApplicationDetails(
-    @Param('application', new JoiPipe(number())) application: number,
+    @Param('application', new JoiPipe(joi.number())) application: number,
     @User('username') username: string,
   ) {
     return await this.issuesService.getTechAplyngDetails(username, application);
@@ -105,7 +105,7 @@ export class IssuesController {
   })
   @Delete('application/:issue')
   async ignoreIssue(
-    @Param('issue', new JoiPipe(number())) issue: number,
+    @Param('issue', new JoiPipe(joi.number())) issue: number,
     @User('username') username: string,
   ) {
     await this.issuesService.ignoreIssue(username, issue);
@@ -129,8 +129,9 @@ export class IssuesController {
   @ApiQuery({
     name: 'state',
     required: false,
-    schema: j2s(array().items(string().valid(...Object.values(ISSUE_STATE))))
-      .swagger,
+    schema: j2s(
+      joi.array().items(joi.string().valid(...Object.values(ISSUE_STATE))),
+    ).swagger,
   })
   @Get('user')
   async getLoggedUserIssues(
@@ -140,8 +141,9 @@ export class IssuesController {
     @Query(
       'state',
       new JoiPipe(
-        array().items(
-          string()
+        joi.array().items(
+          joi
+            .string()
             .valid(...Object.values(ISSUE_STATE))
             .optional(),
         ),
@@ -158,7 +160,7 @@ export class IssuesController {
   @Get('issue/:username/:issue')
   @Public()
   async getUsserIssueDetails(
-    @Param('issue', new JoiPipe(number())) issue: number,
+    @Param('issue', new JoiPipe(joi.number())) issue: number,
     @Param('username') username,
   ) {
     return await this.issuesService.getIssueDetails(issue, username);
@@ -169,7 +171,7 @@ export class IssuesController {
   })
   @Get('issue/:issue')
   async getLoggedUsserIssueDetails(
-    @Param('issue', new JoiPipe(number())) issue: number,
+    @Param('issue', new JoiPipe(joi.number())) issue: number,
     @User('username') username,
   ) {
     return await this.issuesService.getIssueDetails(issue);
@@ -180,7 +182,7 @@ export class IssuesController {
   })
   @Delete('issue/:issue')
   async cancelIssue(
-    @Param('issue', new JoiPipe(number())) issue: number,
+    @Param('issue', new JoiPipe(joi.number())) issue: number,
     @User('username') username: string,
   ) {
     await this.issuesService.cancelIssue(username, issue);
@@ -191,7 +193,7 @@ export class IssuesController {
   })
   @Post('issue/:issue/:username')
   async acceptTech(
-    @Param('issue', new JoiPipe(number())) issue: number,
+    @Param('issue', new JoiPipe(joi.number())) issue: number,
     @Param('username') tech: string,
     @User('username') username: string,
   ) {
@@ -230,14 +232,15 @@ export class IssuesController {
     required: false,
     description: 'Razon por la que  se rechaza',
     type: 'string',
-    schema: j2s(string().max(100).optional()).swagger,
+    schema: j2s(joi.string().max(100).optional()).swagger,
   })
   @Delete('issue/:issue/:username')
   async rejectTech(
-    @Param('issue', new JoiPipe(number())) issue: number,
+    @Param('issue', new JoiPipe(joi.number())) issue: number,
     @Param('username') tech: string,
     @User('username') username: string,
-    @Query('reason', new JoiPipe(string().max(100).optional())) reason: string,
+    @Query('reason', new JoiPipe(joi.string().max(100).optional()))
+    reason: string,
   ) {
     await this.issuesService.rejectTech(username, tech, issue, reason);
   }
@@ -248,8 +251,8 @@ export class IssuesController {
   @Delete('application/:issue/:application')
   async cancelIssueApplication(
     @User('username') username,
-    @Param('issue', new JoiPipe(number().required())) issue,
-    @Param('application', new JoiPipe(number().required())) app,
+    @Param('issue', new JoiPipe(joi.number().required())) issue,
+    @Param('application', new JoiPipe(joi.number().required())) app,
   ) {
     await this.issuesService.cancelIssueApplication(username, issue, app);
   }
@@ -259,7 +262,7 @@ export class IssuesController {
   })
   @Post('tech/:issue')
   async beginIssue(
-    @Param('issue', new JoiPipe(number().required())) issue,
+    @Param('issue', new JoiPipe(joi.number().required())) issue,
     @User('username') tech,
   ) {
     return await this.issuesService.beginIssue(tech, issue);
@@ -270,7 +273,7 @@ export class IssuesController {
   })
   @Put('tech/:issue/:description')
   async postPoneIssue(
-    @Param('issue', new JoiPipe(number().required())) issue,
+    @Param('issue', new JoiPipe(joi.number().required())) issue,
     @Param('description') description,
     @User('username') tech,
   ) {
@@ -282,7 +285,7 @@ export class IssuesController {
   })
   @Head('tech/:issue')
   async refreshIssueInfo(
-    @Param('issue', new JoiPipe(number().required())) issue,
+    @Param('issue', new JoiPipe(joi.number().required())) issue,
     @User('username') tech,
   ) {
     await this.issuesService.refreshRoute(issue, tech);

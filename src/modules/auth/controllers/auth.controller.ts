@@ -31,7 +31,7 @@ import {
   ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { SetAuthCookie } from '../decorators/login.decorator';
-import { object, string } from 'joi';
+import * as joi from 'joi';
 
 @Controller('auth')
 export class AuthController {
@@ -89,16 +89,16 @@ export class AuthController {
   })
   @ApiBody({
     schema: j2s(
-      object({
-        refresh_token: string().required(),
+      joi.object({
+        refresh_token: joi.string().required(),
       }),
     ).swagger,
   })
   async refresh(
     @Body(
       new JoiPipe(
-        object({
-          refresh_token: string().required(),
+        joi.object({
+          refresh_token: joi.string().required(),
         }),
       ),
     )
@@ -200,8 +200,8 @@ export class AuthController {
   @ApiTags('Auth', 'Users')
   @ApiBody({
     schema: j2s(
-      object({
-        code: string().required(),
+      joi.object({
+        code: joi.string().required(),
       }),
     ).swagger,
   })
@@ -209,8 +209,8 @@ export class AuthController {
     @User('username') username: string,
     @Body(
       new JoiPipe(
-        object({
-          code: string().required(),
+        joi.object({
+          code: joi.string().required(),
         }),
       ),
     )
@@ -226,9 +226,9 @@ export class AuthController {
   })
   @ApiBody({
     schema: j2s(
-      object({
-        code: string().required(),
-        username: string().required(),
+      joi.object({
+        code: joi.string().required(),
+        username: joi.string().required(),
       }),
     ).swagger,
   })
@@ -236,9 +236,9 @@ export class AuthController {
   async verifyCode(
     @Body(
       new JoiPipe(
-        object({
-          code: string().required(),
-          username: string().required(),
+        joi.object({
+          code: joi.string().required(),
+          username: joi.string().required(),
         }),
       ),
     )
@@ -254,10 +254,10 @@ export class AuthController {
   })
   @ApiBody({
     schema: j2s(
-      object({
-        code: string().required(),
-        username: string().required(),
-        password: string().required(),
+      joi.object({
+        code: joi.string().required(),
+        username: joi.string().required(),
+        password: joi.string().required(),
       }),
     ).swagger,
   })
@@ -265,10 +265,10 @@ export class AuthController {
   async recoverPassword(
     @Body(
       new JoiPipe(
-        object({
-          code: string().required(),
-          username: string().required(),
-          password: string().required(),
+        joi.object({
+          code: joi.string().required(),
+          username: joi.string().required(),
+          password: joi.string().required(),
         }),
       ),
     )
@@ -284,9 +284,9 @@ export class AuthController {
   })
   @ApiBody({
     schema: j2s(
-      object({
-        username: string().required(),
-        email: string().email().required(),
+      joi.object({
+        username: joi.string().required(),
+        email: joi.string().email().required(),
       }),
     ).swagger,
   })
@@ -296,9 +296,9 @@ export class AuthController {
   async sendVerificationEmail(
     @Body(
       new JoiPipe(
-        object({
-          username: string().required(),
-          email: string().email().required(),
+        joi.object({
+          username: joi.string().required(),
+          email: joi.string().email().required(),
         }),
       ),
     )
@@ -314,8 +314,8 @@ export class AuthController {
   @ApiTags('Auth', 'Users')
   @ApiBody({
     schema: j2s(
-      object({
-        code: string().required(),
+      joi.object({
+        code: joi.string().required(),
       }),
     ).swagger,
   })
@@ -324,8 +324,8 @@ export class AuthController {
     @Param('username') username: string,
     @Body(
       new JoiPipe(
-        object({
-          code: string().required(),
+        joi.object({
+          code: joi.string().required(),
         }),
       ),
     )

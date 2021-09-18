@@ -1,26 +1,26 @@
-import { boolean, date, number, object, string, ref } from 'joi';
+import * as joi from 'joi';
 import { ISSUE_APPLICATION_STATE } from '../entities/issues_applications.entity';
 
-export const CREATE_ISSUE_SCHEMA = object({
-  type: number().required(),
-  scheduled: boolean().optional().default(false),
-  scheduled_description: string().optional(),
-  date: date().optional(),
-  description: string().optional(),
-  expiration_date: date().optional(),
-  max: number().optional(),
-  maxDistance: number().optional(),
-  data: object().unknown().optional(),
+export const CREATE_ISSUE_SCHEMA = joi.object({
+  type: joi.number().required(),
+  scheduled: joi.boolean().optional().default(false),
+  scheduled_description: joi.string().optional(),
+  date: joi.date().optional(),
+  description: joi.string().optional(),
+  expiration_date: joi.date().optional(),
+  max: joi.number().optional(),
+  maxDistance: joi.number().optional(),
+  data: joi.object().unknown().optional(),
 });
 
-export const ISSUE_APPLICATION = object({
-  message: string().optional(),
-  min_price: number().min(0).required(),
-  max_price: number().min(ref('min_price')).required(),
-  min_date: date().optional(),
-  max_date: date().min(ref('min_date')).optional(),
+export const ISSUE_APPLICATION = joi.object({
+  message: joi.string().optional(),
+  min_price: joi.number().min(0).required(),
+  max_price: joi.number().min(joi.ref('min_price')).required(),
+  min_date: joi.date().optional(),
+  max_date: joi.date().min(joi.ref('min_date')).optional(),
 });
 
-export const ISSUES_APPLICATION_STATES = string().valid(
-  ...Object.values(ISSUE_APPLICATION_STATE),
-);
+export const ISSUES_APPLICATION_STATES = joi
+  .string()
+  .valid(...Object.values(ISSUE_APPLICATION_STATE));

@@ -1,4 +1,4 @@
-import { array, binary, boolean, date, number, object, ref, string } from 'joi';
+import * as joi from 'joi';
 import { PAGE_RESULT_SCHEMA } from 'src/lib/schemas/pagination.schema';
 import {
   STRONG_PASSWORD_SCHEMA,
@@ -7,175 +7,187 @@ import {
 import { HABILITIES_SCHEMA } from 'src/modules/enums/schemas/habilities.schema';
 import { USER_TYPE } from '../services/users.service';
 
-export const USERS_SCHEMA = object({
-  username: USER_NAME_SCHEMA.required(),
-  password: STRONG_PASSWORD_SCHEMA.required(),
-  name: string().required(),
-  lastname: string().required(),
-  email: string().email().optional(),
-  telegram_id: string().optional(),
-  phone_number: string().optional(),
-  photo: binary().optional(),
-})
+export const USERS_SCHEMA = joi
+  .object({
+    username: USER_NAME_SCHEMA.required(),
+    password: STRONG_PASSWORD_SCHEMA.required(),
+    name: joi.string().required(),
+    lastname: joi.string().required(),
+    email: joi.string().email().optional(),
+    telegram_id: joi.string().optional(),
+    phone_number: joi.string().optional(),
+    photo: joi.binary().optional(),
+  })
   .required()
   .unknown();
 
 export const REGISTER_USER_SCHEMA = USERS_SCHEMA.keys({
-  email: string().email().required(),
+  email: joi.string().email().required(),
 });
 
-export const UPDATE_USER_SCHEMA = object({
-  last_password: STRONG_PASSWORD_SCHEMA.optional(),
-  new_password: STRONG_PASSWORD_SCHEMA.optional(),
-  confirm_password: ref('new_password'),
-  name: string().optional(),
-  username: USER_NAME_SCHEMA.optional(),
-  lastname: string().optional(),
-  email: string().email().optional(),
-  phone_number: string().optional(),
-  telegram_id: string().optional(),
-  active: boolean().optional(),
-  expiration_date: date().optional().allow(null),
-  photo: binary().optional(),
-  confirmed: boolean().optional(),
-})
+export const UPDATE_USER_SCHEMA = joi
+  .object({
+    last_password: STRONG_PASSWORD_SCHEMA.optional(),
+    new_password: STRONG_PASSWORD_SCHEMA.optional(),
+    confirm_password: joi.ref('new_password'),
+    name: joi.string().optional(),
+    username: USER_NAME_SCHEMA.optional(),
+    lastname: joi.string().optional(),
+    email: joi.string().email().optional(),
+    phone_number: joi.string().optional(),
+    telegram_id: joi.string().optional(),
+    active: joi.boolean().optional(),
+    expiration_date: joi.date().optional().allow(null),
+    photo: joi.binary().optional(),
+    confirmed: joi.boolean().optional(),
+  })
   .required()
   .with('new_password', ['last_password', 'confirm_password']);
 
-export const AGENTS_SCHEMA = object({
-  new_user: USERS_SCHEMA.optional(),
-  username: string().optional(),
-  role: number().integer().required(),
-  expiration_date: date().optional(),
-}).xor('username', 'new_user');
+export const AGENTS_SCHEMA = joi
+  .object({
+    new_user: USERS_SCHEMA.optional(),
+    username: joi.string().optional(),
+    role: joi.number().integer().required(),
+    expiration_date: joi.date().optional(),
+  })
+  .xor('username', 'new_user');
 
-export const UPDATE_AGENT_SCHEMA = object({
-  role: number().integer().optional(),
-  active: boolean().optional(),
-  expiration_date: date().optional().allow(null),
-}).required();
+export const UPDATE_AGENT_SCHEMA = joi
+  .object({
+    role: joi.number().integer().optional(),
+    active: joi.boolean().optional(),
+    expiration_date: joi.date().optional().allow(null),
+  })
+  .required();
 
-export const TECH_SCHEMA = object({
-  new_user: USERS_SCHEMA.optional(),
-  username: string().optional(),
-  expiration_date: date().optional(),
-  habilities: array().items(number()).min(1).required(),
-  confirmation_photo: binary().optional(),
-  address: string().required(),
-  confirmed: boolean().required(),
-  ci: string().pattern(/\d{11,11}/),
-  province: number().required(),
-  municipality: number().required(),
-}).xor('username', 'new_user');
+export const TECH_SCHEMA = joi
+  .object({
+    new_user: USERS_SCHEMA.optional(),
+    username: joi.string().optional(),
+    expiration_date: joi.date().optional(),
+    habilities: joi.array().items(joi.number()).min(1).required(),
+    confirmation_photo: joi.binary().optional(),
+    address: joi.string().required(),
+    confirmed: joi.boolean().required(),
+    ci: joi.string().pattern(/\d{11,11}/),
+    province: joi.number().required(),
+    municipality: joi.number().required(),
+  })
+  .xor('username', 'new_user');
 
-export const TECH_APP_SCHEMA = object({
-  habilities: array().items(number()).min(1).required(),
-  address: string().required(),
-  ci: string()
+export const TECH_APP_SCHEMA = joi.object({
+  habilities: joi.array().items(joi.number()).min(1).required(),
+  address: joi.string().required(),
+  ci: joi
+    .string()
     .pattern(/\d{11,11}/)
     .required(),
-  province: number().required(),
-  municipality: number().required(),
-  confirmation_photo: binary().optional(),
+  province: joi.number().required(),
+  municipality: joi.number().required(),
+  confirmation_photo: joi.binary().optional(),
 });
 
-export const UPDATE_TECH_SCHEMA = object({
-  active: boolean().optional(),
-  expiration_date: date().optional().allow(null),
-  habilities: array().items(number()).min(0).optional(),
-  confirmation_photo: binary().optional(),
-  address: string().optional(),
-  confirmed: boolean().optional(),
-  ci: string()
-    .pattern(/\d{11,11}/)
-    .optional(),
-  province: number().optional(),
-  municipality: number().optional(),
-})
+export const UPDATE_TECH_SCHEMA = joi
+  .object({
+    active: joi.boolean().optional(),
+    expiration_date: joi.date().optional().allow(null),
+    habilities: joi.array().items(joi.number()).min(0).optional(),
+    confirmation_photo: joi.binary().optional(),
+    address: joi.string().optional(),
+    confirmed: joi.boolean().optional(),
+    ci: joi
+      .string()
+      .pattern(/\d{11,11}/)
+      .optional(),
+    province: joi.number().optional(),
+    municipality: joi.number().optional(),
+  })
   .with('province', 'municipality')
   .with('municipality', 'province');
 
-export const USER_QUERY_RESULT = object({
-  id: number(),
-  name: string(),
-  lastname: string(),
-  username: string(),
-  email: string().email(),
-  phone_number: string(),
-  telegram_id: string(),
-  active: boolean(),
-  expiration_date: date(),
-  photo: string().base64(),
-  techniccian_info: object({
-    user: number(),
-    expiration_date: date(),
-    active: boolean(),
-    rating: number().min(1).max(5),
-    habilities: array().items(HABILITIES_SCHEMA),
+export const USER_QUERY_RESULT = joi.object({
+  id: joi.number(),
+  name: joi.string(),
+  lastname: joi.string(),
+  username: joi.string(),
+  email: joi.string().email(),
+  phone_number: joi.string(),
+  telegram_id: joi.string(),
+  active: joi.boolean(),
+  expiration_date: joi.date(),
+  photo: joi.string().base64(),
+  techniccian_info: joi.object({
+    user: joi.number(),
+    expiration_date: joi.date(),
+    active: joi.boolean(),
+    rating: joi.number().min(1).max(5),
+    habilities: joi.array().items(HABILITIES_SCHEMA),
   }),
-  agent_info: object({
-    user: number(),
-    expiration_date: date(),
-    active: boolean(),
+  agent_info: joi.object({
+    user: joi.number(),
+    expiration_date: joi.date(),
+    active: joi.boolean(),
   }),
 });
 
 export const USERS_QUERY_RESULTS = PAGE_RESULT_SCHEMA.keys({
-  data: array().items(USER_QUERY_RESULT),
+  data: joi.array().items(USER_QUERY_RESULT),
 });
 
-export const USERS_FILTERS = object({
-  types: array()
-    .items(string().valid(...Object.values(USER_TYPE)))
+export const USERS_FILTERS = joi.object({
+  types: joi
+    .array()
+    .items(joi.string().valid(...Object.values(USER_TYPE)))
     .optional()
     .min(1),
-  username: string().optional(),
-  name: string().optional(),
-  user_active: boolean().optional(),
-  roles: array().items(number()).optional().min(1),
-  agent_active: boolean().optional(),
-  tech_active: boolean().optional(),
-  ci: string().optional(),
-  address: string().optional(),
-  tech_provinces: array().items(number()).optional().min(1),
-  tech_municipalities: array().items(number()).optional().min(1),
-  tech_rating: number().optional().min(1).max(5),
-  habilities: array().items(number()).optional().min(1),
+  username: joi.string().optional(),
+  name: joi.string().optional(),
+  user_active: joi.boolean().optional(),
+  roles: joi.array().items(joi.number()).optional().min(1),
+  agent_active: joi.boolean().optional(),
+  tech_active: joi.boolean().optional(),
+  ci: joi.string().optional(),
+  address: joi.string().optional(),
+  tech_provinces: joi.array().items(joi.number()).optional().min(1),
+  tech_municipalities: joi.array().items(joi.number()).optional().min(1),
+  tech_rating: joi.number().optional().min(1).max(5),
+  habilities: joi.array().items(joi.number()).optional().min(1),
 });
 
-export const TECH_APPLICANTS_SCHEMA = object({
-  page: number(),
-  page_size: number(),
-  total: number(),
-  pages: number(),
-  data: array().items(
-    object({
-      id: number().required(),
-      user: object({
-        username: string(),
-        name: string(),
-        lastname: string(),
+export const TECH_APPLICANTS_SCHEMA = joi.object({
+  page: joi.number(),
+  page_size: joi.number(),
+  total: joi.number(),
+  pages: joi.number(),
+  data: joi.array().items(
+    joi.object({
+      id: joi.number().required(),
+      user: joi.object({
+        username: joi.string(),
+        name: joi.string(),
+        lastname: joi.string(),
       }),
-      province: object({ id: number(), name: string() }),
-      municipality: object({ id: number(), name: string() }),
-      ci: string(),
-      date: date(),
+      province: joi.object({ id: joi.number(), name: joi.string() }),
+      municipality: joi.object({ id: joi.number(), name: joi.string() }),
+      ci: joi.string(),
+      date: joi.date(),
     }),
   ),
 });
 
-export const TECH_APPLICANT_SCHEMA = object({
-  id: number().required(),
-  user: object({
-    username: string(),
-    name: string(),
-    lastname: string(),
+export const TECH_APPLICANT_SCHEMA = joi.object({
+  id: joi.number().required(),
+  user: joi.object({
+    username: joi.string(),
+    name: joi.string(),
+    lastname: joi.string(),
   }),
-  ci: string(),
-  date: date(),
-  address: string(),
-  province: object({ id: number(), name: string() }),
-  municipality: object({ id: number(), name: string() }),
-  habilities: array().items(HABILITIES_SCHEMA),
-  confirmation_photo: string().base64(),
+  ci: joi.string(),
+  date: joi.date(),
+  address: joi.string(),
+  province: joi.object({ id: joi.number(), name: joi.string() }),
+  municipality: joi.object({ id: joi.number(), name: joi.string() }),
+  habilities: joi.array().items(HABILITIES_SCHEMA),
+  confirmation_photo: joi.string().base64(),
 });

@@ -1,14 +1,14 @@
-import { number, object, string } from 'joi';
+import * as joi from 'joi';
 
-export const BUY_LICENSE_SCHEMA = object({
-  license: number().required(),
-  username: string().optional(),
-  amount: number().optional().default(1),
+export const BUY_LICENSE_SCHEMA = joi.object({
+  license: joi.number().required(),
+  username: joi.string().optional(),
+  amount: joi.number().optional().default(1),
 });
 
-export const PAYMENT_EXECUTION_SCHEMA = object({
-  operationId: string().required(),
-  payGateway: number().required(),
-  amount: number().required(),
-  coin: number().optional(),
+export const PAYMENT_EXECUTION_SCHEMA = joi.object({
+  operationId: joi.string().required(),
+  payGateway: joi.number().required(),
+  amount: joi.number().required(),
+  coin: joi.number().optional(),
 });

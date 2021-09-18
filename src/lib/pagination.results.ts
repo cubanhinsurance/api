@@ -1,5 +1,5 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common';
-import { array, number, object, ObjectSchema } from 'joi';
+import * as joi from 'joi';
 import { FindManyOptions, Repository, SelectQueryBuilder } from 'typeorm';
 
 export interface QUERY_PAGE<T> {
@@ -70,11 +70,11 @@ export const paginate_qr = async <T>(
   }
 };
 
-export const PAGINATION_SCHEMA = (data: any): ObjectSchema =>
-  object({
-    page: number(),
-    page_size: number(),
-    total: number(),
-    pages: number(),
-    data: array().items(data),
+export const PAGINATION_SCHEMA = (data: any): joi.ObjectSchema =>
+  joi.object({
+    page: joi.number(),
+    page_size: joi.number(),
+    total: joi.number(),
+    pages: joi.number(),
+    data: joi.array().items(data),
   });

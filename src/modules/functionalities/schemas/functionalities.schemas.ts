@@ -1,9 +1,9 @@
-import { array, number, object, string } from 'joi';
+import * as joi from 'joi';
 
-export const FunctionalitiesSchema = object({
-  name: string().required().description('Nombre'),
-  description: string().optional().description('Descripcion'),
-  id: number().required(),
+export const FunctionalitiesSchema = joi.object({
+  name: joi.string().required().description('Nombre'),
+  description: joi.string().optional().description('Descripcion'),
+  id: joi.number().required(),
 });
 
-export const FunctionalitiesList = array().items(FunctionalitiesSchema);
+export const FunctionalitiesList = joi.array().items(FunctionalitiesSchema);

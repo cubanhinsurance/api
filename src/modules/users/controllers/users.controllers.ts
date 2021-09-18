@@ -53,7 +53,7 @@ import { imageFilter } from 'src/lib/multer/filter';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { User } from 'src/modules/auth/decorators/user.decorator';
 import { TechApplicationsService } from '../services/tech_applications.service';
-import { boolean } from 'joi';
+import * as joi from 'joi';
 
 @Controller('users')
 export class UsersController {
@@ -335,7 +335,8 @@ export class UsersController {
     @User('username') username,
     @Param('tech_application_id') id: number,
     @Query('description') description,
-    @Param('confirmed', new JoiPipe(boolean().required())) confirmed: boolean,
+    @Param('confirmed', new JoiPipe(joi.boolean().required()))
+    confirmed: boolean,
   ) {
     return await this.techApp.confirmTechApplication(
       username,

@@ -7,7 +7,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { number, object, string } from 'joi';
+import * as joi from 'joi';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
 import j2s from 'joi-to-swagger';
 import { LON_LAT_SCHEMA } from '../schemas/gis.schema';
@@ -24,14 +24,14 @@ export class GisController {
   })
   @ApiOkResponse({
     schema: j2s(
-      object({
+      joi.object({
         province: {
-          id: number(),
-          name: string(),
+          id: joi.number(),
+          name: joi.string(),
         },
         municipality: {
-          id: number(),
-          name: string(),
+          id: joi.number(),
+          name: joi.string(),
         },
       }),
     ).swagger,
@@ -61,8 +61,8 @@ export class GisController {
   })
   @ApiNotFoundResponse({ description: 'No se encontro ese dpa' })
   async zoom2Province(
-    @Query('province', new JoiPipe(number().optional())) province,
-    @Query('municipality', new JoiPipe(number().optional())) municipality,
+    @Query('province', new JoiPipe(joi.number().optional())) province,
+    @Query('municipality', new JoiPipe(joi.number().optional())) municipality,
   ) {
     return await this.gisService.zoomto({ province, municipality });
   }

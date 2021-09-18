@@ -32,7 +32,7 @@ import {
 } from 'nestjs-typeorm-crud';
 import { LicensesService } from '../services/licenses.service';
 import j2s from 'joi-to-swagger';
-import { array, boolean, number, object, string } from 'joi';
+import * as joi from 'joi';
 import { LicensesEntity } from '../entities/licenses.entity';
 import { LicensesTypesService } from '../services/licenses_types.service';
 import {
@@ -62,11 +62,11 @@ export class LicensesController {
   })
   @ApiOkResponse({
     schema: j2s(
-      array().items(
-        object({
-          id: number(),
-          name: string(),
-          description: string(),
+      joi.array().items(
+        joi.object({
+          id: joi.number(),
+          name: joi.string(),
+          description: joi.string(),
         }),
       ),
     ).swagger,
@@ -200,7 +200,7 @@ export class LicensesController {
   @Get('users')
   async getUsersLicences(
     @User('username') user,
-    @Query('userOnly', new JoiPipe(boolean().optional())) userOnly,
+    @Query('userOnly', new JoiPipe(joi.boolean().optional())) userOnly,
   ) {
     return await this.licenses.getUsersLicences(user, userOnly);
   }

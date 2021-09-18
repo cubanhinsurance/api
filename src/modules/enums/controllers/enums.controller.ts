@@ -31,7 +31,7 @@ import {
   PROVINCES_SCHEMA,
 } from '../schemas/enums.schema';
 import { JoiPipe } from 'src/lib/pipes/joi.pipe';
-import { array, number, string } from 'joi';
+import * as joi from 'joi';
 import { NUMBER_COMMA_STRING } from 'src/lib/schemas/strings.schema';
 import {
   CREATE_GROUP_SCHEMA,
@@ -173,7 +173,7 @@ export class EnumsController {
     summary: 'Devuelve el listado de Tipos de incidencias con su jerarquia',
   })
   @ApiOkResponse({
-    schema: j2s(array().items(ISSUE_TREE_SCHEMA)).swagger,
+    schema: j2s(joi.array().items(ISSUE_TREE_SCHEMA)).swagger,
   })
   @Get('issues')
   async getIssues() {
@@ -186,7 +186,7 @@ export class EnumsController {
       'Devuelve el listado de Tipos de incidencias en forma de lista con atributo con las migas de pan representando el camino a esta issue',
   })
   @ApiOkResponse({
-    schema: j2s(array().items(ISSUE_SCHEMA_LIST)).swagger,
+    schema: j2s(joi.array().items(ISSUE_SCHEMA_LIST)).swagger,
   })
   @Get('issues_list')
   async getIssuesLists() {
@@ -213,7 +213,7 @@ export class EnumsController {
   )
   @Post('issues')
   async createIssueType(
-    @Query('parent', new JoiPipe(number().optional().allow(null)))
+    @Query('parent', new JoiPipe(joi.number().optional().allow(null)))
     parent: number,
     @Body(
       new JoiPipe(CREATE_ISSUE_TREE_NODE_SCHEMA, null, ['questions', 'rules']),
@@ -246,7 +246,7 @@ export class EnumsController {
   )
   @Put('issues/:issue')
   async updateIssueType(
-    @Query('parent', new JoiPipe(number().optional().allow(null)))
+    @Query('parent', new JoiPipe(joi.number().optional().allow(null)))
     parent: number,
     @Body(
       new JoiPipe(UPDATE_ISSUE_TREE_NODE_SCHEMA, null, ['questions', 'rules']),
