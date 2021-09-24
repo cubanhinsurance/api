@@ -1,3 +1,3 @@
-car: http://192.168.1.100:5001
-bike: http://192.168.1.100:5002
-foot: http://192.168.1.100:5003
+car: http://srv96118-206152.vps.etecsa.cu/routing/car/
+bike: http://srv96118-206152.vps.etecsa.cu/routing/bike/
+foot: http://srv96118-206152.vps.etecsa.cu/routing/foot/

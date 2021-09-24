@@ -28,6 +28,7 @@ export enum ISSUE_STATE {
   ACCEPTED = 'accepted',
   CANCELED = 'canceled',
   EXPIRATED = 'expirated',
+  TRAVELING = 'traveling',
   PROGRESS = 'progress',
   REJECTED = 'rejected',
   COMPLETED = 'completed',

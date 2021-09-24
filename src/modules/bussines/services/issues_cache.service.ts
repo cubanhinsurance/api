@@ -111,6 +111,8 @@ export interface PENDENT_ISSUE {
   application: IssueApplication;
 }
 
+const DEFAULT_MIN_ROUTE_DISTANCE = 200;
+
 @Injectable()
 export class IssuesCacheService {
   clients: Map<string, WsTech>;
@@ -270,15 +272,15 @@ export class IssuesCacheService {
 
   async search4ProgressIssue(tech: TechniccianEntity) {
     const issue = await this.issuesQr
-      .where('tu.username=:tech and i.state=:progress', {
+      .where('tu.username=:tech and i.state in (:...state)', {
         tech: tech.user.username,
-        progress: ISSUE_STATE.PROGRESS,
+        state: [ISSUE_STATE.TRAVELING, ISSUE_STATE.PROGRESS],
       })
       .getOne();
 
     if (!issue) return;
 
-    this.issueInProgress({ issue, tech: tech.user.username });
+    this.issueOnTheWay({ issue, tech: tech.user.username });
     const b = 7;
   }
 
@@ -534,11 +536,13 @@ export class IssuesCacheService {
     issue: IssuesEntity,
     preparedTechs: any[],
   ): Promise<DISTANCE_INFO[]> {
-    const distances = ((await Promise.all(
-      preparedTechs.map(({ id, data, user }) => {
-        return this.distanceInfo(id, user, data, issue);
-      }),
-    )) as any[]).filter((v) => !!v);
+    const distances = (
+      (await Promise.all(
+        preparedTechs.map(({ id, data, user }) => {
+          return this.distanceInfo(id, user, data, issue);
+        }),
+      )) as any[]
+    ).filter((v) => !!v);
 
     const { max_distance, max_techs } = issue;
 
@@ -750,6 +754,10 @@ export class IssuesCacheService {
       return;
     }
 
+    if (client.progress?.issue?.id == issue.id) {
+      delete client.progress;
+    }
+
     const info = await this.getPendentIssueInfo(
       id,
       client.user,
@@ -770,11 +778,15 @@ export class IssuesCacheService {
     issue: IssuesEntity,
     application: IssueApplication,
   ): Promise<PENDENT_ISSUE> {
-    const distance = await this.distanceInfo(id, tech, status, issue);
+    const inProgress = issue.state == ISSUE_STATE.PROGRESS;
+    const distance = inProgress
+      ? null
+      : await this.distanceInfo(id, tech, status, issue);
 
-    let arrive_date = distance.route
-      ? moment().add(distance.duration, 'seconds').toDate()
-      : undefined;
+    let arrive_date =
+      distance.route && !inProgress
+        ? moment().add(distance.duration, 'seconds').toDate()
+        : undefined;
 
     Logger.log(
       `Ruta calculada para el tecnico: ${tech.user.username}
@@ -792,13 +804,7 @@ export class IssuesCacheService {
     };
   }
 
-  async issueInProgress({
-    issue,
-    tech,
-  }: {
-    tech: string;
-    issue: IssuesEntity;
-  }) {
+  async issueOnTheWay({ issue, tech }: { tech: string; issue: IssuesEntity }) {
     const techClient = this.findTechClient(tech);
     if (!techClient) {
       throw new Error(
@@ -868,7 +874,9 @@ export class IssuesCacheService {
       units: 'meters',
     });
 
-    const limit: number = +(process.env?.ROUTE_MAX_DISTANCE ?? 200);
+    const limit: number = +(
+      process.env?.ROUTE_MAX_DISTANCE ?? DEFAULT_MIN_ROUTE_DISTANCE
+    );
 
     return d > limit;
   }
@@ -885,7 +893,11 @@ export class IssuesCacheService {
       return;
     }
 
-    if (!client.progress) return;
+    if (
+      !client.progress ||
+      client?.progress?.issue?.state == ISSUE_STATE.PROGRESS
+    )
+      return;
 
     if (!!old) {
       const should = this.shouldRoute(current, old);
@@ -912,7 +924,7 @@ export class IssuesCacheService {
   async refreshIssueInfo(issue: IssuesEntity, tech: string) {
     const client = this.findTechClient(tech);
     if (!client) return;
-    if (issue.state == ISSUE_STATE.PROGRESS) {
+    if (issue.state == ISSUE_STATE.TRAVELING) {
       this.refreshProgressIssueInfo(client.id);
     } else {
       const pendent = client.client.pendents.get(issue.id);
@@ -929,5 +941,12 @@ export class IssuesCacheService {
 
       client.client.pendents.set(issue.id, updated);
     }
+  }
+
+  async issueInProgress(issue: IssuesEntity) {
+    const client = this.findTechClient(issue.tech.username);
+    if (!client) return;
+    if (!client.client.progress) return;
+    client.client.progress.issue = issue;
   }
 }

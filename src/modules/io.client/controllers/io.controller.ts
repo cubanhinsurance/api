@@ -7,6 +7,7 @@ import {
   ISSUE_PAUSED,
   NEW_ISSUE_APPLICATION,
   TECH_APPLICANT_CONFIRMED,
+  TECH_ARRIVED,
 } from '../../bussines/io.constants';
 import { ClientsIoService } from '../services/clients_io.service';
 
@@ -37,5 +38,10 @@ export class ClientsIoController {
   @MessagePattern(ISSUE_PAUSED)
   async issuePaused(@Payload() data) {
     this.clientsIoService.issuePaused(data);
+  }
+
+  @MessagePattern(TECH_ARRIVED)
+  async issueArrived(@Payload() data) {
+    this.clientsIoService.issueArrived(data);
   }
 }

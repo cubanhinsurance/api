@@ -24,6 +24,7 @@ import {
   ISSUE_STARTED,
   NEW_ISSUE_APPLICATION,
   NEW_TECHAPPLICATION_CONFIRMATION,
+  TECH_ARRIVED,
 } from 'src/modules/bussines/io.constants';
 import { ISSUES_APPLICATION_STATES } from 'src/modules/bussines/schemas/issues.schema';
 import { IssuesService } from 'src/modules/bussines/services/issues.service';
@@ -49,7 +50,8 @@ export interface IoMessage {
   namespace: '/clients',
 })
 export class ClientsIoService
-  implements OnGatewayConnection, OnGatewayDisconnect {
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   clients: Map<string, WsClient>;
 
   usersIndex: Record<string, string>;
@@ -120,7 +122,9 @@ export class ClientsIoService
   async search4ProgressIssue(author: string, ws: Socket) {
     const progressIssues = await this.issuesService
       .getAuthorIssuesQr(author)
-      .andWhere('i.state=:progress', { progress: ISSUE_STATE.PROGRESS })
+      .andWhere('i.state in (:...progress)', {
+        progress: [ISSUE_STATE.TRAVELING, ISSUE_STATE.PROGRESS],
+      })
       .addSelect(['tech.username'])
       .getMany();
 
@@ -210,6 +214,14 @@ export class ClientsIoService
 
     if (clientConn) {
       clientConn.ws.emit(ISSUE_PAUSED, issue);
+    }
+  }
+
+  issueArrived(issue: IssuesEntity) {
+    const clientConn = this.clients.get(issue?.user?.username);
+
+    if (clientConn) {
+      clientConn.ws.emit(TECH_ARRIVED, issue);
     }
   }
 }

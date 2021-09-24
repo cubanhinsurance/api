@@ -281,7 +281,7 @@ export class IssuesController {
   }
 
   @ApiOperation({
-    summary: 'Actualiza la informacion de ruteode una incidencia',
+    summary: 'Actualiza la informacion de ruteo de una incidencia',
   })
   @Head('tech/:issue')
   async refreshIssueInfo(
@@ -289,5 +289,16 @@ export class IssuesController {
     @User('username') tech,
   ) {
     await this.issuesService.refreshRoute(issue, tech);
+  }
+
+  @ApiOperation({
+    summary: 'Confirma la llegada de un tecnico al lugar de la incidencia',
+  })
+  @Post('tech/arrived/:issue')
+  async notifyTechArrived(
+    @Param('issue', new JoiPipe(joi.number().required())) issue,
+    @User('username') tech,
+  ) {
+    await this.issuesService.confirmArrived(tech, issue);
   }
 }

@@ -21,10 +21,12 @@ import {
   ISSUE_CREATED,
   ISSUE_IGNORED,
   ISSUE_IN_PROGRESS,
+  ISSUE_ON_THE_WAY,
   ISSUE_PAUSED,
   NEW_ISSUE_APPLICATION,
   TECH_ACCEPTED,
   TECH_REJECTED,
+  TECH_ARRIVED,
 } from 'src/modules/bussines/io.constants';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { FindConditions, Repository, SelectQueryBuilder } from 'typeorm';
@@ -565,6 +567,7 @@ export class IssuesService implements OnModuleInit {
       .leftJoinAndSelect('i.client_location', 'cl')
       .innerJoin('i.user', 'u')
       .innerJoinAndSelect('i.type', 'issuetype')
+      .leftJoinAndSelect('i.traces', 'traces')
       .where('i.id=:issue', { issue })
       .leftJoin('i.tech', 'tu')
       .leftJoin('tu.techniccian_info', 'tt')
@@ -587,7 +590,7 @@ export class IssuesService implements OnModuleInit {
           const { info, review } = await this.getTechInfo(i.tech.username);
           (i as any).tech = { ...info, review };
           break;
-        case ISSUE_STATE.PROGRESS:
+        case ISSUE_STATE.TRAVELING:
           const wsTech = this.techsCache.findTechClient(i.tech.username);
           if (!!wsTech && wsTech?.client?.progress) {
             const {
@@ -818,12 +821,12 @@ export class IssuesService implements OnModuleInit {
 
     const updated = await this.issuesRepo.save({
       id: i.id,
-      state: ISSUE_STATE.PROGRESS,
+      state: ISSUE_STATE.TRAVELING,
     });
 
-    this.addNewIssueTrace(i, ISSUE_STATE.PROGRESS);
+    this.addNewIssueTrace(i, ISSUE_STATE.TRAVELING);
 
-    this.broker.emit(ISSUE_IN_PROGRESS, {
+    this.broker.emit(ISSUE_ON_THE_WAY, {
       tech,
       issue: i,
     });
@@ -835,7 +838,11 @@ export class IssuesService implements OnModuleInit {
       .innerJoin('i.tech', 'tech')
       .innerJoin('i.user', 'author')
       .addSelect(['tech.username', 'author.username'])
-      .where('tech.username=:tech', { tech })
+      .where('tech.username=:tech and i.id=:issue and i.state=:traveling', {
+        tech,
+        issue,
+        traveling: ISSUE_STATE.TRAVELING,
+      })
       .getOne();
 
     if (!issueO) throw new NotFoundException();
@@ -866,5 +873,26 @@ export class IssuesService implements OnModuleInit {
       );
 
     this.techsCache.refreshIssueInfo(issueDetails, tech);
+  }
+
+  async confirmArrived(tech: string, issue: number, date: Date = new Date()) {
+    const issueO = await this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoin('i.tech', 'tech')
+      .innerJoin('i.user', 'author')
+      .addSelect(['tech.username', 'author.username'])
+      .where('tech.username=:tech and i.id=:issue', { tech, issue })
+      .getOne();
+
+    if (!issueO) throw new NotFoundException();
+
+    issueO.state = ISSUE_STATE.PROGRESS;
+
+    this.addNewIssueTrace(issueO, ISSUE_STATE.PROGRESS);
+
+    const issueDetails = await this.getIssueDetails(issue, null, false);
+
+    this.broker.emit(ISSUE_IN_PROGRESS, issueDetails);
+    this.broker.emit(TECH_ARRIVED, issueDetails);
   }
 }

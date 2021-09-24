@@ -43,7 +43,8 @@ export interface WsTech {
   namespace: '/techs',
 })
 export class TechsIoService
-  implements OnGatewayConnection, OnGatewayDisconnect {
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
@@ -144,6 +145,10 @@ export class TechsIoService
 
   async techAccepted(app) {
     this.techsHandler.techAccepted(app);
+  }
+
+  async issueOnTheWay(app) {
+    this.techsHandler.issueOnTheWay(app);
   }
 
   async issueInProgress(app) {
