@@ -301,4 +301,39 @@ export class IssuesController {
   ) {
     await this.issuesService.confirmArrived(tech, issue);
   }
+
+  @ApiOperation({
+    summary: 'Confirma la finalizacion de un issue del tecnico autenticado',
+  })
+  @Post('tech/finish/:issue')
+  async notifyFinish(
+    @Param('issue', new JoiPipe(joi.number().required())) issue,
+    @User('username') tech,
+  ) {
+    await this.issuesService.confirmFinished(tech, issue);
+  }
+
+  @ApiOperation({
+    summary:
+      'Evaluar a un cliente autor de una issue por el tecnico autenticado',
+  })
+  @Post('rate/client/:issue')
+  async rateClient(
+    @Param('issue', new JoiPipe(joi.number().required())) issue,
+    @User('username') tech,
+  ) {
+    await this.issuesService.rateClient(tech, issue);
+  }
+
+  @ApiOperation({
+    summary:
+      'Evaluar a un tecnico autor de una issue por el tecnico autenticado',
+  })
+  @Post('rate/tech/:issue')
+  async rateTech(
+    @Param('issue', new JoiPipe(joi.number().required())) issue,
+    @User('username') client,
+  ) {
+    await this.issuesService.rateTech(client, issue);
+  }
 }

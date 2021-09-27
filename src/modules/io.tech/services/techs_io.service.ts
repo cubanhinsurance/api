@@ -154,4 +154,8 @@ export class TechsIoService
   async issueInProgress(app) {
     this.techsHandler.issueInProgress(app);
   }
+
+  async issueFinished(app) {
+    this.techsHandler.issueFinished(app);
+  }
 }

@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ClientProxy } from '@nestjs/microservices';
+import { InjectRepository } from '@nestjs/typeorm';
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -20,6 +21,7 @@ import {
 import {
   CLIENT_ISSUE_IN_PROGRESS_UPDATE,
   ISSUE_APPLICATION_CANCELLED,
+  ISSUE_FINISHED,
   ISSUE_PAUSED,
   ISSUE_STARTED,
   NEW_ISSUE_APPLICATION,
@@ -34,6 +36,7 @@ import {
 } from 'src/modules/bussines/services/issues_cache.service';
 import { TechApplicationsService } from 'src/modules/users/services/tech_applications.service';
 import { UsersService } from 'src/modules/users/services/users.service';
+import { Repository } from 'typeorm';
 
 export interface WsClient {
   ws: Socket;
@@ -66,6 +69,8 @@ export class ClientsIoService
     private issuesCache: IssuesCacheService,
     private usersService: UsersService,
     private issuesService: IssuesService,
+    @InjectRepository(IssuesEntity)
+    private issuesRepo: Repository<IssuesEntity>,
   ) {
     this.clients = new Map<string, any>();
     this.usersIndex = {};
@@ -209,6 +214,27 @@ export class ClientsIoService
     }
   }
 
+  async search4PendentClientEvaluations(username: string, issue?: number) {
+    const issues = await this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoin('i.user', 'author')
+      .innerJoin('i.tech', 'tech')
+      .leftJoin('i.evaluations', 'evals')
+      .leftJoin('evals.from', 'fr')
+      .leftJoin('evals.to', 'to')
+      .where('i.state=:completed', {
+        completed: ISSUE_STATE.COMPLETED,
+      })
+      .andWhere('author.username=:username', { username })
+      .andWhere('fr.id=author.id and to.id=tech.id')
+      .andWhere('evals.id isnull')
+      .getMany();
+
+    if (issues.length == 0) return;
+
+    const b = 7;
+  }
+
   issuePaused(issue: IssuesEntity) {
     const clientConn = this.clients.get(issue?.user?.username);
 
@@ -222,6 +248,16 @@ export class ClientsIoService
 
     if (clientConn) {
       clientConn.ws.emit(TECH_ARRIVED, issue);
+    }
+  }
+
+  issueFinished(issue: IssuesEntity) {
+    const clientConn = this.clients.get(issue?.user?.username);
+
+    if (clientConn) {
+      clientConn.ws.emit(ISSUE_FINISHED, issue);
+
+      this.search4PendentClientEvaluations(issue?.user?.username, issue.id);
     }
   }
 }

@@ -14,6 +14,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { IssuesEntity } from './issues.entity';
 
 @Entity({
   schema: 'mod_bussines',
@@ -48,4 +49,7 @@ export class RatingsEntity {
 
   @Column({ default: true })
   tech_review: boolean;
+
+  @ManyToOne(() => IssuesEntity, { nullable: true })
+  issue: IssuesEntity;
 }

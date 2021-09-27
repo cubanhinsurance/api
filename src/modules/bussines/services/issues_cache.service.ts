@@ -21,6 +21,8 @@ import {
   CLIENT_ISSUE_IN_PROGRESS_UPDATE,
   ISSUE_CANCELLED,
   ISSUE_CREATED,
+  ISSUE_FINISHED,
+  ISSUE_IN_PROGRESS,
   ISSUE_UNAVAILABLE,
   NEW_ISSUE_APPLICATION,
   TECH_ACCEPTED,
@@ -177,6 +179,8 @@ export class IssuesCacheService {
       ws: client,
       pendents: new Map<number, PENDENT_ISSUE>(),
     });
+
+    this.search4PendentEvaluations(username);
   }
 
   async getTechPendentIssues(tech: string) {
@@ -223,6 +227,27 @@ export class IssuesCacheService {
       this.search4PendentIssues(user);
       this.search4ProgressIssue(user);
     }
+  }
+
+  async search4PendentEvaluations(username: string, issue?: number) {
+    const issues = await this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoin('i.user', 'author')
+      .innerJoin('i.tech', 'tech')
+      .leftJoin('i.evaluations', 'evals')
+      .leftJoin('evals.from', 'fr')
+      .leftJoin('evals.to', 'to')
+      .where('i.state=:completed', {
+        completed: ISSUE_STATE.COMPLETED,
+      })
+      .andWhere('tech.username=:username', { username })
+      .andWhere('fr.id=tech.id and to.id=author.id and evals.tech_review=true')
+      .andWhere('evals.id isnull')
+      .getMany();
+
+    if (issues.length == 0) return;
+
+    const b = 7;
   }
 
   async search4OpenIssues(
@@ -272,6 +297,7 @@ export class IssuesCacheService {
 
   async search4ProgressIssue(tech: TechniccianEntity) {
     const issue = await this.issuesQr
+      .leftJoinAndSelect('i.traces', 'traces')
       .where('tu.username=:tech and i.state in (:...state)', {
         tech: tech.user.username,
         state: [ISSUE_STATE.TRAVELING, ISSUE_STATE.PROGRESS],
@@ -280,7 +306,11 @@ export class IssuesCacheService {
 
     if (!issue) return;
 
-    this.issueOnTheWay({ issue, tech: tech.user.username });
+    if (issue.state == ISSUE_STATE.TRAVELING) {
+      this.issueOnTheWay({ issue, tech: tech.user.username });
+    } else {
+      this.issueInProgress(issue);
+    }
     const b = 7;
   }
 
@@ -784,15 +814,17 @@ export class IssuesCacheService {
       : await this.distanceInfo(id, tech, status, issue);
 
     let arrive_date =
-      distance.route && !inProgress
+      !inProgress && distance?.route
         ? moment().add(distance.duration, 'seconds').toDate()
         : undefined;
 
-    Logger.log(
-      `Ruta calculada para el tecnico: ${tech.user.username}
+    if (!inProgress) {
+      Logger.log(
+        `Ruta calculada para el tecnico: ${tech.user.username}
       en la incidencia: ${issue.id}(${issue.description})`,
-      'RouteCalculator',
-    );
+        'RouteCalculator',
+      );
+    }
     return {
       refresh_date: new Date(),
       arrive_date,
@@ -946,7 +978,46 @@ export class IssuesCacheService {
   async issueInProgress(issue: IssuesEntity) {
     const client = this.findTechClient(issue.tech.username);
     if (!client) return;
+    if (!client.client.progress) {
+      const application = await this.issuesAppRepo
+        .createQueryBuilder('ia')
+        .innerJoinAndSelect('ia.issue', 'i')
+        .leftJoinAndSelect('i.client_location', 'client_location')
+        .innerJoinAndSelect('client_location.province', 'province')
+        .innerJoinAndSelect(
+          'client_location.municipality',
+          'prmunicipalityovince',
+        )
+        .innerJoin('i.user', 'u')
+        .innerJoin('ia.tech', 'tu')
+        .addSelect(['tu.username', 'tu.id'])
+        .addSelect(['u.username'])
+        .where('i.id=:issue and tu.username=:tech', {
+          issue: issue.id,
+          tech: client.client.user.user.username,
+        })
+        .getOne();
+
+      client.client.progress = await this.getPendentIssueInfo(
+        client.id,
+        client.client.user,
+        client.available,
+        issue,
+        application,
+      );
+    }
+    client.client.progress.issue = issue;
+    client.ws.emit(ISSUE_IN_PROGRESS, client.client.progress);
+  }
+
+  issueFinished(issue: IssuesEntity) {
+    const client = this.findTechClient(issue.tech.username);
+    if (!client) return;
     if (!client.client.progress) return;
     client.client.progress.issue = issue;
+    delete client.client.progress;
+    client.ws.emit(ISSUE_FINISHED, issue);
+
+    this.search4PendentEvaluations(issue.tech.username, issue.id);
   }
 }

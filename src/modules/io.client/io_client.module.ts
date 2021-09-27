@@ -6,6 +6,8 @@ import { BussinesModule } from '../bussines/bussines.module';
 import { UsersModule } from '../users/users.module';
 import { ClientsIoController } from './controllers/io.controller';
 import { ClientsIoService } from './services/clients_io.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { IssuesEntity } from '../bussines/entities/issues.entity';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { ClientsIoService } from './services/clients_io.service';
       },
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature([IssuesEntity]),
   ],
   controllers: [ClientsIoController],
   providers: [ClientsIoService],

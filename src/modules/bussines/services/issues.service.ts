@@ -27,6 +27,8 @@ import {
   TECH_ACCEPTED,
   TECH_REJECTED,
   TECH_ARRIVED,
+  ISSUE_FINISHED,
+  TECH_ISSUE_FINISHED,
 } from 'src/modules/bussines/io.constants';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { FindConditions, Repository, SelectQueryBuilder } from 'typeorm';
@@ -612,6 +614,10 @@ export class IssuesService implements OnModuleInit {
           }
           const g = 7;
           break;
+        case ISSUE_STATE.PROGRESS:
+          break;
+        case ISSUE_STATE.COMPLETED:
+          break;
       }
     }
 
@@ -671,7 +677,11 @@ export class IssuesService implements OnModuleInit {
         'No se encontro una solicitud de aplicacion a ninguna incidencia de ese autor',
       );
 
-    if (app.state != ISSUE_APPLICATION_STATE.PENDENT)
+    if (
+      app.state != ISSUE_APPLICATION_STATE.PENDENT &&
+      app.issue.state != ISSUE_STATE.PROGRESS &&
+      app.issue.state != ISSUE_STATE.TRAVELING
+    )
       throw new ConflictException(
         'Aplicacion no se encuentra en estado pendiente',
       );
@@ -886,7 +896,17 @@ export class IssuesService implements OnModuleInit {
 
     if (!issueO) throw new NotFoundException();
 
+    if (issueO.state != ISSUE_STATE.TRAVELING)
+      throw new ConflictException(
+        'La incidencia no se encuentra en estado: Viajando',
+      );
+
     issueO.state = ISSUE_STATE.PROGRESS;
+
+    const updated = await this.issuesRepo.save({
+      id: issueO.id,
+      state: ISSUE_STATE.PROGRESS,
+    });
 
     this.addNewIssueTrace(issueO, ISSUE_STATE.PROGRESS);
 
@@ -895,4 +915,37 @@ export class IssuesService implements OnModuleInit {
     this.broker.emit(ISSUE_IN_PROGRESS, issueDetails);
     this.broker.emit(TECH_ARRIVED, issueDetails);
   }
+
+  async confirmFinished(tech: string, issue: number, date: Date = new Date()) {
+    const issueO = await this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoin('i.tech', 'tech')
+      .innerJoin('i.user', 'author')
+      .addSelect(['tech.username', 'author.username'])
+      .where('tech.username=:tech and i.id=:issue', { tech, issue })
+      .getOne();
+
+    if (!issueO) throw new NotFoundException();
+
+    if (issueO.state != ISSUE_STATE.PROGRESS)
+      throw new ConflictException('La incidencia no se encuentra en progreso');
+
+    issueO.state = ISSUE_STATE.COMPLETED;
+
+    const updated = await this.issuesRepo.save({
+      id: issueO.id,
+      state: ISSUE_STATE.COMPLETED,
+    });
+
+    this.addNewIssueTrace(issueO, ISSUE_STATE.COMPLETED);
+
+    const issueDetails = await this.getIssueDetails(issue);
+
+    this.broker.emit(TECH_ISSUE_FINISHED, issueDetails);
+    this.broker.emit(ISSUE_FINISHED, issueDetails);
+  }
+
+  async rateTech(client: string, issue: number) {}
+
+  async rateClient(tech: string, issue: number) {}
 }

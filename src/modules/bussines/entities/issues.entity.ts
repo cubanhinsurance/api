@@ -22,6 +22,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { IssueApplication } from './issues_applications.entity';
+import { RatingsEntity } from './ratings.entity';
 
 export enum ISSUE_STATE {
   CREATED = 'created',
@@ -127,6 +128,9 @@ export class IssuesEntity {
 
   @OneToMany(() => IssueApplication, (a) => a.issue)
   applications: IssueApplication[];
+
+  @OneToMany(() => RatingsEntity, (r) => r.issue)
+  evaluations: RatingsEntity;
 }
 
 @Entity({

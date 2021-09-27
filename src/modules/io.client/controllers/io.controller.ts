@@ -4,6 +4,7 @@ import { PENDENT_ISSUE } from 'src/modules/bussines/services/issues_cache.servic
 import {
   CLIENT_ISSUE_IN_PROGRESS_UPDATE,
   ISSUE_APPLICATION_CANCELLED,
+  ISSUE_FINISHED,
   ISSUE_PAUSED,
   NEW_ISSUE_APPLICATION,
   TECH_APPLICANT_CONFIRMED,
@@ -43,5 +44,10 @@ export class ClientsIoController {
   @MessagePattern(TECH_ARRIVED)
   async issueArrived(@Payload() data) {
     this.clientsIoService.issueArrived(data);
+  }
+
+  @MessagePattern(ISSUE_FINISHED)
+  async issueFinished(@Payload() data) {
+    this.clientsIoService.issueFinished(data);
   }
 }
