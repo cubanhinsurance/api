@@ -87,7 +87,8 @@ export class IssuesService implements OnModuleInit {
       .innerJoinAndSelect('i.type', 'issuetype')
       .leftJoin('i.tech', 'tu')
       .leftJoin('tu.techniccian_info', 'tt')
-      .addSelect(['tu.username', 'tu.name', 'tu.lastname', 'tu.phone_number']);
+      .addSelect(['tu.username', 'tu.name', 'tu.lastname', 'tu.phone_number'])
+      .addSelect(['u.username', 'u.name', 'u.lastname', 'u.phone_number']);
   }
 
   async addIssue(
@@ -567,6 +568,8 @@ export class IssuesService implements OnModuleInit {
     const qr = await this.issuesRepo
       .createQueryBuilder('i')
       .leftJoinAndSelect('i.client_location', 'cl')
+      .innerJoinAndSelect('cl.province', 'province')
+      .innerJoinAndSelect('cl.municipality', 'prmunicipalityovince')
       .innerJoin('i.user', 'u')
       .innerJoinAndSelect('i.type', 'issuetype')
       .leftJoinAndSelect('i.traces', 'traces')

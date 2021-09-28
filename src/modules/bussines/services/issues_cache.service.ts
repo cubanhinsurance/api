@@ -893,7 +893,7 @@ export class IssuesCacheService {
         .innerJoin('i.user', 'u')
         .innerJoin('ia.tech', 'tu')
         .addSelect(['tu.username', 'tu.id'])
-        .addSelect(['u.username'])
+        .addSelect(['u.username', 'u.name', 'u.lastname', 'u.phone_number'])
         .where('i.id=:issue and tu.username=:tech', {
           issue: issue.id,
           tech,
