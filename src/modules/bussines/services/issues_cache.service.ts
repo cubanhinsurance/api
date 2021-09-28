@@ -25,6 +25,7 @@ import {
   ISSUE_IN_PROGRESS,
   ISSUE_UNAVAILABLE,
   NEW_ISSUE_APPLICATION,
+  PENDENT_RATING,
   TECH_ACCEPTED,
   TECH_ISSUE_IN_PROGRESS_UPDATE,
   TECH_REJECTED,
@@ -180,7 +181,7 @@ export class IssuesCacheService {
       pendents: new Map<number, PENDENT_ISSUE>(),
     });
 
-    this.search4PendentEvaluations(username);
+    this.search4PendentEvaluations(client, username);
   }
 
   async getTechPendentIssues(tech: string) {
@@ -229,25 +230,50 @@ export class IssuesCacheService {
     }
   }
 
-  async search4PendentEvaluations(username: string, issue?: number) {
-    const issues = await this.issuesRepo
+  async search4PendentEvaluations(
+    ws: Socket,
+    username: string,
+    issue?: number,
+  ) {
+    const qr = this.issuesRepo
       .createQueryBuilder('i')
       .innerJoin('i.user', 'author')
       .innerJoin('i.tech', 'tech')
+      .leftJoinAndSelect('i.client_location', 'cl')
+      .innerJoinAndSelect('i.type', 'issuetype')
       .leftJoin('i.evaluations', 'evals')
       .leftJoin('evals.from', 'fr')
       .leftJoin('evals.to', 'to')
+      .leftJoinAndSelect('i.traces', 'traces')
       .where('i.state=:completed', {
         completed: ISSUE_STATE.COMPLETED,
       })
       .andWhere('tech.username=:username', { username })
-      .andWhere('fr.id=tech.id and to.id=author.id and evals.tech_review=true')
       .andWhere('evals.id isnull')
-      .getMany();
+      .addSelect([
+        'tech.username',
+        'tech.name',
+        'tech.lastname',
+        'tech.phone_number',
+      ])
+      .addSelect([
+        'author.username',
+        'author.name',
+        'author.lastname',
+        'author.phone_number',
+      ]);
+
+    if (typeof issue != 'undefined') {
+      qr.andWhere('i.id=:issue', { issue });
+    }
+
+    const issues = await qr.getMany();
 
     if (issues.length == 0) return;
 
-    const b = 7;
+    for (const i of issues) {
+      ws.emit(PENDENT_RATING, i);
+    }
   }
 
   async search4OpenIssues(
@@ -881,6 +907,8 @@ export class IssuesCacheService {
         issue,
         application,
       );
+    } else {
+      pendent.issue = issue;
     }
 
     if (pendent) {
@@ -1018,6 +1046,6 @@ export class IssuesCacheService {
     delete client.client.progress;
     client.ws.emit(ISSUE_FINISHED, issue);
 
-    this.search4PendentEvaluations(issue.tech.username, issue.id);
+    this.search4PendentEvaluations(client.ws, issue.tech.username, issue.id);
   }
 }

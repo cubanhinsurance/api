@@ -51,6 +51,7 @@ export class TechsIoService
   constructor(
     private jwt: JwtService,
     private techsHandler: IssuesCacheService,
+    private issuesService: IssuesService,
   ) {}
 
   async handleConnection(client: Socket) {

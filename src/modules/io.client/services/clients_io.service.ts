@@ -26,6 +26,7 @@ import {
   ISSUE_STARTED,
   NEW_ISSUE_APPLICATION,
   NEW_TECHAPPLICATION_CONFIRMATION,
+  PENDENT_RATING,
   TECH_ARRIVED,
 } from 'src/modules/bussines/io.constants';
 import { ISSUES_APPLICATION_STATES } from 'src/modules/bussines/schemas/issues.schema';
@@ -101,6 +102,7 @@ export class ClientsIoService
 
       this.search4AuthorIssuesApplications(valid.username);
       this.search4ProgressIssue(valid.username, client);
+      this.search4PendentClientEvaluations(valid.username);
     } catch (e) {
       const b = 6;
     }
@@ -215,7 +217,7 @@ export class ClientsIoService
   }
 
   async search4PendentClientEvaluations(username: string, issue?: number) {
-    const issues = await this.issuesRepo
+    const qr = this.issuesRepo
       .createQueryBuilder('i')
       .innerJoin('i.user', 'author')
       .innerJoin('i.tech', 'tech')
@@ -226,11 +228,24 @@ export class ClientsIoService
         completed: ISSUE_STATE.COMPLETED,
       })
       .andWhere('author.username=:username', { username })
-      .andWhere('fr.id=author.id and to.id=tech.id')
-      .andWhere('evals.id isnull')
-      .getMany();
+      .andWhere('evals.id isnull');
+
+    if (typeof issue != 'undefined') {
+      qr.andWhere('i.id=:issue', { issue });
+    }
+
+    const issues = await qr.getMany();
 
     if (issues.length == 0) return;
+
+    const clientConn = this.clients.get(username);
+
+    if (!clientConn) return;
+
+    for (const { id } of issues) {
+      const issueDetails = await this.issuesService.getIssueDetails(id);
+      clientConn.ws.emit(PENDENT_RATING, issueDetails);
+    }
 
     const b = 7;
   }

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { array, boolean, number, object, string } from 'joi';
+import * as joi from 'joi';
 import { findOrFail } from 'src/lib/typeorm/id_colection_handler';
 import { LocationsController } from 'src/modules/client/controllers/locations.controller';
 import { LocationsService } from 'src/modules/client/services/locations.service';
@@ -134,16 +134,16 @@ export class IssuesService implements OnModuleInit {
         let q;
         switch (type) {
           case 'string':
-            q = string();
+            q = joi.string();
             break;
           case 'options':
-            q = array().items(string().valid(...options));
+            q = joi.array().items(joi.string().valid(...options));
             break;
           case 'boolean':
-            q = boolean();
+            q = joi.boolean();
             break;
           case 'number':
-            q = number();
+            q = joi.number();
             break;
         }
 
@@ -156,7 +156,7 @@ export class IssuesService implements OnModuleInit {
       });
     }
 
-    const schema = object(questionsSchema);
+    const schema = joi.object(questionsSchema);
 
     const { value, error } = await schema.validate(data, { convert: true });
     if (error)
@@ -573,7 +573,8 @@ export class IssuesService implements OnModuleInit {
       .where('i.id=:issue', { issue })
       .leftJoin('i.tech', 'tu')
       .leftJoin('tu.techniccian_info', 'tt')
-      .addSelect(['tu.username', 'tu.name', 'tu.lastname', 'tu.phone_number']);
+      .addSelect(['tu.username', 'tu.name', 'tu.lastname', 'tu.phone_number'])
+      .addSelect(['u.username', 'u.name', 'u.lastname', 'u.phone_number']);
 
     if (username) {
       qr.andWhere('u.username=:username', { username });
