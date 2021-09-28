@@ -657,6 +657,7 @@ export class IssuesService implements OnModuleInit {
       .createQueryBuilder('ia')
       .innerJoinAndSelect('ia.issue', 'i')
       .leftJoinAndSelect('i.client_location', 'client_location')
+      .innerJoinAndSelect('i.type', 'issuetype')
       .innerJoinAndSelect('client_location.province', 'province')
       .innerJoinAndSelect(
         'client_location.municipality',
