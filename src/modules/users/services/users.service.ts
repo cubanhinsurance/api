@@ -562,10 +562,10 @@ export class UsersService {
         roles,
       });
     if (habilities !== undefined) {
-      qr.leftJoin(
-        'tech.habilities',
-        'hab',
-      ).andWhere('hab.id in (:...habilities)', { habilities });
+      qr.leftJoin('tech.habilities', 'hab').andWhere(
+        'hab.id in (:...habilities)',
+        { habilities },
+      );
     }
     if (tech_provinces !== undefined) {
       qr.leftJoin('tech.province', 'tech_province').andWhere(
@@ -606,7 +606,11 @@ export class UsersService {
     const results = await paginate_qr<UsersEntity>(page, page_size, qr);
     for (const u of results.data) {
       if (u.techniccian_info) {
-        (u.techniccian_info as any).rating = Math.random() * (5 - 0) + 0;
+        u.techniccian_info = await this.getTechnichianInfo(u.username);
+        (u.techniccian_info as any).rating = await this.getTechniccianReview(
+          u.username,
+        );
+        // (u.techniccian_info as any).rating = Math.random() * (5 - 0) + 0;
         if (!!u.techniccian_info.expiration_date && u.techniccian_info.active) {
           u.techniccian_info.active = moment(
             u.techniccian_info.expiration_date,

@@ -496,7 +496,7 @@ export class IssuesService implements OnModuleInit {
       app.tech.techniccian_info.review = reviews;
 
       this.broker.emit(NEW_ISSUE_APPLICATION, {
-        issue: i,
+        issue: await this.getIssueDetails(issue, null, false),
         application: app,
       });
     } catch (e) {
