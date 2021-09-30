@@ -243,7 +243,7 @@ export class IssuesCacheService {
       .innerJoin('i.tech', 'tech')
       .leftJoinAndSelect('i.client_location', 'cl')
       .innerJoinAndSelect('i.type', 'issuetype')
-      .leftJoin('i.evaluations', 'evals')
+      .leftJoinAndSelect('i.evaluations', 'evals')
       .leftJoinAndSelect('i.client_location', 'client_location')
       .leftJoinAndSelect('client_location.province', 'province')
       .leftJoinAndSelect('client_location.municipality', 'prmunicipalityovince')

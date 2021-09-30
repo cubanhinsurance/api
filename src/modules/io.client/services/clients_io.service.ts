@@ -223,7 +223,7 @@ export class ClientsIoService
       .createQueryBuilder('i')
       .innerJoin('i.user', 'author')
       .innerJoin('i.tech', 'tech')
-      .leftJoin('i.evaluations', 'evals')
+      .leftJoinAndSelect('i.evaluations', 'evals')
       .leftJoin('evals.from', 'fr')
       .leftJoin('evals.to', 'to')
       .leftJoinAndSelect('i.client_location', 'client_location')
