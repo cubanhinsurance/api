@@ -226,6 +226,9 @@ export class ClientsIoService
       .leftJoin('i.evaluations', 'evals')
       .leftJoin('evals.from', 'fr')
       .leftJoin('evals.to', 'to')
+      .leftJoinAndSelect('i.client_location', 'client_location')
+      .leftJoinAndSelect('client_location.province', 'province')
+      .leftJoinAndSelect('client_location.municipality', 'prmunicipalityovince')
       .where('i.state=:completed', {
         completed: ISSUE_STATE.COMPLETED,
       })

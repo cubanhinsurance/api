@@ -244,6 +244,9 @@ export class IssuesCacheService {
       .leftJoinAndSelect('i.client_location', 'cl')
       .innerJoinAndSelect('i.type', 'issuetype')
       .leftJoin('i.evaluations', 'evals')
+      .leftJoinAndSelect('i.client_location', 'client_location')
+      .leftJoinAndSelect('client_location.province', 'province')
+      .leftJoinAndSelect('client_location.municipality', 'prmunicipalityovince')
       .leftJoin('evals.from', 'fr')
       .leftJoin('evals.to', 'to')
       .leftJoinAndSelect('i.traces', 'traces')
@@ -1056,7 +1059,7 @@ export class IssuesCacheService {
     this.search4PendentEvaluations(client.ws, issue.tech.username, issue.id);
   }
 
-  techRated(rating:RatingsEntity){
+  techRated(rating: RatingsEntity) {
     const client = this.findTechClient(rating.to.username);
     if (!client) return;
     client.ws.emit(TECH_RATED, rating);
