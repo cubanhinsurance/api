@@ -20,6 +20,7 @@ import {
   CREATE_ISSUE_SCHEMA,
   ISSUES_APPLICATION_STATES,
   ISSUE_APPLICATION,
+  RATING_SCHEMA,
 } from '../schemas/issues.schema';
 import {
   ApiBody,
@@ -317,23 +318,31 @@ export class IssuesController {
     summary:
       'Evaluar a un cliente autor de una issue por el tecnico autenticado',
   })
+  @ApiBody({
+    schema: j2s(RATING_SCHEMA).swagger,
+  })
   @Post('rate/client/:issue')
   async rateClient(
     @Param('issue', new JoiPipe(joi.number().required())) issue,
     @User('username') tech,
+    @Body(new JoiPipe(RATING_SCHEMA)) rating,
   ) {
-    await this.issuesService.rateClient(tech, issue);
+    await this.issuesService.rateClient(tech, issue, rating);
   }
 
   @ApiOperation({
     summary:
       'Evaluar a un tecnico autor de una issue por el tecnico autenticado',
   })
+  @ApiBody({
+    schema: j2s(RATING_SCHEMA).swagger,
+  })
   @Post('rate/tech/:issue')
   async rateTech(
     @Param('issue', new JoiPipe(joi.number().required())) issue,
     @User('username') client,
+    @Body(new JoiPipe(RATING_SCHEMA)) rating,
   ) {
-    await this.issuesService.rateTech(client, issue);
+    await this.issuesService.rateTech(client, issue, rating);
   }
 }

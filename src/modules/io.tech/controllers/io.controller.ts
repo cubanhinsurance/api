@@ -8,6 +8,7 @@ import {
   NEW_ISSUE_APPLICATION,
   TECH_ACCEPTED,
   TECH_ISSUE_FINISHED,
+  TECH_RATED,
   TECH_REJECTED,
 } from 'src/modules/bussines/io.constants';
 import { TechsIoService } from '../services/techs_io.service';
@@ -49,6 +50,11 @@ export class TechsIoController {
   @MessagePattern(TECH_ISSUE_FINISHED)
   async issueFinished(@Payload() data) {
     this.techsIoService.issueFinished(data);
+  }
+
+  @MessagePattern(TECH_RATED)
+  async techRated(@Payload() data) {
+    this.techsIoService.techRated(data);
   }
 
   // @MessagePattern(NEW_ISSUE_APPLICATION)

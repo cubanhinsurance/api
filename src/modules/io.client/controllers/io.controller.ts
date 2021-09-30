@@ -3,6 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { PENDENT_ISSUE } from 'src/modules/bussines/services/issues_cache.service';
 import {
   CLIENT_ISSUE_IN_PROGRESS_UPDATE,
+  CLIENT_RATED,
   ISSUE_APPLICATION_CANCELLED,
   ISSUE_FINISHED,
   ISSUE_PAUSED,
@@ -49,5 +50,10 @@ export class ClientsIoController {
   @MessagePattern(ISSUE_FINISHED)
   async issueFinished(@Payload() data) {
     this.clientsIoService.issueFinished(data);
+  }
+
+  @MessagePattern(CLIENT_RATED)
+  async clientRated(@Payload() data) {
+    this.clientsIoService.clientRated(data);
   }
 }

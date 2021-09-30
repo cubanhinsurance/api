@@ -159,4 +159,8 @@ export class TechsIoService
   async issueFinished(app) {
     this.techsHandler.issueFinished(app);
   }
+
+  async techRated(app) {
+    this.techsHandler.techRated(app);
+  }
 }

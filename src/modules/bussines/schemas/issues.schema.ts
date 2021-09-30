@@ -24,3 +24,10 @@ export const ISSUE_APPLICATION = joi.object({
 export const ISSUES_APPLICATION_STATES = joi
   .string()
   .valid(...Object.values(ISSUE_APPLICATION_STATE));
+
+export const RATING_SCHEMA = joi.object({
+  date: joi.date().optional(),
+  rating: joi.number().min(-5).max(5).required(),
+  like: joi.boolean().default(true).optional(),
+  description: joi.string().required(),
+});

@@ -29,6 +29,8 @@ import {
   TECH_ARRIVED,
   ISSUE_FINISHED,
   TECH_ISSUE_FINISHED,
+  TECH_RATED,
+  CLIENT_RATED,
 } from 'src/modules/bussines/io.constants';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { FindConditions, Repository, SelectQueryBuilder } from 'typeorm';
@@ -49,6 +51,7 @@ import {
 } from '../entities/ignored_issues.entity';
 import { ISSUES_APPLICATION_STATES } from '../schemas/issues.schema';
 import { IssuesCacheService } from './issues_cache.service';
+import { RatingsEntity } from '../entities/ratings.entity';
 
 const updateQb = (qb: SelectQueryBuilder<IssuesEntity>): void => {};
 
@@ -57,6 +60,13 @@ export enum PROGRESS_ISSUES_ACTIONS {
   START = 'start',
   RESUME = 'resume',
   PAUSE = 'pause',
+}
+
+export interface RATING_I {
+  date?: Date;
+  description: string;
+  rating: number;
+  like?: boolean;
 }
 
 @Injectable()
@@ -68,6 +78,8 @@ export class IssuesService implements OnModuleInit {
     private issuesTracesRepo: Repository<IssuesTraces>,
     @InjectRepository(IgnoredIssuesEntity)
     private ignoredIssuesRepo: Repository<IgnoredIssuesEntity>,
+    @InjectRepository(RatingsEntity)
+    private ratingsEntity: Repository<RatingsEntity>,
     @InjectRepository(IssueApplication)
     private issuesAppRepo: Repository<IssueApplication>,
     @Inject('BROKER') private broker: ClientProxy,
@@ -951,7 +963,97 @@ export class IssuesService implements OnModuleInit {
     this.broker.emit(ISSUE_FINISHED, issueDetails);
   }
 
-  async rateTech(client: string, issue: number) {}
+  async rateTech(
+    client: string,
+    issue: number,
+    { description, date, rating, like }: RATING_I,
+  ) {
+    const i = await this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoin('i.user', 'author')
+      .innerJoin('i.tech', 'tech')
+      .leftJoin('i.evaluations', 'evals')
+      .leftJoin('evals.from', 'fr')
+      .leftJoin('evals.to', 'to')
+      .addSelect(['author.id', 'author.username', 'tech.id', 'tech.username'])
+      .where('i.id=:issue and author.username=:client and i.state=:completed', {
+        issue,
+        client,
+        completed: ISSUE_STATE.COMPLETED,
+      })
+      .getOne();
 
-  async rateClient(tech: string, issue: number) {}
+    if (!i)
+      throw new NotFoundException(
+        'No se encontro una incidencia completada de este author',
+      );
+
+    const already = i.evaluations.find(
+      ({ from: { username: u } }) => u == client,
+    );
+    if (already)
+      throw new ConflictException(
+        'Ya existe una valoracion del tecnico de esa incidencia',
+      );
+
+    const saved = await this.ratingsEntity.save({
+      date: date ?? new Date(),
+      description,
+      issue: i,
+      like,
+      rating,
+      tech_review: true,
+      from: i.user,
+      to: i.tech,
+    });
+
+    this.broker.emit(TECH_RATED, saved);
+  }
+
+  async rateClient(
+    tech: string,
+    issue: number,
+    { description, date, rating, like }: RATING_I,
+  ) {
+    const i = await this.issuesRepo
+      .createQueryBuilder('i')
+      .innerJoin('i.user', 'author')
+      .innerJoin('i.tech', 'tech')
+      .leftJoin('i.evaluations', 'evals')
+      .leftJoin('evals.from', 'fr')
+      .leftJoin('evals.to', 'to')
+      .addSelect(['author.id', 'author.username', 'tech.id', 'tech.username'])
+      .where('i.id=:issue and tech.username=:tech and i.state=:completed', {
+        issue,
+        tech,
+        completed: ISSUE_STATE.COMPLETED,
+      })
+      .getOne();
+
+    if (!i)
+      throw new NotFoundException(
+        'No se encontro una incidencia completada de este author',
+      );
+
+    const already = i.evaluations.find(
+      ({ from: { username: u } }) => u == tech,
+    );
+    if (already)
+      throw new ConflictException(
+        'Ya existe una valoracion del cliente de esa incidencia',
+      );
+
+    const saved = await this.ratingsEntity.save({
+      date: date ?? new Date(),
+      description,
+      issue: i,
+      like,
+      rating,
+      tech_review: false,
+      from: i.tech,
+      to: i.user,
+    });
+
+    this.broker.emit(CLIENT_RATED, saved);
+  }
 }

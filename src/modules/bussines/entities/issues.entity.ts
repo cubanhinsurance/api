@@ -130,7 +130,7 @@ export class IssuesEntity {
   applications: IssueApplication[];
 
   @OneToMany(() => RatingsEntity, (r) => r.issue)
-  evaluations: RatingsEntity;
+  evaluations: RatingsEntity[];
 }
 
 @Entity({

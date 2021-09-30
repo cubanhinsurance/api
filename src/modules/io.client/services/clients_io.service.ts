@@ -18,8 +18,10 @@ import {
   IssueApplication,
   ISSUE_APPLICATION_STATE,
 } from 'src/modules/bussines/entities/issues_applications.entity';
+import { RatingsEntity } from 'src/modules/bussines/entities/ratings.entity';
 import {
   CLIENT_ISSUE_IN_PROGRESS_UPDATE,
+  CLIENT_RATED,
   ISSUE_APPLICATION_CANCELLED,
   ISSUE_FINISHED,
   ISSUE_PAUSED,
@@ -227,6 +229,19 @@ export class ClientsIoService
       .where('i.state=:completed', {
         completed: ISSUE_STATE.COMPLETED,
       })
+      .addSelect(['fr.username', 'to.username'])
+      .addSelect([
+        'tech.username',
+        'tech.name',
+        'tech.lastname',
+        'tech.phone_number',
+      ])
+      .addSelect([
+        'author.username',
+        'author.name',
+        'author.lastname',
+        'author.phone_number',
+      ])
       .andWhere('author.username=:username', { username })
       .andWhere('evals.id isnull');
 
@@ -242,7 +257,11 @@ export class ClientsIoService
 
     if (!clientConn) return;
 
-    for (const { id } of issues) {
+    for (const { id, evaluations } of issues) {
+      const already = evaluations.find(
+        ({ from: { username: u } }) => u == username,
+      );
+      if (already) continue;
       const issueDetails = await this.issuesService.getIssueDetails(id);
       clientConn.ws.emit(PENDENT_RATING, issueDetails);
     }
@@ -273,6 +292,14 @@ export class ClientsIoService
       clientConn.ws.emit(ISSUE_FINISHED, issue);
 
       this.search4PendentClientEvaluations(issue?.user?.username, issue.id);
+    }
+  }
+
+  clientRated(rating: RatingsEntity) {
+    const clientConn = this.clients.get(rating.to.username);
+
+    if (clientConn) {
+      clientConn.ws.emit(CLIENT_RATED, rating);
     }
   }
 }

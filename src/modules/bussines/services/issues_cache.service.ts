@@ -28,6 +28,7 @@ import {
   PENDENT_RATING,
   TECH_ACCEPTED,
   TECH_ISSUE_IN_PROGRESS_UPDATE,
+  TECH_RATED,
   TECH_REJECTED,
 } from 'src/modules/bussines/io.constants';
 import { IssuesService } from './issues.service';
@@ -36,6 +37,7 @@ import { Repository, SelectQueryBuilder } from 'typeorm';
 import { application } from 'express';
 import * as moment from 'moment';
 import { UsersEntity } from 'src/modules/users/entities/user.entity';
+import { RatingsEntity } from '../entities/ratings.entity';
 
 export interface WsClient {
   ws: Socket;
@@ -250,6 +252,7 @@ export class IssuesCacheService {
       })
       .andWhere('tech.username=:username', { username })
       .andWhere('evals.id isnull')
+      .addSelect(['fr.username', 'to.username'])
       .addSelect([
         'tech.username',
         'tech.name',
@@ -272,6 +275,10 @@ export class IssuesCacheService {
     if (issues.length == 0) return;
 
     for (const i of issues) {
+      const already = i.evaluations.find(
+        ({ from: { username: u } }) => u == username,
+      );
+      if (already) continue;
       ws.emit(PENDENT_RATING, i);
     }
   }
@@ -1047,5 +1054,11 @@ export class IssuesCacheService {
     client.ws.emit(ISSUE_FINISHED, issue);
 
     this.search4PendentEvaluations(client.ws, issue.tech.username, issue.id);
+  }
+
+  techRated(rating:RatingsEntity){
+    const client = this.findTechClient(rating.to.username);
+    if (!client) return;
+    client.ws.emit(TECH_RATED, rating);
   }
 }
