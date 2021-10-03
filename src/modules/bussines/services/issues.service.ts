@@ -64,7 +64,7 @@ export enum PROGRESS_ISSUES_ACTIONS {
 
 export interface RATING_I {
   date?: Date;
-  description: string;
+  description?: string;
   rating: number;
   like?: boolean;
 }
