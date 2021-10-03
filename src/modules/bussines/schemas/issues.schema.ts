@@ -27,7 +27,7 @@ export const ISSUES_APPLICATION_STATES = joi
 
 export const RATING_SCHEMA = joi.object({
   date: joi.date().optional(),
-  rating: joi.number().min(-5).max(5).required(),
+  rating: joi.number().min(0).max(5).required(),
   like: joi.boolean().default(true).optional(),
   description: joi.string().required(),
 });

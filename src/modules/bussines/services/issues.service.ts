@@ -972,7 +972,7 @@ export class IssuesService implements OnModuleInit {
       .createQueryBuilder('i')
       .innerJoin('i.user', 'author')
       .innerJoin('i.tech', 'tech')
-      .leftJoin('i.evaluations', 'evals')
+      .leftJoinAndSelect('i.evaluations', 'evals')
       .leftJoin('evals.from', 'fr')
       .leftJoin('evals.to', 'to')
       .addSelect(['author.id', 'author.username', 'tech.id', 'tech.username'])
@@ -1000,7 +1000,7 @@ export class IssuesService implements OnModuleInit {
       date: date ?? new Date(),
       description,
       issue: i,
-      like,
+      like: rating >= 3,
       rating,
       tech_review: true,
       from: i.user,
@@ -1019,7 +1019,7 @@ export class IssuesService implements OnModuleInit {
       .createQueryBuilder('i')
       .innerJoin('i.user', 'author')
       .innerJoin('i.tech', 'tech')
-      .leftJoin('i.evaluations', 'evals')
+      .leftJoinAndSelect('i.evaluations', 'evals')
       .leftJoin('evals.from', 'fr')
       .leftJoin('evals.to', 'to')
       .addSelect(['author.id', 'author.username', 'tech.id', 'tech.username'])
@@ -1047,7 +1047,7 @@ export class IssuesService implements OnModuleInit {
       date: date ?? new Date(),
       description,
       issue: i,
-      like,
+      like: rating >= 3,
       rating,
       tech_review: false,
       from: i.tech,
@@ -1055,5 +1055,34 @@ export class IssuesService implements OnModuleInit {
     });
 
     this.broker.emit(CLIENT_RATED, saved);
+  }
+
+  async getUserReviews(
+    username: string,
+    page: number = 1,
+    page_size: number = 10,
+    tech: boolean = false,
+    likes?: boolean,
+  ) {
+    const qr = await this.ratingsEntity
+      .createQueryBuilder('r')
+      .innerJoin('r.from', 'f')
+      .innerJoin('r.to', 't')
+      .where('t.username=:username and t.tech_review=:tech', { username, tech })
+      .addSelect([
+        'r.username',
+        'r.name',
+        'r.lastname',
+        't.username',
+        't.name',
+        't.lastname',
+      ])
+      .orderBy('r.id', 'DESC');
+
+    if (typeof likes != 'undefined') {
+      qr.andWhere('r.like=:likes', { likes });
+    }
+
+    return await paginate_qr(page, page_size, qr);
   }
 }

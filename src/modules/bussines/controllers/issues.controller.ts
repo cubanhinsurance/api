@@ -44,6 +44,7 @@ import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { USER_NAME_SCHEMA } from 'src/modules/auth/schemas/signin.schema';
 import { ISSUE_STATE } from '../entities/issues.entity';
 import { Action } from 'rxjs/internal/scheduler/Action';
+import { boolean } from 'joi';
 
 @ApiTags('Issues')
 @Controller('issues')
@@ -344,5 +345,37 @@ export class IssuesController {
     @Body(new JoiPipe(RATING_SCHEMA)) rating,
   ) {
     await this.issuesService.rateTech(client, issue, rating);
+  }
+
+  @ApiOperation({
+    summary: 'Devuelve los reviews de un usuario',
+  })
+  @ApiQuery({
+    name: 'tech',
+    type: boolean,
+    description: 'Define si se buscaran los reviews como tecnico',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'likes',
+    type: boolean,
+    description: 'Define si se filtrara por los likes o los dislikes',
+    required: false,
+  })
+  @Get('rate/:username')
+  async getReviews(
+    @Param('username') username,
+    @Query('tech', new JoiPipe(joi.boolean().default(false).optional())) tech,
+    @Query('likes', new JoiPipe(joi.boolean().optional())) likes,
+    @Page() page,
+    @PageSize() page_size,
+  ) {
+    return await this.issuesService.getUserReviews(
+      username,
+      page,
+      page_size,
+      tech,
+      likes,
+    );
   }
 }
