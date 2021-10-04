@@ -975,7 +975,14 @@ export class IssuesService implements OnModuleInit {
       .leftJoinAndSelect('i.evaluations', 'evals')
       .leftJoin('evals.from', 'fr')
       .leftJoin('evals.to', 'to')
-      .addSelect(['author.id', 'author.username', 'tech.id', 'tech.username'])
+      .addSelect([
+        'author.id',
+        'author.username',
+        'tech.id',
+        'tech.username',
+        'fr.username',
+        'to.username',
+      ])
       .where('i.id=:issue and author.username=:client and i.state=:completed', {
         issue,
         client,
@@ -1022,7 +1029,14 @@ export class IssuesService implements OnModuleInit {
       .leftJoinAndSelect('i.evaluations', 'evals')
       .leftJoin('evals.from', 'fr')
       .leftJoin('evals.to', 'to')
-      .addSelect(['author.id', 'author.username', 'tech.id', 'tech.username'])
+      .addSelect([
+        'author.id',
+        'author.username',
+        'tech.id',
+        'tech.username',
+        'fr.username',
+        'to.username',
+      ])
       .where('i.id=:issue and tech.username=:tech and i.state=:completed', {
         issue,
         tech,
