@@ -352,13 +352,13 @@ export class IssuesController {
   })
   @ApiQuery({
     name: 'tech',
-    type: boolean,
+    type: 'boolean',
     description: 'Define si se buscaran los reviews como tecnico',
     required: false,
   })
   @ApiQuery({
     name: 'likes',
-    type: boolean,
+    type: 'boolean',
     description: 'Define si se filtrara por los likes o los dislikes',
     required: false,
   })
