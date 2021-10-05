@@ -549,9 +549,15 @@ export class IssuesService implements OnModuleInit {
       .leftJoinAndSelect('i.traces', 'traces')
       .leftJoin('i.tech', 'tu')
       .leftJoin('tu.techniccian_info', 'tt')
-      .leftJoin('i.applications', 'applications', 'i.state=:created', {
-        created: ISSUE_STATE.CREATED,
-      })
+      .leftJoin(
+        'i.applications',
+        'applications',
+        'i.state=:created and applications.state=:pendent',
+        {
+          created: ISSUE_STATE.CREATED,
+          pendent: ISSUE_APPLICATION_STATE.PENDENT,
+        },
+      )
       .addSelect([
         'tu.username',
         'tu.name',
