@@ -546,6 +546,8 @@ export class IssuesService implements OnModuleInit {
       .innerJoin('i.user', 'u')
       .innerJoinAndSelect('i.type', 'issuetype')
       .leftJoinAndSelect('i.client_location', 'cl')
+      .innerJoinAndSelect('cl.province', 'province')
+      .innerJoinAndSelect('cl.municipality', 'prmunicipalityovince')
       .leftJoinAndSelect('i.traces', 'traces')
       .leftJoin('i.tech', 'tu')
       .leftJoin('tu.techniccian_info', 'tt')
