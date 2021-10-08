@@ -378,4 +378,20 @@ export class IssuesController {
       likes,
     );
   }
+
+  @ApiQuery({
+    description: 'Obtiene las tareas completadas de un tecnico autenticado',
+  })
+  @Get('tech/completed_tasks')
+  async getLoggedTechCompletedTasks(
+    @User('username') tech,
+    @Page() page,
+    @PageSize() page_size,
+  ) {
+    return await this.issuesService.getTechCompletedIssues(
+      tech,
+      page,
+      page_size,
+    );
+  }
 }

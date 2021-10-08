@@ -1107,4 +1107,26 @@ export class IssuesService implements OnModuleInit {
 
     return await paginate_qr(page, page_size, qr);
   }
+
+  async getTechCompletedIssues(
+    tech: string,
+    page: number = 1,
+    page_size: number = 5,
+  ) {
+    return await paginate_qr(
+      page,
+      page_size,
+      this.issuesQr
+        .andWhere('tu.username=:tech and i.state=:completed', {
+          tech,
+          completed: ISSUE_STATE.COMPLETED,
+        })
+        .innerJoinAndSelect('i.evaluations', 'evals')
+        .innerJoinAndSelect(
+          'i.applications',
+          'applications',
+          'applications.tech=tu.id',
+        ),
+    );
+  }
 }
