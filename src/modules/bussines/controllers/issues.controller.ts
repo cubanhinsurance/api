@@ -362,6 +362,16 @@ export class IssuesController {
     description: 'Define si se filtrara por los likes o los dislikes',
     required: false,
   })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'page_size',
+    type: 'number',
+    required: false,
+  })
   @Get('rate/:username')
   async getReviews(
     @Param('username') username,
@@ -381,6 +391,16 @@ export class IssuesController {
 
   @ApiQuery({
     description: 'Obtiene las tareas completadas de un tecnico autenticado',
+  })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'page_size',
+    type: 'number',
+    required: false,
   })
   @Get('tech/completed_tasks')
   async getLoggedTechCompletedTasks(

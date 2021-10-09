@@ -610,6 +610,7 @@ export class IssuesService implements OnModuleInit {
 
     const { info, review } = await this.getTechInfo(i.tech.username);
     (i as any).tech = { ...info, review };
+    (i as any).tech.techniccian_info.review = review;
 
     if (handleState) {
       switch (i.state) {
@@ -1093,11 +1094,16 @@ export class IssuesService implements OnModuleInit {
       .createQueryBuilder('r')
       .innerJoin('r.from', 'f')
       .innerJoin('r.to', 't')
-      .where('t.username=:username and t.tech_review=:tech', { username, tech })
+      .innerJoinAndSelect('r.issue', 'issue')
+      .innerJoinAndSelect('issue.client_location', 'cl')
+      .innerJoinAndSelect('cl.province', 'clprov')
+      .innerJoinAndSelect('cl.municipality', 'clmunicipality')
+      .innerJoinAndSelect('issue.type', 'issuetype')
+      .where('t.username=:username and r.tech_review=:tech', { username, tech })
       .addSelect([
-        'r.username',
-        'r.name',
-        'r.lastname',
+        'f.username',
+        'f.name',
+        'f.lastname',
         't.username',
         't.name',
         't.lastname',
@@ -1108,7 +1114,11 @@ export class IssuesService implements OnModuleInit {
       qr.andWhere('r.like=:likes', { likes });
     }
 
-    return await paginate_qr(page, page_size, qr);
+    try {
+      return await paginate_qr(page, page_size, qr);
+    } catch (e) {
+      const a = 7;
+    }
   }
 
   async getTechCompletedIssues(
