@@ -1096,6 +1096,7 @@ export class IssuesService implements OnModuleInit {
       .innerJoin('r.to', 't')
       .innerJoinAndSelect('r.issue', 'issue')
       .innerJoinAndSelect('issue.client_location', 'cl')
+      .innerJoinAndSelect('issue.traces', 'traces')
       .innerJoinAndSelect('cl.province', 'clprov')
       .innerJoinAndSelect('cl.municipality', 'clmunicipality')
       .innerJoinAndSelect('issue.type', 'issuetype')
@@ -1130,6 +1131,7 @@ export class IssuesService implements OnModuleInit {
       page,
       page_size,
       this.issuesQr
+        .leftJoinAndSelect('i.traces', 'traces')
         .andWhere('tu.username=:tech and i.state=:completed', {
           tech,
           completed: ISSUE_STATE.COMPLETED,
