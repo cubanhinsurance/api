@@ -608,14 +608,17 @@ export class IssuesService implements OnModuleInit {
 
     if (!i) throw new NotFoundException();
 
+    const { info, review } = await this.getTechInfo(i.tech.username);
+    (i as any).tech = { ...info, review };
+
     if (handleState) {
       switch (i.state) {
         case ISSUE_STATE.CREATED:
           (i as any).applications = await this.getIssueApplications(issue);
           break;
         case ISSUE_STATE.ACCEPTED:
-          const { info, review } = await this.getTechInfo(i.tech.username);
-          (i as any).tech = { ...info, review };
+          // const { info, review } = await this.getTechInfo(i.tech.username);
+          // (i as any).tech = { ...info, review };
           break;
         case ISSUE_STATE.TRAVELING:
           const wsTech = this.techsCache.findTechClient(i.tech.username);
