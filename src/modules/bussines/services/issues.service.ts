@@ -608,9 +608,12 @@ export class IssuesService implements OnModuleInit {
 
     if (!i) throw new NotFoundException();
 
-    const { info, review } = await this.getTechInfo(i.tech.username);
+    if(!!i?.tech?.username){
+const { info, review } = await this.getTechInfo(i.tech.username);
     (i as any).tech = { ...info, review };
     (i as any).tech.techniccian_info.review = review;
+    }
+    
 
     if (handleState) {
       switch (i.state) {
