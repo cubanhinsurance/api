@@ -607,9 +607,9 @@ export class UsersService {
     for (const u of results.data) {
       if (u.techniccian_info) {
         u.techniccian_info = await this.getTechnichianInfo(u.username);
-        (u.techniccian_info as any).rating = await this.getTechniccianReview(
-          u.username,
-        );
+        const review = await this.getTechniccianReview(u.username);
+        (u.techniccian_info as any).rating = review;
+        (u.techniccian_info as any).review = review;
         // (u.techniccian_info as any).rating = Math.random() * (5 - 0) + 0;
         if (!!u.techniccian_info.expiration_date && u.techniccian_info.active) {
           u.techniccian_info.active = moment(
