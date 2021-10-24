@@ -67,4 +67,7 @@ export class LicensesEntity {
 
   @OneToMany(() => UserLicensesEntity, (ul) => ul.type)
   users: UserLicensesEntity;
+
+  @Column({ nullable: true })
+  max: number;
 }
