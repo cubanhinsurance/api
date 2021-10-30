@@ -908,6 +908,7 @@ export class IssuesCacheService {
           issue: issue.id,
           tech,
         })
+        .leftJoinAndSelect('i.traces', 'itraces')
         .getOne();
 
       pendent = await this.getPendentIssueInfo(

@@ -608,12 +608,11 @@ export class IssuesService implements OnModuleInit {
 
     if (!i) throw new NotFoundException();
 
-    if(!!i?.tech?.username){
-const { info, review } = await this.getTechInfo(i.tech.username);
-    (i as any).tech = { ...info, review };
-    (i as any).tech.techniccian_info.review = review;
+    if (!!i?.tech?.username) {
+      const { info, review } = await this.getTechInfo(i.tech.username);
+      (i as any).tech = { ...info, review };
+      (i as any).tech.techniccian_info.review = review;
     }
-    
 
     if (handleState) {
       switch (i.state) {
@@ -753,7 +752,7 @@ const { info, review } = await this.getTechInfo(i.tech.username);
       );
     }
 
-    this.addNewIssueTrace(
+    await this.addNewIssueTrace(
       app.issue,
       ISSUE_STATE.ACCEPTED,
       new Date(),
@@ -761,7 +760,7 @@ const { info, review } = await this.getTechInfo(i.tech.username);
     );
 
     this.broker.emit(TECH_ACCEPTED, {
-      issue: app.issue,
+      issue: await this.getIssueDetails(issue, null, false),
       tech: await this.usersService.getTechnichianInfo(tech),
       application: app,
       refused: others.map(({ tech: { username } }) => username),
@@ -867,11 +866,11 @@ const { info, review } = await this.getTechInfo(i.tech.username);
       state: ISSUE_STATE.TRAVELING,
     });
 
-    this.addNewIssueTrace(i, ISSUE_STATE.TRAVELING);
+    await this.addNewIssueTrace(i, ISSUE_STATE.TRAVELING);
 
     this.broker.emit(ISSUE_ON_THE_WAY, {
       tech,
-      issue: i,
+      issue: await this.getIssueDetails(issue, null, false),
     });
   }
 
@@ -941,7 +940,7 @@ const { info, review } = await this.getTechInfo(i.tech.username);
       state: ISSUE_STATE.PROGRESS,
     });
 
-    this.addNewIssueTrace(issueO, ISSUE_STATE.PROGRESS);
+    await this.addNewIssueTrace(issueO, ISSUE_STATE.PROGRESS);
 
     const issueDetails = await this.getIssueDetails(issue, null, false);
 
@@ -970,7 +969,7 @@ const { info, review } = await this.getTechInfo(i.tech.username);
       state: ISSUE_STATE.COMPLETED,
     });
 
-    this.addNewIssueTrace(issueO, ISSUE_STATE.COMPLETED);
+    await this.addNewIssueTrace(issueO, ISSUE_STATE.COMPLETED);
 
     const issueDetails = await this.getIssueDetails(issue);
 

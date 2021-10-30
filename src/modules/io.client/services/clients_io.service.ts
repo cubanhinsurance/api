@@ -197,7 +197,7 @@ export class ClientsIoService
     tech,
     refresh_date,
     arrive_date,
-    distance: { distance, linearDistance, duration },
+    distance,
     application,
   }: PENDENT_ISSUE) {
     const clientConn = this.clients.get(issue?.user?.username);
@@ -207,13 +207,15 @@ export class ClientsIoService
         issue,
         tech,
         application,
-        arrive: {
-          duration,
-          distance,
-          linearDistance,
-          refresh_date,
-          arrive_date,
-        },
+        arrive: distance
+          ? {
+              duration: distance?.duration,
+              distance: distance?.distance,
+              linearDistance: distance?.linearDistance,
+              refresh_date,
+              arrive_date,
+            }
+          : null,
       });
     }
   }
