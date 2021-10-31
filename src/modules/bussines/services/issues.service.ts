@@ -620,34 +620,67 @@ export class IssuesService implements OnModuleInit {
           (i as any).applications = await this.getIssueApplications(issue);
           break;
         case ISSUE_STATE.ACCEPTED:
-          // const { info, review } = await this.getTechInfo(i.tech.username);
-          // (i as any).tech = { ...info, review };
+          {
+            const application = await this.issuesAppRepo
+              .createQueryBuilder('aps')
+              .innerJoin('aps.tech', 'tech')
+              .innerJoin('aps.issue', 'issue')
+              .where('issue.id=:issue and tech.username=:tech', {
+                issue,
+                tech: i.tech.username,
+              })
+              .getOne();
+            (i as any).application = application;
+            // const { info, review } = await this.getTechInfo(i.tech.username);
+            // (i as any).tech = { ...info, review };
+          }
           break;
         case ISSUE_STATE.TRAVELING:
-          const wsTech = this.techsCache.findTechClient(i.tech.username);
-          if (!!wsTech && wsTech?.client?.progress) {
-            const {
-              issue,
-              tech,
-              refresh_date,
-              arrive_date,
-              distance: { distance, linearDistance, duration },
-              application,
-            } = wsTech?.client?.progress;
+          {
+            const wsTech = this.techsCache.findTechClient(i.tech.username);
+            if (!!wsTech && wsTech?.client?.progress) {
+              const {
+                issue,
+                tech,
+                refresh_date,
+                arrive_date,
+                distance: { distance, linearDistance, duration },
+                application,
+              } = wsTech?.client?.progress;
 
-            (i as any).arrive_info = {
-              duration,
-              distance,
-              linearDistance,
-              refresh_date,
-              arrive_date,
-            };
+              (i as any).arrive_info = {
+                duration,
+                distance,
+                linearDistance,
+                refresh_date,
+                arrive_date,
+              };
+              (i as any).application = wsTech.client.progress.application;
+            }
+            const g = 7;
           }
-          const g = 7;
           break;
         case ISSUE_STATE.PROGRESS:
+          {
+            const wsTech = this.techsCache.findTechClient(i.tech.username);
+            if (!!wsTech && wsTech?.client?.progress) {
+              (i as any).application = wsTech.client.progress.application;
+            }
+          }
           break;
         case ISSUE_STATE.COMPLETED:
+          {
+            const application = await this.issuesAppRepo
+              .createQueryBuilder('aps')
+              .innerJoin('aps.tech', 'tech')
+              .innerJoin('aps.issue', 'issue')
+              .where('issue.id=:issue and tech.username=:tech', {
+                issue,
+                tech: i.tech.username,
+              })
+              .getOne();
+            (i as any).application = application;
+          }
           break;
       }
     }
