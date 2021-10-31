@@ -95,6 +95,7 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
         'r.expiration_date',
         'r.price',
         'r.time',
+        'r.max',
         'r.photo',
         'r.description',
       ])
@@ -364,6 +365,7 @@ export class LicensesService extends TypeOrmService<LicensesEntity> {
         'l.time',
         'l.price',
         'l.expiration_date',
+        'l.max',
       ])
       .innerJoinAndSelect('l.coin', 'lcoin')
       .innerJoin('l.type', 'ltype')
