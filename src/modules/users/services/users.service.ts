@@ -614,7 +614,7 @@ export class UsersService {
         if (!!u.techniccian_info.expiration_date && u.techniccian_info.active) {
           u.techniccian_info.active = moment(
             u.techniccian_info.expiration_date,
-          ).isBefore(moment());
+          ).isAfter(moment());
         }
       }
 
