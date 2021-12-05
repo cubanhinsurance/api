@@ -352,6 +352,14 @@ export class IssuesController {
   }
 
   @ApiOperation({
+    summary: 'Obtiene las estadisticas de un cliente',
+  })
+  @Get('user_measures')
+  async loggedUserMeasures(@User('username') author) {
+    return await this.issuesService.getUserMeasures(author);
+  }
+
+  @ApiOperation({
     summary:
       'Evaluar a un tecnico autor de una issue por el tecnico autenticado',
   })

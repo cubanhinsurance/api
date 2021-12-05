@@ -115,6 +115,15 @@ export class LocationsService {
     const deleted = await this.cliensLocationsRepo.softDelete(location);
   }
 
+  getUserLocationQr(username: string) {
+    return this.cliensLocationsRepo
+      .createQueryBuilder('c')
+      .innerJoinAndSelect('c.province', 'province')
+      .innerJoinAndSelect('c.municipality', 'municipality')
+      .innerJoin('c.user', 'user')
+      .where('user.username=:username', { username });
+  }
+
   async getUserLocations(username: string) {
     return await this.cliensLocationsRepo
       .createQueryBuilder('c')

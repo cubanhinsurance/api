@@ -5,6 +5,7 @@ import {
   CallHandler,
   InternalServerErrorException,
   HttpException,
+  Logger,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -17,6 +18,7 @@ export class ExceptionsInterceptor implements NestInterceptor {
     return next.handle().pipe(
       catchError((err) => {
         if (err instanceof QueryFailedError) {
+          Logger.error(err.message);
           throw new InternalServerErrorException();
         }
         if (err.isAxiosError === true)

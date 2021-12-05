@@ -1078,6 +1078,57 @@ export class IssuesService implements OnModuleInit {
     this.broker.emit(TECH_RATED, saved);
   }
 
+  async getUserMeasures(username: string) {
+    const [locations, total, completed, pendent] = await Promise.all([
+      this.locationsService
+        .getUserLocationQr(username)
+        .select('count(c.id)', 'locations')
+        .getRawOne(),
+      this.issuesRepo
+        .createQueryBuilder('i')
+        .select('count(i.id)', 'total')
+        .innerJoin('i.user', 'author')
+        .where('author.username=:username', { username })
+        .orderBy('i.user')
+        .groupBy('i.user')
+        .getRawOne(),
+      this.issuesRepo
+        .createQueryBuilder('i')
+        .select('count(i.id)', 'completed')
+        .innerJoin('i.user', 'author')
+        .where('author.username=:username and i.state=:completed', {
+          username,
+          completed: ISSUE_STATE.COMPLETED,
+        })
+        .orderBy('i.user')
+        .groupBy('i.user')
+        .getRawOne(),
+      this.issuesRepo
+        .createQueryBuilder('i')
+        .select('count(i.id)', 'pendent')
+        .innerJoin('i.user', 'author')
+        .where('author.username=:username and i.state in (:...pendent)', {
+          username,
+          pendent: [
+            ISSUE_STATE.CREATED,
+            ISSUE_STATE.PROGRESS,
+            ISSUE_STATE.ACCEPTED,
+            ISSUE_STATE.TRAVELING,
+          ],
+        })
+        .orderBy('i.user')
+        .groupBy('i.user')
+        .getRawOne(),
+    ]);
+
+    return {
+      locations: locations?.locations ?? 0,
+      total: total?.total ?? 0,
+      completed: completed?.completed ?? 0,
+      pendent: pendent?.pendent ?? 0,
+    };
+  }
+
   async rateClient(
     tech: string,
     issue: number,
