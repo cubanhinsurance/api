@@ -52,4 +52,7 @@ export class RatingsEntity {
 
   @ManyToOne(() => IssuesEntity, { nullable: true })
   issue: IssuesEntity;
+
+  @Column({ nullable: true })
+  price: number;
 }

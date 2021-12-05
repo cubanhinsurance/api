@@ -135,6 +135,11 @@ export class IssuesController {
       joi.array().items(joi.string().valid(...Object.values(ISSUE_STATE))),
     ).swagger,
   })
+  @ApiQuery({
+    name: 'orderAsc',
+    required: false,
+    type: 'boolean',
+  })
   @Get('user')
   async getLoggedUserIssues(
     @PageSize() pz: number,
@@ -143,17 +148,32 @@ export class IssuesController {
     @Query(
       'state',
       new JoiPipe(
-        joi.array().items(
-          joi
-            .string()
-            .valid(...Object.values(ISSUE_STATE))
-            .optional(),
-        ),
+        joi
+          .alternatives()
+          .try(
+            joi
+              .array()
+              .items(joi.string().valid(...Object.values(ISSUE_STATE))),
+            joi.string().valid(...Object.values(ISSUE_STATE)),
+          )
+          .optional(),
       ),
     )
     state,
+    @Query('orderAsc', new JoiPipe(joi.boolean().optional()))
+    orderAsc?: boolean,
   ) {
-    return await this.issuesService.getUserIssues(username, p, pz, state);
+    return await this.issuesService.getUserIssues(
+      username,
+      p,
+      pz,
+      typeof state != 'undefined'
+        ? typeof state == 'string'
+          ? [state]
+          : state
+        : state,
+      orderAsc,
+    );
   }
 
   @ApiOperation({

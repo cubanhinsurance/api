@@ -66,6 +66,7 @@ export interface RATING_I {
   date?: Date;
   description?: string;
   rating: number;
+  price?: number;
   like?: boolean;
 }
 
@@ -175,6 +176,10 @@ export class IssuesService implements OnModuleInit {
     if (error)
       throw new BadRequestException(`Formulario incorrecto: ${error.message}`);
     data = value;
+
+    if (scheduled == true) {
+      const h = 7;
+    }
 
     try {
       const {
@@ -472,7 +477,10 @@ export class IssuesService implements OnModuleInit {
       .createQueryBuilder('i')
       .innerJoin('i.user', 'u')
       .addSelect(['u.username'])
-      .where('i.id=:issue', { issue })
+      .where('i.id=:issue and i.state=:created', {
+        issue,
+        created: ISSUE_STATE.CREATED,
+      })
       .getOne();
     if (!i) throw new NotFoundException(`Incidencia no existe`);
 
@@ -540,6 +548,7 @@ export class IssuesService implements OnModuleInit {
     page: number,
     page_size: number = 10,
     state?: ISSUE_STATE[],
+    orderAsc?: boolean,
   ) {
     const qr = this.issuesRepo
       .createQueryBuilder('i')
@@ -571,6 +580,10 @@ export class IssuesService implements OnModuleInit {
 
     if (state) {
       qr.andWhere('i.state in (:...state)', { state });
+    }
+
+    if (typeof orderAsc != 'undefined') {
+      qr.orderBy('i.date', orderAsc ? 'ASC' : 'DESC');
     }
 
     const res = await paginate_qr(page, page_size, qr);
@@ -1013,7 +1026,7 @@ export class IssuesService implements OnModuleInit {
   async rateTech(
     client: string,
     issue: number,
-    { description, date, rating, like }: RATING_I,
+    { description, date, rating, like, price }: RATING_I,
   ) {
     const i = await this.issuesRepo
       .createQueryBuilder('i')
@@ -1056,6 +1069,7 @@ export class IssuesService implements OnModuleInit {
       issue: i,
       like: rating >= 3,
       rating,
+      price,
       tech_review: true,
       from: i.user,
       to: i.tech,
@@ -1067,7 +1081,7 @@ export class IssuesService implements OnModuleInit {
   async rateClient(
     tech: string,
     issue: number,
-    { description, date, rating, like }: RATING_I,
+    { description, date, rating, like, price }: RATING_I,
   ) {
     const i = await this.issuesRepo
       .createQueryBuilder('i')
@@ -1113,6 +1127,7 @@ export class IssuesService implements OnModuleInit {
       tech_review: false,
       from: i.tech,
       to: i.user,
+      price,
     });
 
     this.broker.emit(CLIENT_RATED, saved);

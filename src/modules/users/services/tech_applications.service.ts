@@ -280,6 +280,11 @@ export class TechApplicationsService implements OnModuleInit {
         `El usuario ya tiene una solicitud en proceso, debe esperar a que se apruebe/deniegue para realizar otra`,
       );
 
+    if (!userData.phone_number)
+      throw new ForbiddenException(
+        'El usuario no tiene un numero de telefono configurado',
+      );
+
     const techinfo = userData.techniccian_info
       ? await this.technicciansEntity.findOne({
           relations: ['province', 'municipality', 'habilities'],

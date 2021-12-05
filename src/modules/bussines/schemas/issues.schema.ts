@@ -30,4 +30,5 @@ export const RATING_SCHEMA = joi.object({
   rating: joi.number().min(0).max(5).required(),
   like: joi.boolean().default(true).optional(),
   description: joi.string().optional(),
+  price: joi.number().optional(),
 });
