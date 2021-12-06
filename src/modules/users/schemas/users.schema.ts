@@ -79,6 +79,7 @@ export const TECH_SCHEMA = joi
 export const TECH_APP_SCHEMA = joi.object({
   habilities: joi.array().items(joi.number()).min(1).required(),
   address: joi.string().required(),
+  phone_number: joi.string().optional(),
   ci: joi
     .string()
     .pattern(/\d{11,11}/)

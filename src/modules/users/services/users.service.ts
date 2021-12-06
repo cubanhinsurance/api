@@ -251,6 +251,7 @@ export class UsersService {
     }
     if (data.lastname) curr.lastname = data.lastname;
     if (data.email) curr.email = data.email;
+    if (data.phone_number) curr.phone_number = data.phone_number;
     if (typeof data.telegram_id !== 'undefined') curr.active = data.active;
     if (data.expiration_date || data.expiration_date === null)
       curr.expiration_date = data.expiration_date;

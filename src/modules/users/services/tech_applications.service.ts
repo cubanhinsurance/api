@@ -255,16 +255,18 @@ export class TechApplicationsService implements OnModuleInit {
     province,
     municipality,
     confirmation_photo,
+    phone_number,
   }: {
     username: string;
     address?: string;
+    phone_number?: string;
     ci?: string;
     province?: string;
     municipality?: string;
     confirmation_photo?: Buffer;
     habilities?: number[];
   }) {
-    const userData = await this.usersService.findUserByUserName(username);
+    let userData = await this.usersService.findUserByUserName(username);
 
     if (!userData) throw new NotFoundException(`Usuario no existe`);
 
@@ -279,6 +281,13 @@ export class TechApplicationsService implements OnModuleInit {
       throw new ForbiddenException(
         `El usuario ya tiene una solicitud en proceso, debe esperar a que se apruebe/deniegue para realizar otra`,
       );
+
+    if (typeof phone_number != 'undefined') {
+      const updated = await this.usersService.updateUser(username, {
+        phone_number,
+      });
+      userData = await this.usersService.findUserByUserName(username);
+    }
 
     if (!userData.phone_number)
       throw new ForbiddenException(
