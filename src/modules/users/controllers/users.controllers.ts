@@ -391,4 +391,14 @@ export class UsersController {
   ) {
     return await this.techApp.getUserApplications(username, page, page_size);
   }
+
+  @ApiTags('Users')
+  @Get('verify_user/:username')
+  @ApiOperation({
+    summary: 'Verifica si un nombre de usuario esta disponible',
+  })
+  async verifyUsername(@Param('username') username) {
+    const u = await this.users.findUserByUserName(username, {}, true);
+    return !u;
+  }
 }
