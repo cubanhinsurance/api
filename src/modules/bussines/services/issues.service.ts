@@ -948,10 +948,10 @@ export class IssuesService implements OnModuleInit {
       .innerJoin('i.tech', 'tech')
       .innerJoin('i.user', 'author')
       .addSelect(['tech.username', 'author.username'])
-      .where('tech.username=:tech and i.id=:issue and i.state=:traveling', {
+      .where('tech.username=:tech and i.id=:issue and i.state!=:completed', {
         tech,
         issue,
-        traveling: ISSUE_STATE.TRAVELING,
+        completed: ISSUE_STATE.COMPLETED,
       })
       .getOne();
 
