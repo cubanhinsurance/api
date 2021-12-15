@@ -817,7 +817,7 @@ export class IssuesCacheService {
     const { available, client, id } = techClient;
 
     if (!available) {
-      return;
+      // return;
     }
 
     if (client.progress?.issue?.id == issue.id) {
