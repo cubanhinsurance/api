@@ -669,6 +669,17 @@ export class IssuesService implements OnModuleInit {
                 arrive_date,
               };
               (i as any).application = wsTech.client.progress.application;
+            } else {
+              const application = await this.issuesAppRepo
+                .createQueryBuilder('aps')
+                .innerJoin('aps.tech', 'tech')
+                .innerJoin('aps.issue', 'issue')
+                .where('issue.id=:issue and tech.username=:tech', {
+                  issue,
+                  tech: i.tech.username,
+                })
+                .getOne();
+              (i as any).application = application;
             }
             const g = 7;
           }
@@ -678,6 +689,17 @@ export class IssuesService implements OnModuleInit {
             const wsTech = this.techsCache.findTechClient(i.tech.username);
             if (!!wsTech && wsTech?.client?.progress) {
               (i as any).application = wsTech.client.progress.application;
+            } else {
+              const application = await this.issuesAppRepo
+                .createQueryBuilder('aps')
+                .innerJoin('aps.tech', 'tech')
+                .innerJoin('aps.issue', 'issue')
+                .where('issue.id=:issue and tech.username=:tech', {
+                  issue,
+                  tech: i.tech.username,
+                })
+                .getOne();
+              (i as any).application = application;
             }
           }
           break;
