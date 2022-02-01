@@ -274,12 +274,8 @@ export class AuthService {
       reviews: await this.usersService.getClientReview(user.username),
     };
 
-    const {
-      name,
-      lastname,
-      techniccian_info,
-      agent_info,
-    } = await this.usersService.getUserPrivateData(user.username);
+    const { name, lastname, techniccian_info, agent_info } =
+      await this.usersService.getUserPrivateData(user.username);
 
     data = { ...data, name, lastname };
 
@@ -298,9 +294,8 @@ export class AuthService {
         user.username,
       )) as any;
 
-      data.techniccian_info.reviews = await this.usersService.getTechniccianReview(
-        user.username,
-      );
+      data.techniccian_info.reviews =
+        await this.usersService.getTechniccianReview(user.username);
     }
 
     return data;
@@ -309,12 +304,13 @@ export class AuthService {
   async getUserInfo(username: string): Promise<USER_INFO> {
     if (this.isRoot(username))
       return {
-        isRoot: false,
+        isRoot: true,
         id: -1,
         isAgent: false,
         isTech: false,
         name: 'Root',
         username,
+        confirmed: true,
         tools: await this.getAllTools(),
       };
 

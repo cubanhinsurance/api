@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { REDIS_BROKER } from 'src/lib/microservice/broker';
 import { ClientModule } from '../client/client.module';
@@ -24,6 +25,7 @@ import { IssuesService } from './services/issues.service';
 import { IssuesCacheService } from './services/issues_cache.service';
 import { LicensesService } from './services/licenses.service';
 import { LicensesTypesService } from './services/licenses_types.service';
+import { directory } from './filesdir';
 
 @Module({
   imports: [
@@ -32,6 +34,13 @@ import { LicensesTypesService } from './services/licenses_types.service';
     ClientModule,
     EnumsModule,
     GisModule,
+    MulterModule.registerAsync({
+      useFactory: async () => {
+        return {
+          dest: await directory(),
+        };
+      },
+    }),
     TypeOrmModule.forFeature([
       TechApplicantEntity,
       LicensesEntity,
@@ -45,7 +54,7 @@ import { LicensesTypesService } from './services/licenses_types.service';
       PayGatewaysEntity,
       IssuesEntity,
       IssueApplication,
-      IgnoredIssuesEntity
+      IgnoredIssuesEntity,
     ]),
   ],
   controllers: [LicensesController, IssuesController],

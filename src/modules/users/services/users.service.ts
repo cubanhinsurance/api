@@ -484,7 +484,7 @@ export class UsersService {
       .where('u.username=:username', { username })
       .getOne();
 
-    return data;
+    return data ?? ({} as any);
   }
 
   async getUsers(

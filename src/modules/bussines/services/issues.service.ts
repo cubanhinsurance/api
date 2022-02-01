@@ -52,6 +52,10 @@ import {
 import { ISSUES_APPLICATION_STATES } from '../schemas/issues.schema';
 import { IssuesCacheService } from './issues_cache.service';
 import { RatingsEntity } from '../entities/ratings.entity';
+import { Public } from 'src/modules/auth/decorators/public.decorator';
+import { existsSync, mkdirSync, statSync } from 'fs';
+import { v4 } from 'uuid';
+import { checkPhotosDir } from '../filesdir';
 
 const updateQb = (qb: SelectQueryBuilder<IssuesEntity>): void => {};
 
@@ -164,9 +168,8 @@ export class IssuesService implements OnModuleInit {
         if (q) {
           if (required) q = q.required();
           else q = q.allow(null).optional();
+          questionsSchema[i] = q;
         }
-
-        questionsSchema[i] = q;
       });
     }
 
@@ -179,6 +182,15 @@ export class IssuesService implements OnModuleInit {
 
     if (scheduled == true) {
       const h = 7;
+    }
+
+    if (photos.length > 0 && issue.questions?.length > 0) {
+      const photosField = issue.questions.findIndex(
+        ({ type }) => type == 'photo',
+      );
+      if (photosField >= 0) {
+        data[photosField] = photos.map(({ filename }) => filename);
+      }
     }
 
     try {
@@ -236,6 +248,7 @@ export class IssuesService implements OnModuleInit {
   }
 
   async onModuleInit() {
+    await checkPhotosDir();
     const opennedIssues = await this.getOpenedIssues();
 
     for (const i of opennedIssues) {
@@ -783,7 +796,7 @@ export class IssuesService implements OnModuleInit {
       app.issue.state != ISSUE_STATE.TRAVELING
     )
       throw new ConflictException(
-        'Aplicacion no se encuentra en estado pendiente',
+        'Aplicacion no se encuentra en estado "pendiente", "en camino" o "en progreso" ',
       );
 
     await this.issuesAppRepo.save({
@@ -1266,5 +1279,9 @@ export class IssuesService implements OnModuleInit {
           'applications.tech=tu.id',
         ),
     );
+  }
+
+  async getIssuesStates() {
+    return await this.techsCache.getIssuesStates();
   }
 }

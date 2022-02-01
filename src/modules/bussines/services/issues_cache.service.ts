@@ -835,6 +835,8 @@ export class IssuesCacheService {
     client.ws.emit(TECH_ACCEPTED, info);
 
     client.pendents.set(issue.id, info);
+
+    this.openIssues.delete(issue.id);
   }
 
   async getPendentIssueInfo(
@@ -1064,5 +1066,29 @@ export class IssuesCacheService {
     const client = this.findTechClient(rating.to.username);
     if (!client) return;
     client.ws.emit(TECH_RATED, rating);
+  }
+
+  async getIssuesStates() {
+    const openissues = {};
+
+    for (const [id, v] of this.openIssues) {
+      openissues[id] = v;
+    }
+
+    const techs = {};
+    for (const [id, { user, pendents }] of this.clients) {
+      const p = {};
+      for (const [id, pendent] of pendents) {
+        p[id] = pendent;
+      }
+      techs[user.user.username] = {
+        pendents: p,
+      };
+    }
+
+    return {
+      openissues,
+      techs,
+    };
   }
 }
