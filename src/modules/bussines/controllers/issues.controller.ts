@@ -63,6 +63,9 @@ export class IssuesController {
   @UseInterceptors(
     FilesInterceptor('photos', null, {
       fileFilter: imageFilter,
+      // limits: {
+      //   fileSize: 104857600,
+      // },
     }),
   )
   @ApiBody({
@@ -98,6 +101,7 @@ export class IssuesController {
 
   @ApiOperation({ summary: 'Obtiene imagen' })
   @Get('image/:image_id')
+  @Public()
   async getImage(@Param('image_id') image_id, @Res() res) {
     const dir = await directory();
     const pth = resolve(dir, image_id);

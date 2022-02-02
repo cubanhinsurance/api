@@ -37,6 +37,10 @@ import { directory } from './filesdir';
     MulterModule.registerAsync({
       useFactory: async () => {
         return {
+          limits: {
+            fileSize: 10000000,
+            files: 10,
+          },
           dest: await directory(),
         };
       },
