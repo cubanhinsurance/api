@@ -4,10 +4,12 @@ import {
   Delete,
   Get,
   Head,
+  NotFoundException,
   Param,
   Post,
   Put,
   Query,
+  Res,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -45,6 +47,9 @@ import { USER_NAME_SCHEMA } from 'src/modules/auth/schemas/signin.schema';
 import { ISSUE_STATE } from '../entities/issues.entity';
 import { Action } from 'rxjs/internal/scheduler/Action';
 import { boolean } from 'joi';
+import { directory } from '../filesdir';
+import { createReadStream, existsSync } from 'fs';
+import { resolve } from 'path';
 
 @ApiTags('Issues')
 @Controller('issues')
@@ -58,6 +63,9 @@ export class IssuesController {
   @UseInterceptors(
     FilesInterceptor('photos', null, {
       fileFilter: imageFilter,
+      // limits: {
+      //   fileSize: 104857600,
+      // },
     }),
   )
   @ApiBody({
@@ -89,6 +97,18 @@ export class IssuesController {
     @Body(new JoiPipe(ISSUE_APPLICATION)) app,
   ) {
     await this.issuesService.createIssueApplication(username, issue, app);
+  }
+
+  @ApiOperation({ summary: 'Obtiene imagen' })
+  @Get('image/:image_id')
+  @Public()
+  async getImage(@Param('image_id') image_id, @Res() res) {
+    const dir = await directory();
+    const pth = resolve(dir, image_id);
+    const exists = await existsSync(pth);
+    if (!exists) throw new NotFoundException();
+    const file = createReadStream(pth);
+    file.pipe(res);
   }
 
   @ApiOperation({
@@ -441,5 +461,11 @@ export class IssuesController {
       page,
       page_size,
     );
+  }
+
+  @Public()
+  @Get('issues_states')
+  async issuesStates() {
+    return await this.issuesService.getIssuesStates();
   }
 }

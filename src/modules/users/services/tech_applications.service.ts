@@ -154,7 +154,7 @@ export class TechApplicationsService implements OnModuleInit {
       }
 
       this.broker.emit(TECH_APPLICANT_CONFIRMED, {
-        username,
+        username: application.user.username,
         approved: confirm,
         description,
         agent,

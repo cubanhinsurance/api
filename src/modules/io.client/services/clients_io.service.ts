@@ -111,11 +111,12 @@ export class ClientsIoService
   }
 
   async emitTechConfirmation(data) {
-    for (const id in this.clients) {
+    for (const [id, client] of this.clients) {
+      const h = 8;
       const {
         user: { username: u },
         ws,
-      } = this.clients[id];
+      } = client;
 
       if (data.username == u) {
         (ws as Socket).emit(NEW_TECHAPPLICATION_CONFIRMATION, data);
