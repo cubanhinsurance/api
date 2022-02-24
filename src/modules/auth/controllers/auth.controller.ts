@@ -173,12 +173,28 @@ export class AuthController {
   }
 
   @ApiTags('Auth')
-  @ApiOperation({ summary: 'Devuelve la informacion de un usuario' })
+  @ApiOperation({
+    summary: 'Devuelve la informacion de un usuario autenticado',
+  })
   @ApiOkResponse({
     schema: j2s(USER_INFO_SCHEMA).swagger,
   })
   @Get('user_info')
   async userFuncs(@Req() { user }: any) {
+    return await this.auth.updateUserInfo(user);
+    // return { ...user, licenses: await this.auth.userLicenses(user.username) };
+  }
+
+  @ApiTags('Auth')
+  @ApiOperation({
+    summary: 'Devuelve la informacion de un usuario',
+  })
+  @ApiOkResponse({
+    schema: j2s(USER_INFO_SCHEMA).swagger,
+  })
+  @Get('user_info/:username')
+  async userInfo(@Param('username') username: string) {
+    const user = await this.auth.getUserInfo(username);
     return await this.auth.updateUserInfo(user);
     // return { ...user, licenses: await this.auth.userLicenses(user.username) };
   }
